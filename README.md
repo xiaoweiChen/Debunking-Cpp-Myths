@@ -1,6 +1,6 @@
-# 消除对于C++的误解
+# 消除C++迷思
 
-*开启一段富有洞见的旅程，揭开流行的 C++ 迷思与误解背后的真相。*
+*开启一段富有洞见的旅程，揭开 C++ 迷思与误解背后的真相*
 
 <a href=""><img src="cover.png" height="256px" align="right"></a>
 
@@ -15,40 +15,45 @@
 
 ## 本书概述
 
-告别繁琐的任务！GitHub Actions 是一个强大的工作流引擎，可以自动化 GitHub 生态系统中的所有内容，让开发者专注于更重要的事。
+Explore the origins of C++ myths and their relevance today, learn to sidestep common pitfalls, and adopt modern best practices to master the evolving C++ programming landscape
 
 **关于本书**
 
-本书展示了如何使用社区驱动的GitHub Actions工作流平台，来自动化重复性的工程任务。
+Think you know C++? Think again.
 
-本书解释了GitHub Actions工作流语法、不同种类的动作，以及GitHub托管和自托管的工作流运行器是如何工作的。可以了解到如何使用Visual Studio Code (VS Code)编写和调试GitHub Actions和工作流的技巧，学习如何在本地运行，并借用GitHub Copilot的力量。书中通过动手实例，引导你完成实际应用案例，自动化整个发布过程。从自动生成发布说明到构建和测试软件，再到使用OpenID Connect (OIDC)、密钥、变量、环境和审批检查安全地部署到Azure、Amazon Web Services (AWS)或Google Cloud。
+For decades, C++ has been clouded by myths and misunderstandings—from its early design decisions to misconceptions that still linger today. Claims like "C++ is too hard to learn" or "C++ is obsolete" are often rooted in some truth, but they are outdated and fail to capture the language’s ongoing evolution and modern capabilities.
 
-内容不仅限于CI/CD，还演示了使用GitHub CLI、GitHub API和SDK及GitHub Token执行IssueOp和其他重复性任务的解决方案。你将学习如何构建自己的动作和可重用的工作流，以与社区或组织内部共享构建模块。
+Written by industry veterans with over 40 years of combined experience, this book uncovers the myths, exploring their origins and relevance in the context of today’s C++ landscape. It equips you with a deeper understanding of advanced features and best practices to elevate your projects. Each chapter tackles a specific misconception, shedding light on C++'s modern features, such as smart pointers, lambdas, and concurrency. You’ll learn practical strategies to navigate common challenges like code portability and compiler compatibility, as well as how to incorporate modern best practices into your C++ codebase to optimize performance and future-proof your projects.
 
-阅读完这本关于GitHub的书籍后，读者们将掌握自动化任务所需的技能，并能够以卓越的效率和敏捷性开展工作。
+By the end of this book, you’ll have a comprehensive understanding of C++'s evolution, equipping you to make informed decisions and harness its powerful features to enhance your skills, coding practices, and projects.
 
 **主要特点**
 
-* 使用OpenID安全地自动化CI/CD工作流并部署到如Azure、AWS或GCP这样的云提供商
-* 使用Docker、JavaScript编程或shell脚本创建自己的自定义动作并与他人分享
-* 发现复杂场景的自动化方法，超越GitHub中已记录的基本示例
+* Trace the origins of C++ misconceptions and understand why they persist
+* Learn to avoid pitfalls caused by misunderstood C++ standards
+* Leverage the lesser-known features of the C++ programming language
+* Purchase of the print or Kindle book includes a free PDF eBook
 
 **内容包括**
 
-* 使用VS Code和Copilot编写和调试GitHub Actions工作流
-* 在GitHub提供的虚拟机(Linux、Windows和macOS)上运行工作流，或者在开发者的基础设施中托管运行器
-* 学习如何通过GitHub Actions保护工作流
-* 通过使用GitHub的强大工具(如CLI、API、SDK和访问令牌)自动化工作流以提高生产力
-* 通过分阶段或环形部署，以安全可靠的方式部署至云和服务
+* Comprehend the history of C++ and the design decisions that shape modern challenges
+* Master program flow and its underlying principles to resolve issues effectively
+* Tackle incompatibility across compilers and platforms with ease
+* Identify issues and avoid writing code that may lead to undefined behavior
+* Explore advanced C++ features not typically covered in academia
+* Address concerns about compiler code generation and optimizations
+* Understand why undefined behavior remains intentionally undefined
 
 **适读人群**
 
-这本书适合学习GitHub Actions实用方法的人，无论经验水平如何，无论职业是软件开发者、DevOps工程师，还是已经尝试过Actions的人，亦或对于Jenkins或Azure Pipelines这样的CI/CD工具完全不了解的人，都能在这本书中找到自己所寻之物。不过，使用Git和命令行是必备的基础知识。
+This book is for intermediate-to-advanced C++ developers looking to deepen their understanding of the language’s complexities. It is perfect for coders eager to avoid common mistakes, hackers, scholars with a sense of humor, or anyone with an interest in C++. Programmers who want to expand their knowledge, refine existing skills, explore new paradigms, or dive into the nuances of C++, will find valuable insights. Technical leads and software engineering managers adopting new technologies or navigating the C++ ecosystem will also benefit from this book.
 
 
 ## 作者简介
 
-Michael Kaufmann相信开发者和工程师能够在工作中感到快乐和高效。他热爱DevOps、GitHub、Azure和现代工作方式。Microsoft授予他Microsoft区域总监(RD)和Microsoft最有价值专家(MVP)称号 --- 后者属于DevOps和GitHub类别。Michael同时也是德国Xebia Microsoft服务公司的创始人兼总经理，这是一家咨询公司，通过支持客户进行云、DevOps和数字化转型来帮助他们成为数字领导者。Michael通过书籍、培训，以及经常在国际会议上进行分享。
+[Alex Bolboaca](https://www.amazon.com/stores/author/B07VGJ5RND/about?ingress=0&visitId=3681fba3-55d3-4740-bd35-8040d21f011d&ref_=ap_rdr) was born in the mythical lands of Transylvania, Romania, in 1977, the year when Star Wars launched. He read the first book on computers when he was 10, and found the topic fascinating, which pushed him towards the new domain of software development. Fortunately, the main obstacle towards his desired career was pushed away with the Romanian Revolution from 1989, leaving Alex free to pursue his interests.
+
+[Ferenc Deák](https://www.amazon.com/stores/author/B0DT724DDC/about?ingress=0&visitId=1d5aad24-db29-468e-aa25-2626037f0f87&ref_=ap_rdr) is a software developer with over 15 years of experience specializing in system programming, software security, and application design. Based in Trondheim, Norway, he has worked on projects involving autonomous systems, real-time traffic solutions, and cryptographic applications.
 
 ## 本书相关
 
