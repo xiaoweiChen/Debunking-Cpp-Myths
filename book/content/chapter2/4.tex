@@ -1,3 +1,133 @@
 
+当今三个主要编译器中的两个是以开源方式开发和维护的。 这意味着,从理论上讲,任何都可以为他们选择的编译器做出贡献并提供有用的新功能。然而,在实践中,这意味着一小部分专业程序员的核心拥有必要的知识和奉献精神,并且还得到了一家受益于上述译器开发的大公司的支持。
 
-\mySubsubsection{2.4.1}{A tribute to attributes}
+GCC 和 Clang(以及我们在上一节中讨论的 MSVC)是截至 2024 年最符合标准的编译器, 名不分先后。但是,这种标准合规性并不意味着这些编译器没有自己的好处,开发人员经认为合并这些好处是一个好主意。
+
+例如,让我们以 GCC 的计算 goto 功能为例(当然,还有 Clang;这两者往往是齐头并进的) 我们都在学校里学到了 goto 就是纯粹的邪恶,永远不应该使用。如果你在学校没有学到个,请不要从这本书中学到。那是因为它又一次不是真的。相反,让我们关注我们可以到的计算 goto。如果 goto 是邪恶的,那么计算出的 goto 是计算出的邪恶吗?那么下面的码序列是纯粹的邪恶,还是经过计算的邪恶呢?让我们来看看:
+
+\begin{cpp}
+int main() {
+  std::vector<void*> labels = { &&start, &&state1, &&state2, &&end };
+  int state = 0;
+  goto *labels[state];
+  start:
+    std::cout << "In start state" << std::endl;
+    state = 1;
+    goto *labels[state];
+  state1:
+    std::cout << "In state 1" << std::endl;
+    state = 2;
+    goto *labels[state];
+  state2:
+    std::cout << "In state 2" << std::endl;
+    state = 3;
+    goto *labels[state];
+  end:
+    std::cout << "In end state" << std::endl;
+    return 0;
+}
+\end{cpp}
+
+第一行没有错。问题在那之后开始。这个非常方便的功能可用于以非标准方式高效地实现释器或状态机,它允许根据指针的值跳转到标签,从标签本身的地址初始化。由于我们在处理指针,因此完全可以使用可怕的指针算法并对地址进行一些计算。
+
+此外,如果使用不当,这可能是一个危险的功能。与标准 goto 的情况不同,计算的 goto 不虑在离开特定范围时生命周期结束的对象。因此,不会调用析构函数。认为自己被警告! 
+
+另一个与标准 C++ 语法相当有用的偏差来自 GCC(同样,它也由 Clang 实现,真是令人惊),这使得以下代码序列可以使用这两个编译器进行编译:
+
+\begin{cpp}
+int y = ({ int x = 10; x + 5; });
+\end{cpp}
+
+很整洁,不是吗?这个特性叫做 表达式中的语句和声明 它有你能想到的所有好处:很好地装了里面声明的对象,如果使用得当,宏会更安全一些。太糟糕了,它不是标准的 C++。
+
+Clang 是新来的(好吧,如果我们可以称一个 15 岁的编译器为“新”孩子,尽管与 GCC 相,其出生日期可以追溯到 1987 年,Clang 仍然是一个非常年轻但技术娴熟的玩家)在功斗争中走得更远。以下代码仅使用 Clang 进行编译,具有非常特殊的库和编译器的新命令切换的优势:
+
+\begin{cpp}
+#include <iostream>
+int main() {
+  int (^square)(int) = ^(int num) { return num * num; };
+  int y = square(12);
+  std::cout << y << std::endl;
+}
+\end{cpp}
+
+此功能称为 Blocks in Clang。为了正确地做到这一点,你需要安装 BlocksRuntime\footnote{\url{https://github.com/mackyle/blocksruntime}} 库,然后 Clang 指定一个特殊的 -fblocks 标志,在完成所有这些阻塞之后,我们终于可以编译前面代码了。
+
+这与标准 C++11 lambda 的行为非常相似,但考虑到此功能是在 2008 年的 Clang 中创建和引的,我们可以将其称为标准 C++ lambda 之父。 如果您好奇,提供相同功能的标准 C++ lambda 如下所示:
+
+\begin{cpp}
+auto square = [](int num) ->int { return num * num; };
+\end{cpp}
+
+所以,如果你想知道那里发生了什么,这里只是你 C++ 新生记忆的一个小小的复习:在任情况下,int array[n] = \{0\};标准 C++。可变长度数组是 C 语言中的一个功能,但出各种安全考虑,C++ 标准并未包含它。无论如何,GCC 编译器接受了前面的代码,但 Clang 对此抱怨:
+
+\begin{shell}
+error: variable-sized object may not be initialized
+   5 | int array[n] = {0};
+\end{shell}
+
+根据错误消息，修复很容易：
+
+\begin{cpp}
+auto generate(int n) -> std::vector<int>{
+  int array[n];
+  for(int i=0; i<n; i++) array[i] = i;
+  return std::vector<int>{array, array + n};
+}
+\end{cpp}
+
+现在，即使是 Clang（和其他几个编译器，比如 ICC）也接受了它，无论代码的标准状态如
+何......或者更确切地说，缺乏它。
+
+\mySubsubsection{2.4.1}{敬属性}
+
+但是,GCC 和 Clang(以及 Microsoft Visual C++)都可以就 C++ 语言的一个非常具体的扩的有用性达成一致:我们需要一种方法将元数据附加到某些语言结构(例如类型、函数变量等)。然后,编译器和其他工具可以使用此元数据来生成优化代码、执行检查或提其他功能。
+
+在现代 C++(即 C++11)引入使用双方括号语法 [[attribute]] 指定属性的标准化方法之前, 个编译器都有自己的方法来指定这些必需的属性:
+
+\begin{itemize}
+\item 
+GCC 和 Clang 使用 \_\_attribute\_\_((attribute-name))
+
+\item 
+Microsoft Visual C++ 使用 \_\_declspec(attribute-name)
+\end{itemize}
+
+然而,随着 C++11 的发布,标准化委员会意识到了这些属性的有用性,并将最适用的属性升到语言中(例如 [[noreturn]]),而后来对标准的改进增加了更多属性(例如 [[fallthroug ]]、[[nodiscard]] 等)。但是,这些属性中的许多仍然局限于引入它们的编译器。以下代码段展示了其中的一些功能:
+
+\begin{cpp}
+void old_function() __attribute__((deprecated));
+void fatal_error() __attribute__((noreturn));
+int pure_function(int x) __attribute__((pure));
+int x __attribute__((aligned(16)));
+void old_function() {
+  std::cout << "This function is deprecated.";
+}
+void fatal_error() {
+  std::cerr << "This function does not return.";
+  exit(1);
+}
+int pure_function(int x) {
+  return x * x;
+}
+\end{cpp}
+
+上面的代码序列包含 GCC 和 Clang 共享的一些属性，例如：
+
+\begin{itemize}
+\item 
+\_\_attribute\_\_((deprecated))  将old\_function标记为已弃用
+
+\item 
+\_\_attribute\_\_((noreturn)) 用于表示 fatal\_error 不返回
+
+\item 
+\_\_attribute\_\_((pure))  用于表示pure\_function除了返回值外没有副作用
+
+\item 
+\_\_attribute\_\_((aligned(16))) 用于将 x 变量与 16 字节边界对齐
+\end{itemize}
+
+这些编译器 \footnote{\url{https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html}} 提供的属性列表非常庞大 \footnote{\url{https://clang.llvm.org/docs/AttributeReference.html}},我们强烈建议您,如果您正在一个非常特定的平上使用这些编译器之一,并且您主要关心的不是代码可移植性、平台独立性和标准合规,那么你应该去看看它们。这是因为通过正确使用编译器为您提供的工具，可以利用大量功能。
+
+

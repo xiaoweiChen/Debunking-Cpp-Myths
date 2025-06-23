@@ -1,0 +1,75 @@
+我们即将探讨的、关于你所编写代码是否符合标准的最后一种情形，涉及 C++ 生态系统中最基本的组成部分：编译器本身。
+
+要知道，编译器也只是一种程序，由数百万行代码组成。全球各地有许多贡献者在参与开发它们：添加新功能、修复漏洞、提升标准兼容性、发布新版本，并确保你的编译器能够正常工作。
+
+这些编译器也有自己的开发时间线。特性的实现不可能一蹴而就，有时会出现这样的情形：某一特定时间点上，某个编译器尚未支持某些标准特性，只是因为没有足够的人力去完成实现。
+
+在 C++ 知识的源泉\footnote{\url{https://en.cppreference.com/w/cpp/compiler_support}}（即 C++ 官方网站或相关权威资源）中，有一份非常实用的文档，详细列出了各种 C++ 标准特性的支持情况，以及哪些编译器已经实现了某个特定的功能。
+
+在标准更替之际（或者被迫使用尚未实现某些特性的旧版编译器时），C++ 开发者社区曾采用过许多技巧，来弥补即将到来的新版本编译器中某些缺失的特性。
+
+例如，当 mutable 关键字在 C++98 中引入时，某些编译器对它的实现比其他编译器慢了一些。对于使用这些编译器的程序员来说，在 const 成员函数中修改成员变量（这是在同一标准中引入的功能）变得颇具挑战性。
+
+在这种情况下，必须使用以下（相当丑陋的）技巧来抵消缺失的关键字：
+
+\begin{cpp}
+class Counter {
+  int viewCount = 0;
+public:
+  void view() const {
+    const_cast<Counter*>(this)->viewCount++;
+  }
+  void print() const {
+    std::cout << "Count: " << viewCount << std::endl;
+  }
+}
+\end{cpp}
+
+假设你的编译器支持 const\_cast，那么上面的代码就没有问题。然而，如果 const\_cast 不在编译器所支持的关键字列表中，那你基本上只能退而求其次，使用传统的 C 风格强制类型转换，例如：((Counter*)(this))->viewCount++; 
+
+mutable 关键字并不是第一个因编译器缺乏支持而给开发者带来麻烦的语言特性。在 C++11 引入 constexpr 之前（甚至在那之后的好几年，对于 Microsoft Visual C++ 的程序员来说也是如此），编译时常量表达式必须通过各种模板技巧来实现（或者直接使用宏，但我们都知道宏是“邪恶”的，所以我们会尽可能避免使用它们）。
+
+\begin{cpp}
+template <unsigned int N>
+struct Factorial {
+  static const unsigned long long value = N * Factorial<N - 1>::value;
+};
+template <>
+struct Factorial<0> {
+  static const unsigned long long value = 1;
+};
+const unsigned long long fac5 = Factorial<5>::value;
+\end{cpp}
+
+使用支持同一函数的 constexpr 的编译器的当前标准实现肯定更短且更容易理解：
+
+\begin{cpp}
+constexpr unsigned long long factorial(unsigned int n) {
+  return n <= 1 ? 1 : n * factorial(n - 1);
+}
+const unsigned long long fac5too = factorial(5);
+\end{cpp}
+
+当然，如果我可以这么说的话，代码的可读性有很大的飞跃。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

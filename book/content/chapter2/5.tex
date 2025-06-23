@@ -1,0 +1,92 @@
+一长串 standard-un-compliant-but-still-working-and-useful 功能并不以前面的示例结束。然而如果我们只把注意力集中在这些上,我们仍然可以用它们写满好几本书。遗憾的是,目我们只用了一章来讨论这个主题,所以让我们把注意力转移到一些更奇特的功能上。
+
+Qt 事实上一直是 GUI 应用程序(但不仅仅是)的跨平台编程框架已经有一段时间了。自19 4年成立以来,Qt框架经历了多次易主,但在其命运多舛的历史中,Qt框架已经取得了长的发展,每个版本都为C++(但不仅仅是)编程社区提供了一组新的功能。然而,有一个能或多或少保持不变:信号/插槽实现和 Meta Object Compiler (MOC)。作为框架的支,MOC 可以将事件从组件(即信号)连接到接收器(即插槽)以进行正确处理。
+
+但是,这个非常方便的功能是以必须支持多个非 C++ 结构为代价的,这使得应用程序看似相关的元素之间的连接成为可能。例如,必须响应事件的对象的类声明由几个非标准的访问修饰符”扩展,例如 signals:、private slots: 等。此外,还有一个名为 emit 的新关字,它可以发出信号。
+
+长话短说,以下是头文件的摘录,使以下代码的编译成为可能:
+
+\begin{cpp}
+#ifndef MYCONTROL_H
+#define MYCONTROL_H
+#include <QObject>
+#include <QPushButton>
+#include <QWidget>
+class MyControl : public QWidget {
+  Q_OBJECT
+public:
+  MyControl(QWidget *parent = nullptr);
+private slots:
+  void onButtonClicked();
+signals:
+  void nameChanged(const QString &name);
+private:
+  QPushButton *myButton;
+};
+#endif
+\end{cpp}
+
+我们是否应该采用 Qt 提供给我们的奢侈品,并使用非常方便的信号/插槽机制,但缺点是我必须编写非标准的 C++ 代码?或者我们宁愿坚持传统,通过编写纯 C++ 代码来创建每一小按钮和连接,就像我们在 GTK 中所做的那样? 
+
+本章无法回答这个问题,因为最终,这取决于每个项目的具体要求。这些因素包括环境施的内容、项目利益相关者对环境的期望以及开发团队如何决定前进的道路。然而,不要望:即使这感觉不像标准的 C++,它也解决了一个非常现实的问题。在幕后,隐藏着一尖端的实现,它已经过测试、批准、改进,并在多个小型和大型项目中使用。它经受住时间的考验。
+
+Microsoft 自己的 C++ 语言的大规模扩展来自不同的方法。虽然 C++/CLI 不是 Qt 的 MOC 特定工具,但它将 C++ 扩展为 .特定于 NET 的语法。适用于 C++/CLI 的 Visual Studio 编器(如公共语言基础结构,而不是命令行界面)可以分析此扩展语法并生成有效的公共间语言(这是 .NET 框架使用的低级、独立于平台的指令集)和本机代码。以下代码序列此托管 C++ 的一个示例。它没什么特别的;它只是连接字符串数组的元素并打印结果:
+
+\begin{cpp}
+#include <iostream>
+#include <atlstr.h>
+#include <stdio.h>
+using namespace System;
+int main() {
+  array<String^>^ args = { "managed", "world" };
+  String^ s = "Hello";
+  for each (String ^ a in args) s += " " + a ;
+  CString cs(s);
+  wprintf(cs);
+}
+\end{cpp}
+
+我完全同意;它绝不是标准的 C++。它看起来不像标准的 C++，感觉不像标准的 C++，甚至
+不像标准的 C++。所以，一定不是那样。具有相同功能的符合标准的 C++ 代码将如下所示
+：
+
+\begin{cpp}
+#include <array>
+#include <iostream>
+#include <string>
+int main() {
+  std::array<std::string, 2> args = { "unmanaged", "world" };
+  std::string s = "Hello";
+  for(const auto& a : args) {
+    s += " " + a ;
+  }
+  std::cout << s;
+}
+\end{cpp}
+
+它不是比前一个更好、更短、更简洁吗?更不用说它也符合标准的事实。
+
+将来观察 C++ 的托管扩展的演变将会很有趣。
+
+目前,它充当本机代码和托管代码之间的桥梁,目前这是一个非常小众的领域。然而,从远来看,它的生存在很大程度上取决于开发者社区将如何接受它(或不接受),它创建生态系统是否有足够的用途来保持它的活力,或者其他技术(如 P/Invoke 或 COM Interop 是否会接管 C++/CLI 现在处理的特定用例。
+
+确实,前方有有趣的时代。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

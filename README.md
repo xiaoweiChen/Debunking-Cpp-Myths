@@ -13,6 +13,24 @@
 >
 > — 云风，程序员修炼之道第2版译者
 
+> [!NOTE]
+> 译版在Release中提供生成好的PDF文件以供下载，若需要其他格式请自行安装第三方工具(比如：Calibre)进行转换
+
+> [!TIP]
+> 译文的LaTeX 环境配置：https://www.cnblogs.com/1625--H/p/11524968.html
+>
+>  * 禁用拼写检查：https://blog.csdn.net/weixin_39278265/article/details/87931348
+>
+>  * 使用xelatex编译时需要添加`-shell-escape`和`-8bit`选项，例如：
+>
+>    `xelatex -synctex=1 -interaction=nonstopmode -shell-escape -8bit "book".tex`
+>
+>  * 为了内容中表格和目录索引能正常生成，至少需要连续编译两次
+>
+>  * Latex中的中文字体([思源宋体](https://github.com/notofonts/noto-cjk/releases))和英文字体([Hack](https://github.com/source-foundry/Hack-windows-installer/releases/tag/v1.6.0))，需要安装后自行配置。如何配置请参考主book/css.tex顶部关于字体的信息。
+>
+> vscode中配置LaTeX：https://blog.csdn.net/Ruins_LEE/article/details/123555016
+
 ## 本书概述
 
 Explore the origins of C++ myths and their relevance today, learn to sidestep common pitfalls, and adopt modern best practices to master the evolving C++ programming landscape
@@ -59,19 +77,4 @@ This book is for intermediate-to-advanced C++ developers looking to deepen their
 
 * Github翻译地址：https://github.com/xiaoweiChen/Debunking-Cpp-Myths
 
-* 译文的LaTeX 环境配置：https://www.cnblogs.com/1625--H/p/11524968.html
-
-  * 禁用拼写检查：https://blog.csdn.net/weixin_39278265/article/details/87931348
-
-  * 使用xelatex编译时需要添加`-shell-escape`和`-8bit`选项，例如：
-
-    `xelatex -synctex=1 -interaction=nonstopmode -shell-escape -8bit "book".tex`
-
-  * 为了内容中表格和目录索引能正常生成，至少需要连续编译两次
-
-  * Latex中的中文字体([思源宋体](https://github.com/notofonts/noto-cjk/releases))和英文字体([Hack](https://github.com/source-foundry/Hack-windows-installer/releases/tag/v1.6.0))，需要安装后自行配置。如何配置请参考主book/css.tex顶部关于字体的信息。
-
-  * 本书的Latex编译生成，在Windows 11中文版下测试通过。若在其他平台或不同语言版本遇到了Latex的编译问题，请自行解决。
-
-* vscode中配置LaTeX：https://blog.csdn.net/Ruins_LEE/article/details/123555016
 
