@@ -1,0 +1,109 @@
+
+在深入探讨传统C++与现代C++的内存安全问题前，让我们先明确其定义。援引白宫报告所述："内存安全漏洞是指一类由于内存访问、写入、分配或释放操作违反预期方式而产生的漏洞(...)主要分为两大类：空间安全和时间安全。空间安全问题源于对变量和对象内存'正确'边界之外的访问；时间安全问题则发生在内存访问违反时序或状态时，例如访问已释放对象或出现意外交错的内存访问。"完整定义参见报告第7页：\url{https://www.whitehouse.gov/wp-content/uploads/2024/02/Final-ONCD-TechnicalReport.pdf}。
+
+所有C++程序员都应对这两类问题耳熟能详。空间安全问题在使用原生数组时最为常见，例如下面这个创建数组、赋值后尝试越界读写元素的程序：
+
+\begin{cpp}
+int doSomeWork(int value1, int value2, int value3, int value4) {
+  int array[3];
+  array[0] = value1;
+  array[1] = value2;
+  array[3] = value3;
+  array[4] = value4;
+
+  return array[0] + array[1] + array[3] + array[4];
+}
+\end{cpp}
+
+这段代码最令人意外的是它属于未定义行为(undefined behavior)——编译器可能以不同方式处理数组越界访问，从静默允许到报错皆有可能。更复杂的是，根据操作系统和运行环境，代码可能"正常"运行并覆盖未知内存区域。
+
+\begin{myNotic}{Note}
+对攻击者来说，这类代码就是金矿。为什么？因为虽然概率很小，但这个进程有可能在某个时间点与重要进程在内存中相邻存放。如果攻击者能向该函数传入特定值，并在恰当时机捕获进程，就可能实现：覆盖银行应用程序的身份验证检查代码/安装键盘记录器/向系统植入恶意软件。当然，这种攻击不能保证成功，但由于整个过程都是自动化的，黑客有的是时间尝试——他们只需要成功一次就够了。
+\end{myNotic}
+
+我在Ubuntu Linux系统上使用clang和g++编译器测试了这段代码。g++编译器即使开启所有警告选项也毫无提示地通过了编译，而clang则在编译时给出了数组越界访问的警告。实际运行程序时，系统显示"检测到堆栈破坏：程序已终止"。这说明运行时存在一定保护机制，但代码仍可能产生未知的副作用。
+
+需要注意的是，这只是一个简单示例。如果在代码中创建数组后将其传递给多个函数，并通过复杂公式计算索引，恐怕没有编译器能识别这类越界访问。最终我们只能依赖测试和操作系统保护机制。
+
+这是编程语言的缺陷吗？鲜为人知的是，那些被列为内存安全的语言同样可能写出这类代码。以C\#为例，它允许通过unsafe代码块使用指针和指针运算（尽管有限制）。关键区别在于：
+
+\begin{itemize}
+\item 
+需要显式声明unsafe代码块
+
+\item 
+实现相同功能需要更多工作
+
+\item 
+不会产生C++那样的严重后果
+
+\item 
+危险代码因unsafe标记而显眼可见
+\end{itemize}
+
+C++的问题不在于允许这些操作，而在于默认情况下太容易犯错。既然谈到指针，请看下面这段通过void和指针运算越界访问int类型内存的代码：
+
+\begin{cpp}
+int pointerBounds() {
+  int *aPointerToInt;
+  void *aPointerToVoid;
+  aPointerToVoid = new int();
+  aPointerToInt = (int*)aPointerToVoid;
+  *aPointerToInt = 234;
+  aPointerToInt = (int*)((char*)aPointerToVoid + sizeof(int));
+  *aPointerToInt = 2423;
+  int value = *aPointerToInt;
+  delete aPointerToVoid;
+  return value;
+}
+
+TEST_CASE("try pointer bounds"){
+  int result = pointerBounds();
+  CHECK_EQ(2423, result);
+}
+\end{cpp}
+
+我们再次遭遇未定义行为：通过指针算术运算得到的指针赋值操作，其具体行为由编译器决定。这次g++和clang都给出了警告——但仅针对删除void指针这一操作。两个编译器对我尝试读写越界内存区域的行为都毫无反应。更有趣的是，测试运行完全正常，函数返回了预期结果，皆大欢喜！甚至连操作系统都没对这荒谬操作提出抗议——但愿只是因为我没超出进程的内存分配范围。
+
+但愿如此。
+
+至此我们看到的都是空间内存安全问题，情况已经不容乐观。那么时间安全问题呢？任何使用过指针的人都深有体会：必须在指针不再需要时完成两件事——释放分配的内存并将其置为NULL。这两者都至关重要，因为忽略任一项都会引发时间安全问题：要么产生悬垂指针（仍能访问已释放内存区域），要么导致内存泄漏（指针未释放且可能已被重置，致使内存区域永久不可访问）。
+
+请看下面这个示例函数：它初始化一个int指针并赋值，释放内存后，又返回该内存存储的值：
+
+\begin{cpp}
+int danglingPointer() {
+  int *aPointerToInt = new int(234);
+  delete aPointerToInt;
+  return *aPointerToInt;
+}
+
+TEST_CASE("Try dangling pointer"){
+  int result = danglingPointer();
+  CHECK_EQ(234, result);
+}
+\end{cpp}
+
+这段代码再次顺利通过了编译——无论是g++还是clang都没有发出任何警告。程序也能运行，但测试最终失败：因为此时该内存地址存储的值已非预期结果。
+
+\begin{shell}
+test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, 721392248 )
+\end{shell}
+
+每次调用该函数时，该内存地址存储的值都会发生变化，可能产生如下不同的结果：
+
+\begin{shell}
+test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, 1757279720 )
+test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, -1936531037 )
+\end{shell}
+
+在后续代码中使用这个值进行计算并返回异常结果，简直出乎意料地简单。如果你对程序执行的运算稍有了解，并能反复输入特定值，这甚至可能成为探查内存区域内容的手段。
+
+时间安全问题更为棘手——在庞大的代码迷宫中追踪指针生命周期，远比确保不越界访问困难得多。是的，很不幸，内存问题确实是C++中的重大隐患。
+
+不过您可能已经注意到，前述所有示例都采用了传统C++风格：使用原生数组、裸指针和指针运算。正因如此，在现代C++中应当极其谨慎地使用这些特性。虽然不能说完全禁用（毕竟某些特定场景如内存优化或底层编程仍需它们），但通常可以划定明确边界将其隔离在现代C++的安全区域之外。
+
+那么，现代C++是否已解决所有这些问题？

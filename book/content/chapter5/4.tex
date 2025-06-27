@@ -1,3 +1,175 @@
+C++语言中存在一个鲜为人知的黑暗角落——当来自这个角落的代码偶然现世时，总会引发核心开发者们的集体重构。以数组访问为例，为什么在C++中a[2]和2[a]这两种写法完全等效？
+
+\begin{cpp}
+int main() {
+  int a[16] = {0};
+  a[2] = 3;
+  3[a] = 4;
+}
+\end{cpp}
+
+这段看似怪异的代码能够编译，其根本原因在于：
 
 
-\mySubsubsection{5.4.1}{The most important question}
+指针算术本质：
+
+\begin{itemize}
+\item 
+a[i]被编译器转化为*(a + i)
+
+\item 
+i[a]同样转化为*(i + a)
+
+\item 
+加法交换律使这两种形式完全等价
+\end{itemize}
+
+现代容器的限制。std::vector和std::array不支持这种"乱序"语法，因为：
+
+\begin{itemize}
+\item 
+运算符重载规则：operator[]作为成员函数必须通过对象实例调用
+
+\item 
+安全设计理念：内部实现采用边界检查而非原始指针算术
+\end{itemize}
+
+模拟方案（不建议生产环境使用）：
+
+\begin{cpp}
+#include <vector>
+#include <iostream>
+
+struct wrapper {
+  wrapper(int p) : i(p) {}
+  int operator[](const std::vector<int> v) {return v[i];}
+  int i = 0;
+};
+
+struct helper {
+  helper() = default;
+  wrapper operator << (int a) { return wrapper {a}; }
+};
+
+#define _ helper()<<
+int main() {
+  std::vector<int> vec = {10, 20, 30, 40, 50};
+  int b= (_ 2) [vec];
+  std::cout << b << std::endl; // Outputs 30
+  return 0;
+}
+\end{cpp}
+
+经过快速审视这段代码后（声明：两位作者中Alex是无辜的，此处使用"我们"仅是行文惯例），我们必须羞愧地承认——这段代码实在难登大雅之堂，更不敢将其实现到std::array或其他容器中。
+
+但仔细看来，其中仍存在有趣的技术点。虽然我们最初目标是实现vector/array的无序索引访问，但残酷的现实是：这根本不可行。尝试编译2[vec]表达式时，编译器会直接报错：
+
+\begin{shell}
+error: no match for 'operator[]' (operand types are 'int' and 'std::vector<int>')
+\end{shell}
+
+这个错误信息直白地说就是：编译器找不到一个能接受整型参数并应用于int向量的下标运算符。在C++现有的语法体系下，这种写法永远不可能通过编译，主要原因有二：
+
+1. 成员函数限制：
+
+\begin{itemize}
+\item 
+operator[]必须定义为类的成员函数
+
+\item 
+C++不允许存在独立的下标运算符（不存在全局的operator[]）
+\end{itemize}
+
+2. 运算符优先级机制：
+
+\begin{itemize}
+\item 
+在C++中，操作符优先级（operator precedence）决定了表达式的解析顺序
+
+\item 
+高优先级运算符先于低优先级运算符求值
+
+\item 
+当优先级相同时，由结合性（associativity）决定求值顺序
+\end{itemize}
+
+虽然最新标准第7章[expr.pre]节指出"运算符优先级并非直接规定，而是通过语法推导"，但仍有权威资料\footnote{\url{https://en.cppreference.com/w/cpp/language/operator_precedence}}完整列出了优先级顺序表——我们强烈建议开发者系统学习这些资料。
+
+\mySubsubsection{5.4.1}{最关键的问题在于}
+
+亲爱的读者，此刻您应该能轻松回答这个问题了：下面这段程序的输出结果是什么？
+
+\begin{cpp}
+#include <iostream>
+int main() {
+  auto a = 4;
+  std::cout << sizeof(a)["Hello World"] << std::endl;
+  return 0;
+}
+\end{cpp}
+
+但在您急着将代码扔进编译器之前，不妨暂停片刻，沉下心来仔细推敲其中的运行机制。本节已为您提供了所有解题线索——从关键提示到潜在方向一应俱全。我们暂不揭晓答案，也不做完整解析，仅列出现象要点，相信这些足以引导您得出正确结论：
+
+\begin{itemize}
+\item 
+在表达式 auto a = 4; 中，变量 a 被推导为 int 类型并初始化为 4 —— 这正是现代 C++ 中 auto 与整数字面量的配合方式。
+
+\item 
+接下来是精妙之处：通过代码解析可知，sizeof(a) 表达式将返回 sizeof(int) 的值：
+
+\begin{itemize}
+\item 
+主流系统中通常为 4 字节
+
+\item 
+古老的 16 位系统可能为 2 字节
+
+\item 
+某些特殊架构可能达到 8 字节（虽然笔者从未亲眼见过）
+\end{itemize}
+
+\end{itemize}
+
+这正是我们所有推理的关键转折点——C++的运算符优先级在此发挥了决定性作用。以下是从优先级表中提取的与当前案例直接相关的部分：
+
+% Please add the following required packages to your document preamble:
+% \usepackage{longtable}
+% Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
+\begin{longtable}{|l|l|l|}
+\hline
+\textbf{Precedence} & \textbf{Operator}                                  & \textbf{Description}            \\ \hline
+\endfirsthead
+%
+\multicolumn{3}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\endhead
+%
+1 & ::       & Scope resolution operator   \\ \hline
+2                   & \begin{tabular}[c]{@{}l@{}}a++ \\ a--\end{tabular} & Postfix increment and decrement \\ \hline
+  & a()      & Function call               \\ \hline
+  & a{[}{]}  & Subscript                   \\ \hline
+3                   & \begin{tabular}[c]{@{}l@{}}++a \\ --a\end{tabular} & Prefix increment and decrement  \\ \hline
+                    & \begin{tabular}[c]{@{}l@{}}+a \\ -a\end{tabular}   & Unary plus and minus            \\ \hline
+  & ! $\sim$ & Logical NOT and bitwise NOT \\ \hline
+  & *a       & Dereference                 \\ \hline
+  & \&a      & Address-of                  \\ \hline
+  & sizeof   & Size of operator            \\ \hline
+\end{longtable}
+
+
+现在我们可以清楚地看到：在这段代码中，sizeof(a)实际上并不会被执行。由于C++编译器处理运算符优先级的方式，[]运算符的优先级高于sizeof，因此编译器会优先计算(a)["Hello World"]这个表达式。
+
+关键解析步骤：
+
+括号的等价性：
+在C++中，(a)基本等同于a（除非遇到"最令人头疼的解析"场景，这个我们稍后再讨论）。因此整个表达式等价于sizeof a["Hello World"]。
+
+数组访问的对称性：
+
+如前所述，a["Hello World"]与"Hello World"[a]效果相同。当a的值为4时，这将返回字符串中的字符'o'。
+
+sizeof运算符的特性：
+
+表达式最终简化为sizeof 'o'，对于char类型，sizeof运算结果总是1。
+
+至此，问题的答案应该已经显而易见了。

@@ -1,0 +1,194 @@
+
+我们在学校都学过字母表——它将所有字母按特定顺序排列，比如英语的A、B、C，或是罗马尼亚语的A、Ă、Â（没错，罗马尼亚字母表开头竟有大量A的变体字母）。如今已无人确知这种排序的缘由，但鉴于现代字母表都源于古希腊的Α、Β、Γ或古埃及乃至更古老的文字，我们实在难以考证这种字符序列的起源。
+
+字母表堪称实用利器，它能帮我们归类所有可命名之物：从昆虫（蚂蚁ant总排在蜜蜂bee之前）到橱柜里的香料（除非你按颜色或使用频率排列……可怜的津巴布韦穆富什瓦干菜，你只能永远待在角落了），它让日常生活井然有序。
+
+不过言归正传（毕竟这是本关于编程——确切地说是C++编程的书），我们必须聚焦主题，而非沉溺于"蜜蜂与飞鸟"的字母排序趣谈（显然bee在bird之前）。
+
+但组织C++概念可能令人望而生畏。这里所说的"概念"指函数、类和变量，而非C++20引入的那个实用特性"concepts"（可惜本书不涵盖此内容）。你无法随心所欲地编排代码，因为某些函数需要调用其他函数，某些代码块必须访问事先定义好的变量。因此精心构建C++程序绝非易事。
+
+然而当话题转向C++类时，情况就不同了。在类中，这些可见性限制几乎不存在——类的所有方法都能彼此访问，成员函数之间可直接调用，类的世界如此简单……
+
+此刻我仿佛听见你惊呼："但绝不该在类内部调用析构函数或构造函数啊！"基本赞同，但若要写这样的方法，谁也拦不住：
+
+\begin{cpp}
+struct a_class {
+  void reboot() {
+    this->~a_class();
+    new (reinterpret_cast<void*>(this)) a_class();
+  }
+}
+\end{cpp}
+
+然而亲爱的读者，若你写出这样的代码，必将自食其果。让我们回归正题：排序。
+
+人类思维天生渴求秩序。我们需要清晰掌握工作内容的整体脉络，明确信息所在位置，并能以最便捷的方式定位——即便只是寻找类中某个成员的下落这般微不足道的小事，也必须确保能轻松快速地获取所需信息。
+
+经过无数次在类成员中大海捞针的痛苦挣扎后，某位在BigGameDev公司工作的游戏程序员（姑且称他为Joe）突然灵光乍现：所有类成员都应按字母顺序排列。妙极了！现在每个人都能轻松定位所需成员，瞧瞧这代码多么赏心悦目——
+
+\begin{cpp}
+struct point {
+  bool active;
+  double x;
+  double y;
+  double z;
+}
+\end{cpp}
+
+这个用例并不复杂，它只是游戏中用来表示某个点的位置——通过x、y、z三个坐标值，并附带一个状态值来指示该点是否处于活动状态。一切运行良好，游戏流畅运行，玩家们也很满意。
+
+然而某天，项目主程认为对该点的某些操作耗时过长（具体是什么操作以及为何需要这些操作，我就不赘述了），这些操作应该只在三个坐标值都发生变化时才执行。我们的程序员Joe是个严谨细致的人，他想到一个解决方案：存储三个额外的double类型值来记录之前的x、y、z坐标，在坐标变化时更新这些值，只有坐标发生变化时才执行相关操作。
+
+但他很快否决了这个方案，转而构思出另一个方法：为每个坐标维护一个bool标志位来记录变化。因为他知道bool类型通常只占1字节，而他们平台上double类型要占8字节。这样总共能节省...嗯，21字节的空间。于是，Joe的新类变成了这样：
+
+\begin{cpp}
+class point {
+  bool active;
+  double x;
+  bool x_changed;
+  double y;
+  bool y_changed;
+  double z;
+  bool z_changed;
+};
+\end{cpp}
+
+优美如诗——他写的代码向来如此。Joe将新写的代码提交到代码库，等待夜间构建，第二天测试团队就能拿到热腾腾的新版本。不过他并没有马上去度假（毕竟是个敬业的程序员，而且离夏天还早），打算等测试通过后再订机票。
+
+结果当夜自动化测试全线崩溃，所有测试套件失败，监控面板红得像某些国家的旗帜。第二天测试部门遭遇致命错误，游戏崩溃，99.9\%的报错最终都指向内存不足问题。
+
+应用内存占用突然翻倍，测试机难以维持目标帧率，除了持续飙升的内存分配检查数值外，所有操作都变得迟缓。除Joe的点类重构外，唯一改动只是某位开发者把主菜单背景色从深灰改成黑色（本该配合Joe改动的同事因孩子生病请假了）。开发团队紧急开会讨论问题根源。
+
+技术主管（我们姑且称这位编程高手为吉米）扫了眼代码立刻断言："Joe，虽然你按字母序排列成员的做法很整洁，但必须调整成员顺序。"Joe的脸顿时涨得和持续集成监控屏上的报错一样红，但他还是虚心请教原因。难道吉米看不出这代码的美感吗？吉米的解释让他目瞪口呆：
+
+C++类的内存布局受成员大小/对齐要求、继承关系和编译器填充字节影响。每个数据成员根据类型占据特定字节数——这点Joe应该清楚，但他可能忽略了内存对齐问题。每个成员必须存储在对其对齐要求整数倍的内存地址上（对齐要求通常等于类型大小，也可通过编译器指令调整）。
+
+为满足对齐约束，编译器会在成员间插入填充字节，并在类末尾填充使其大小为最大对齐要求的整数倍。以团队原有类为例（假设该架构下double类型占8字节），其内存布局原本可能是这样的：
+
+\myGraphic{0.9}{content/chapter5/images/1.png}{图 5.1 – 初始类布局}
+
+按照这种对齐方式，该类的总大小为32字节。但如今Joe新增了三个bool型成员（每个占1字节），编译器可能会按照以下内存布局进行排列：
+
+\myGraphic{0.9}{content/chapter5/images/2.png}{图 5.2 – 成员顺序错误时的类内存布局}
+
+因此，每个1字节的bool值都必须填充至8字节，以确保后续的double类型成员能正确对齐到内存地址。这使得类的总大小膨胀至56字节——因为3个填充至8字节的bool值加上3个8字节的double值，总共占据了56字节空间。Clang编译器提供了一个查看类内存布局的编译选项：-fdump-record-layouts。为验证此案例，我们创建了包含该点类定义的简单源文件，并通过编译器进行分析：
+
+\begin{shell}
+> $ clang -cc1 -fdump-record-layouts main.cpp
+*** Dumping AST Record Layout
+         0 | struct Point
+         0 | _Bool active
+         8 | double x
+        16 | _Bool x_changed
+        24 | double y
+        32 | _Bool y_changed
+        40 | double z
+        48 | _Bool z_changed
+           | [sizeof=56, dsize=56, align=8,
+           | nvsize=56, nvalign=8]
+\end{shell}
+
+上述数据明确证实了我们最初的猜测：原本应只占1字节的bool值，现在实际却占据了8字节（注：我们已创建名为main.cpp的源文件，其中包含该point结构体定义）。
+
+为了解决这个棘手的问题，我们显然需要采取进一步措施。让我们按照以下方式重新调整类成员排序：
+
+\begin{cpp}
+class point {
+bool active;
+bool x_changed;
+bool y_changed;
+bool z_changed;
+double y;
+double x;
+double z;
+}
+\end{cpp}
+
+这个改动看似不大（除了伤害了Joe按字母排序的强迫症），但我们将所有bool类型成员集中排列，使类的内存结构尽可能紧凑。基于前述分析——特别是充分考虑各类型的内存占用后——我们得出一个重要原则：应将小类型变量集中存放（所谓"小类型"，是指占用字节数最少的变量类型，比如在当前实现中bool类型仅占1字节）。
+
+经过这样的成员顺序重组后，新的内存布局如下所示（实际布局可能因架构差异而略有优化）：
+
+\myGraphic{0.9}{content/chapter5/images/3.png}{图 5.3 – 成员顺序正确时的类内存布局}
+
+再次通过Clang编译器验证后，类的内存占用与之前版本已大不相同（注：我们同样修改了main.cpp文件中的结构体定义）：
+
+\begin{shell}
+> $ clang -cc1 -fdump-record-layouts main.cpp
+*** Dumping AST Record Layout
+         0 | struct Point
+         0 | _Bool active
+         1 | _Bool x_changed
+         2 | _Bool y_changed
+         3 | _Bool z_changed
+         8 | double x
+        16 | double y
+        24 | double z
+           | [sizeof=32, dsize=32, align=8,
+           | nvsize=32, nvalign=8]
+\end{shell}
+
+
+由此可见，现在四个bool值在内存中连续排列，仅需一段填充字节就能满足后续double类型的内存对齐要求。假设我们有个4字节大小的字段，完全可以将其放在最后一个bool之后、第一个double之前，这样连填充字节都不需要了。
+
+听完吉米的解释，Joe终于明白了问题所在。虽然他从未遇到过内存对齐问题，但决定深入研究这个课题。他查阅的资料揭示了一个有趣的事实：内存对齐是硬件要求、性能优化和架构限制共同作用的结果。
+
+现代处理器设计时通常要求数据按特定边界对齐才能高效访问内存。例如：
+
+\begin{itemize}
+\item 
+8字节的double类型最好存放在8的倍数地址上
+
+\item 
+若未对齐，处理器可能需要进行多次内存访问
+
+\item 
+在某些架构（如早期ARM、PowerPC和MIPS处理器）上，未对齐访问会直接触发SIGBUS错误
+\end{itemize}
+
+例如下面这段代码，在这些老式处理器上运行就会引发SIGBUS错误导致程序终止：
+
+\begin{cpp}
+#include <cstdlib>
+  int main(int argc, char **argv) {
+  char *cptr = (char*)malloc(sizeof(int) + 1);
+  int* iptr = (int *) ++cptr;
+  *iptr = 42;
+  return 0;
+}
+\end{cpp}
+
+这种未对齐错误在操作系统层面往往会造成严重后果——轻则应用程序崩溃，在老式系统上甚至可能导致整个系统崩溃。
+
+\myGraphic{0.9}{content/chapter5/images/4.png}{图 5.2 – 旧版系统在看到未对齐的数据时会发脾气}
+
+你可能会问错误类型7代表什么。其实很简单：7是SIGBUS错误对应的魔数。在作者的Linux机器上，这个定义可以在/usr/include/x86\_64-linux-gnu/bits/signum-arch.h文件的第34行找到：
+
+\begin{cpp}
+/* Historical signals specified by POSIX. */
+#define SIGBUS         7    /* Bus error. */
+\end{cpp}
+
+而像x86\_64等新一代处理器（甚至包括老旧的80286及其后续x86平台处理器）通常能优雅处理未对齐访问，仅会产生轻微性能损耗。不过通过以下汇编指令，我们可以让这些好脾气的处理器立刻变得暴躁：
+
+% Please add the following required packages to your document preamble:
+% \usepackage{longtable}
+% Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
+\begin{longtable}{|l|l|}
+\hline
+\textbf{AT\&T (64 bit)} &
+  \textbf{Intel (32 bit)} \\ \hline
+\endfirsthead
+%
+\multicolumn{2}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\endhead
+%
+\begin{tabular}[c]{@{}l@{}}pushf \\ \\ orl \$0x40000,(\%rsp) \\ \\ popf\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}pushfd\\ \\ or dword ptr {[}esp{]}, 40000h \\ \\ popfd\end{tabular} \\ \hline
+\end{longtable}
+
+这段代码通过位或操作修改EFLAGS寄存器特定比特位。其中十六进制值40000h对应设置AC（Alignment Check，对齐检查）标志位。当该标志位与CR0寄存器中的AM（Alignment Mask，对齐掩码）位同时被设置时，处理器会检查数据是否按自然边界对齐，若检测到未对齐情况就会触发错误。
+
+EFLAGS是x86架构CPU中的特殊功能寄存器，包含多个反映处理器状态的标志位。这些标志可以控制或指示各种状态，包括算术运算条件、控制功能及系统设置等。Intel开发者中心\footnote{\url{https://www.intel.com/content/www/us/en/resources-documentation/developer.html}}提供了大量关于这些底层编程特性的详细信息，我们建议感兴趣读者前往查阅。
+
+虽然插入上述代码可以触发SIGBUS信号（此处略过具体实现，毕竟没人该故意写崩溃代码），但不如来看看我们的朋友乔在类成员排序问题上遇到的另一个典型案例：
