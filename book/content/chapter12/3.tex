@@ -1,17 +1,397 @@
 
+要理解Rust的核心特性，首推其官网（\url{https://www.rust-lang.org/}），该站对其核心优势的提炼极为精当：
 
-\mySubsubsection{12.3.1}{Project templates and package management}
+\begin{itemize}
+\item 
+运行高效且内存节约
 
-\mySubsubsection{12.3.2}{Immutability}
+\item 
+零运行时开销
 
-\mySubsubsection{12.3.3}{Simple syntax for compound types}
+\item 
+无垃圾回收机制
 
-\mySubsubsection{12.3.4}{Optional return keyword}
+\item 
+卓越的跨语言互操作性
 
-\mySubsubsection{12.3.5}{Closures}
+\item 
+通过丰富的类型系统和所有权模型实现内存安全和线程安全
 
-\mySubsubsection{12.3.6}{Unit tests in Standard Library}
+\item 
+出色的文档
 
-\mySubsubsection{12.3.7}{Traits}
+\item 
+友好的编译器，提供有用的错误消息
 
-\mySubsubsection{12.3.8}{Ownership model}
+\item 
+集成的包管理器和构建工具
+
+\item 
+自动格式化程序
+
+\item 
+智能多编辑器支持，具有自动完成和类型检查
+\end{itemize}
+
+仅从这些描述中，我们就能看出Rust与C++的诸多相似之处，以及它对C++现状的改进。相似点主要体现在控制力层面：原生编译、无垃圾回收、高性能和内存效率——这些同样是C++标榜的特性。差异则指向本书反复讨论的痛点：标准化的包管理、统一工具链以及友好的编译器。最后这点尤其让饱受冗长错误信息折磨的C++程序员热泪盈眶——记得2000年代使用Visual C++时，我曾遇到过编译器直接提示"错误信息过长无法显示"。虽然现代C++已有所改善，但模板相关的错误排查仍是场噩梦。
+
+不过，让我们超越官网首页的宣传语。接下来我将重点介绍几个相较于C++特别实用且有趣的功能特性：
+
+\mySubsubsection{12.3.1}{项目模板系统和包管理机制}
+
+作为命令行和Neovim代码编辑器的重度用户，我尤其钟爱能直接从命令行创建项目的技术。Rust自带的cargo工具可以完成项目创建、构建、运行、打包和发布全流程工作：
+
+\begin{itemize}
+\item 
+创建项目：cargo new 项目名
+
+\item 
+运行项目：cargo run
+
+\item 
+检查编译错误：cargo check
+
+\item 
+编译项目：cargo build
+
+\item 
+打包项目：如您所料——cargo package
+
+\item 
+发布项目：（鼓点声）...cargo publish
+\end{itemize}
+
+通过cargo我们不仅能创建库和可执行文件，更能使用cargo generate工具（参见、\url{https://cargo-generate.github.io/cargo-generate/}）基于项目模板快速初始化。
+
+我知道这对大多数C++开发者可能不足为奇——毕竟你们很少创建新项目。在教授C++程序员单元测试或测试驱动开发时，这点常让我惊讶：我们需要共同费劲地配置测试项目与生产项目的引用关系，而这本应是理所当然的配置。请相信，这种便捷性不仅体现在项目初期，对小型实验、个人练习代码库乃至缩短编译时间都大有裨益。在SSD硬盘显著提升编译速度前，我经常使用C++的一个技巧：将正在修改的少数文件组成新编译单元，其余部分作为二进制引用——这算是C++应对缓慢编译的土法方案。
+
+关于新建项目就说到这里。现在让我们写点代码...或者说，尝试修改些变量...（突然想起Rust的不可变性）
+
+\mySubsubsection{12.3.2}{不可变性}
+
+Rust 默认采用不可变设计，正如官方文档所述："一旦值被绑定到变量名，就无法更改该值"。让我们通过一个简单示例演示：先为变量分配字符串值并显示，然后尝试修改它：
+
+\begin{rust}
+fn main() {
+  let the_message = "Hello, world!";
+  println!("{the_message}");
+  the_message = "A new hello!";
+  println!("{the_message}");
+}
+\end{rust}
+
+尝试编译此程序会导致编译错误。
+
+\verb|cannot assign twice to immutable variable the_message| 
+
+贴心的错误信息还包含提示：
+
+\verb|For more information about this error, try 'rustc -{}-explain E0384'|
+
+错误解释不仅包含示例，还明确说明如何声明可变变量：
+
+\textit{"Rust变量默认不可变。要修复此错误，需在声明变量时于let后添加mut关键字"。}
+
+以下是修改后可正常编译的代码示例：
+
+\begin{rust}
+let mut the_message = "Hello, world!";
+println!("{the_message}");
+the_message = "A new hello!";
+println!("{the_message}");
+\end{rust}
+
+由此可见，可变变量必须显式声明为 mut，这体现了Rust默认不可变的设计哲学。正如前几章讨论的，这种设计能有效解决并行并发、自动化测试和代码简洁性等诸多问题。
+
+\mySubsubsection{12.3.3}{复合类型的简洁语法}
+
+Rust 借鉴了 Python 和 Ruby 等语言的语法特性来处理数组和元组，其声明方式如下所示：
+
+\begin{rust}
+let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+println!("{:?}", months);
+
+let (one, two) = (1, 1+1);
+println!("{one} and {two}");
+\end{rust}
+
+这看似微不足道,却能显著简化代码。值得一提的是,C++自C++11起通过花括号列表初始化(list initializer)引入了类似语法,并在后续版本中持续优化:
+
+\begin{rust}
+std::vector<string> months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+\end{rust}
+
+我期待这方面能有更多改进，但考虑到C++语法已然十分复杂，对此并不抱太高期望。
+
+\mySubsubsection{12.3.4}{可省略的return关键字}
+
+Rust函数允许直接返回最后一个表达式的值。以下示例演示了如何使用该特性实现数字自增：
+
+\begin{rust}
+fn main() {
+  let two = increment(1);
+  println!("{two}");
+}
+
+fn increment(x:i32) -> i32{
+  x+1
+}
+\end{rust}
+
+虽然在前述简单函数中我通常不会使用这种写法，但省略return关键字确实能简化闭包编写——这正是我们接下来要探讨的内容。
+
+\mySubsubsection{12.3.5}{闭包}
+
+
+让我们对向量中的所有元素进行自增操作：
+
+\begin{rust}
+fn increment_all() -> Vec<i32>{
+  let values : Vec<i32> = vec![1, 2, 3];
+  return values.iter().map(|x| x+1).collect();
+}
+\end{rust}
+
+与函数式编程的常规做法类似（如同C++中的ranges库），我们需要：
+
+\begin{itemize}
+\item 
+获取迭代器
+
+\item 
+调用map函数（相当于C++中的transform算法）并传入闭包
+
+\item 
+调用collect获取结果集
+\end{itemize}
+
+闭包语法之所以如此简洁，正是得益于可选的return语句设计。
+
+\mySubsubsection{12.3.6}{标准库中的单元测试}
+
+单元测试是软件开发中至关重要的实践，但令人惊讶的是，仅有少数语言在标准库中提供原生支持。Rust默认集成了这一功能，且使用极其简便。让我们为increment\_all函数添加单元测试以验证其行为符合预期：
+
+\begin{rust}
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn it_works() {
+    assert_eq!(vec![2, 3, 4], increment_all());
+  }
+}
+\end{rust}
+
+额外值得一提的是，我特别欣赏Rust允许在同一个编译单元（Rust中称为crate）内同时编写生产代码和单元测试的便捷性。如果您仅将单元测试视为义务性工作，这可能无足轻重；但对我这样常通过单元测试进行技术探索和设计验证的开发者而言，此特性实属福音。
+
+\mySubsubsection{12.3.7}{特质}
+
+Rust（以及Go）与其他主流语言的一大区别在于：它不支持继承机制，而是推崇组合模式。为实现多态行为，Rust提供了特质（trait）这一特性。
+
+Rust的特质类似于面向对象语言中的接口，它们定义了一组需要由派生类型实现的方法。但Rust特质有个独特功能：您可以为非自身定义的类型添加特质。这与C\#的扩展方法类似，但又不尽相同。
+
+Rust官方文档通过两个结构体示例演示了特质的使用：一个表示推文（tweet），另一个表示新闻文章（news article）。为两者添加Summary特质后，就能生成对应的内容摘要。如下例所示，特质实现既独立于结构体实现，也独立于特质定义本身，这种设计提供了极大的灵活性。
+
+首先让我们看看这两个结构体的定义。新闻文章结构体NewsArticle包含以下字段：
+
+\begin{rust}
+pub struct NewsArticle {
+  pub headline: String,
+  pub location: String,
+  pub author: String,
+  pub content: String,
+}
+\end{rust}
+
+然后，Tweet 结构包含其自己的字段：
+
+\begin{rust}
+pub struct Tweet {
+  pub username: String,
+  pub content: String,
+  pub reply: bool,
+  pub retweet: bool,
+}
+\end{rust}
+
+另外，我们使用返回字符串的单个方法 summarize 来定义 Summary trait：
+
+\begin{rust}
+pub trait Summary {
+  fn summarize(&self) -> String;
+}
+\end{rust}
+
+现在,我们来为 Tweet 结构实施 Summary 特征。这是通过指定此 trait 的实现应用于结构来成的,如下所示:
+
+\begin{rust}
+impl Summary for Tweet {
+  fn summarize(&self) -> String {
+    format!("{}: {}", self.username, self.content)
+  }
+}
+\end{rust}
+
+测试完美运行：
+
+\begin{rust}
+#[test]
+fn summarize_tweet() {
+  let tweet = Tweet {
+    username: String::from("me"),
+    content: String::from("a message"),
+    reply: false,
+    retweet: false,
+  };
+
+  assert_eq!("me: a message", tweet.summarize());
+}
+\end{rust}
+
+最后，让我们实现NewsArticle的特征：
+
+\begin{rust}
+impl Summary for NewsArticle {
+  fn summarize(&self) -> String {
+    format!("{}, by {} ({})", self.headline, self.author, self.location)
+  }
+}
+#[test]
+  fn summarize_news_article() {
+    let news_article = NewsArticle {
+      headline: String::from("Big News"),
+      location: String::from("Undisclosed"),
+      author: String::from("Me"),
+      content: String::from("Big News here, must follow"),
+    };
+
+    assert_eq!("Big News, by Me (Undisclosed)", news_article.summarize());
+  }
+\end{rust}
+
+Rust的特质系统远不止于此，它具备更强大的能力：
+
+\begin{itemize}
+\item 
+可提供默认方法实现
+
+\item 
+可限定参数类型需实现特定特质（或特质组合）
+
+\item 
+可泛化地为多种类型实现特质
+
+\item 
+融合了面向对象接口、C\#扩展方法和C++概念的多重特性
+\end{itemize}
+
+虽然这些高级用法已超出本章讨论范围。最值得铭记的是：Rust处理继承的方式与C++有着根本性差异。
+
+\mySubsubsection{12.3.8}{所有权模型}
+
+Rust有个极具特色的设计，也是其最广为人知的特性——所有权模型。这是Rust针对C++内存安全问题的解决方案，不同于Java/C\#采用垃圾回收机制，Rust通过更明确的内存所有权来解决问题。
+
+正如《Rust编程语言》所述（\url{https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html}）："内存通过所有权系统进行管理，编译器会检查一组规则。任何规则被违反时，程序都无法通过编译。所有权的所有特性都不会在运行时拖慢程序速度。"
+
+Rust所有权的三大核心规则：
+
+\begin{itemize}
+\item 
+Rust中的每个值都有唯一所有者
+
+\item 
+同一时间只能有一个所有者
+
+\item 
+当所有者离开作用域时，值将被自动释放
+\end{itemize}
+
+先看一个与C++行为相同的例子。对于栈上分配的变量（如整型），其复制行为符合常规认知：
+
+\begin{rust}
+#[test]
+fn copy_on_stack() {
+  let stack_value = 1;
+  let copied_stack_value = stack_value;
+
+  assert_eq!(1, stack_value);
+  assert_eq!(1, copied_stack_value);
+}
+\end{rust}
+
+正如预期的那样,这两个变量具有相同的值。但是,如果我们尝试使用在堆上分配的变量写相同的代码,则会收到错误:
+
+\begin{rust}
+#[test]
+fn copy_on_heap() {
+  let heap_value = String::from("A string");
+  let copied_heap_value = heap_value;
+
+  assert_eq!(String::from("A string"), heap_value);
+  assert_eq!(String::from("A string"), copied_heap_value);
+}
+\end{rust}
+
+运行这段代码时，我们会遇到错误:
+
+\verb|[E0382]: borrow of moved value: 'heap_value'|
+
+究竟发生了什么？当我们将heap\_value赋值给copied\_heap\_value时，原变量heap\_value随即失效——这与C++的移动语义如出一辙，只是无需开发者额外操作。其底层机制通过两个特质实现：Copy和Drop。若类型实现Copy特质，则表现如第一个示例；若实现Drop特质，则表现如第二个示例。注意：任何类型都不能同时实现这两个特质。
+
+要让上述示例正常工作，我们需要改用克隆机制而非默认的移动语义：
+
+\begin{rust}
+#[test]
+fn clone_on_heap() {
+  let heap_value = String::from("A string");
+  let copied_heap_value = heap_value.clone();
+
+  assert_eq!(String::from("A string"), heap_value);
+  assert_eq!(String::from("A string"), copied_heap_value);
+}
+\end{rust}
+
+这个示例可以正常运行，因为此时执行的是值克隆（而非引用同一内存地址），这意味着在堆上进行了新的内存分配。
+
+移动语义在函数调用中同样适用。让我们初始化一个值并将其传递给函数（该函数原样返回此值），观察会发生什么：
+
+\begin{rust}
+fn call_me(value: String) -> String {
+  return value;
+}
+
+#[test]
+fn move_semantics_method_call() {
+  let heap_value = String::from("A string");
+
+  let result = call_me(heap_value);
+
+  assert_eq!(String::from("A string"), heap_value);
+  assert_eq!(String::from("A string"), result);
+}
+\end{rust}
+
+在编译这段代码时，我们会遇到与之前相同的错误：\verb|error[E0382]: borrow of moved value: 'heap_value'|。这是因为堆上创建的值被移动到call\_me函数中，导致其脱离了当前作用域而被释放。
+
+要使代码正常工作，我们需要指定函数应该借用（borrow）所有权而非取得所有权——这通过引用和解引用操作符实现（与C++的语法相同）：
+
+\begin{rust}
+fn i_borrow(value: &String) -> &String {
+  return value;
+}
+
+#[test]
+fn borrow_method_call() {
+  let heap_value = String::from("A string");
+
+  let result = i_borrow(&heap_value);
+
+  assert_eq!(String::from("A string"), heap_value);
+  assert_eq!(String::from("A string"), *result);
+}
+\end{rust}
+
+Rust引用与C++引用的关键区别在于：Rust引用默认是不可变的（immutable）。
+
+当然，Rust的所有权模型还有更多精妙之处需要探索，但相信这些示例已足够让您初步理解：其运作机制，以及如何有效预防内存安全问题。
