@@ -1,0 +1,114 @@
+
+我们重新审视前面的示例，但按照现代C++的建议，将原生数组和原生指针替换为对应的STL容器。
+
+首先来看数组越界的例子。我们只需将原生数组替换为vector<int>实例，就能得到以下函数：
+
+\begin{cpp}
+int doSomeWork(int value1, int value2, int value3, int value4) {
+  vector<int> values;
+  values[0] = value1;
+  values[1] = value2;
+  values[3] = value3;
+  values[4] = value4;
+  return values[0] + values[1] + values[3] + values[4];
+}
+
+TEST_CASE("try vector bounds"){
+  int result = doSomeWork(1, 234, 543, 23423);
+  CHECK_EQ(1 + 234 + 543 + 23423, result);
+}
+\end{cpp}
+
+遗憾的是，运行这个示例的结果并不理想。无论是g++还是clang都没有报错，运行测试时得到以下结果：
+
+\begin{shell}
+TEST CASE: try vector bounds
+test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation signal
+\end{shell}
+
+难道std::vector<>也不安全吗？实际上我们仍需注意其内存分配问题。我们有几种选择：正确初始化容器、使用提供的追加元素方法，或者预先预留特定数量的内存空间。前两种是我通常推荐的方式，因为它们更不容易出问题。但即便采用第三种方式，测试也能通过：
+
+\begin{cpp}
+int doSomeWork(int value1, int value2, int value3, int value4) {
+  vector<int> values;
+  values.reserve(5);
+  values[0] = value1;
+  values[1] = value2;
+  values[3] = value3;
+  values[4] = value4;
+  return values[0] + values[1] + values[3] + values[4];
+}
+\end{cpp}
+
+一个令人惊喜的发现是std::vector的行为（至少在g++中）——调用reserve后，我尝试访问未赋值的values[2]，得到的值是0。这比直接访问该内存块残留的旧值要好得多，我猜这是std::vector默认分配器的特性。这种差异源于operator[]的未定义行为，而使用vector::at()方法可以避免该问题。不过我们仍需谨慎行事——即便使用现代STL，仍然可能写出存在内存问题的代码。当然，如果我们不耍小聪明，老老实实采用简单方法，问题就能彻底避免。比如使用初始化列表语法时，向量会根据传入的数据自动创建，完全不需要手动计数：
+
+\begin{cpp}
+int doSomeWork(int value1, int value2, int value3, int value4) {
+  vector<int> values{value1, value2, 0, value3, value4};
+  return values[0] + values[1] + values[3] + values[4];
+}
+\end{cpp}
+
+当然，这种语法要求我们一次性添加所有元素，而非部分元素，从而有效规避"差一错误"。另一种方式是逐个添加元素：
+
+\begin{cpp}
+int doSomeWork(int value1, int value2, int value3, int value4) {
+  vector<int> values;
+  values.push_back(value1);
+  values.push_back(value2);
+  values.push_back(0);
+  values.push_back(value3);
+  values.push_back(value4);
+  return values[0] + values[1] + values[3] + values[4];
+}
+\end{cpp}
+
+正如预期，这个版本同样完美运行。启示在于：使用最朴素的写法，99\%的情况下都能获得预期行为。这是所有编程语言的通用准则，对C++而言更是如此。
+
+现在让我们重新审视那个使用指针运算和void*越界访问内存的例子。其原始代码如下：
+
+\begin{cpp}
+int pointerBounds() {
+  int *aPointerToInt;
+  void *aPointerToVoid;
+  aPointerToVoid = new int();
+  aPointerToInt = (int*)aPointerToVoid;
+  *aPointerToInt = 234;
+  aPointerToInt = (int*)((char*)aPointerToVoid + sizeof(int));
+  *aPointerToInt = 2423;
+
+  int value = *aPointerToInt;
+  delete aPointerToVoid;
+
+  return value;
+}
+\end{cpp}
+
+我已尽力将这段代码改用std::unique\_ptr或std::shared\_ptr实现，虽然可行但极其繁琐。首要难题在于处理所有的指针类型转换——无法直接将std::unique\_ptr<int>转为std::unique\_ptr<char>，唯一方法是提取原始值重新构造unique\_ptr<>实例。
+
+第二个难点是void*无法直接对应到std::shared\_ptr<void>：虽然可以通过手动分配内存并传入自定义删除器来实现，但过程复杂。因此，即使用现代STL勉强能写出类似功能的代码，其实现成本之高也足以让开发者除非有特殊需求，否则宁愿选择安全写法。
+
+悬垂指针的例子同样棘手：
+
+\begin{cpp}
+int danglingPointer() {
+  int *aPointerToInt = new int(234);
+
+  delete aPointerToInt;
+
+  return *aPointerToInt;
+}
+\end{cpp}
+
+智能指针无法在返回数值的同时被主动释放。虽然可以通过unique\_ptr::reset重新分配内存，但这又绕回了原生指针。最简洁的纯智能指针实现如下：
+
+\begin{cpp}
+int danglingPointer() {
+  unique_ptr<int> aPointerToInt = make_unique<int>(234);
+  return *aPointerToInt;
+}
+\end{cpp}
+
+唯有这样才能完全符合预期：正确返回值的同时自动释放内存，从根本上杜绝悬垂指针！当然，如果手动分配内存并为std::unique\_ptr<>设置空删除器，仍可能制造悬垂指针——但绝大多数场景都没有理由这么做。若需内存块多归属管理，还可选用std::shared\_ptr<>，至此常见需求均已覆盖。
+
+由此我们得出结论：现代C++通过默认机制大幅提升了安全性，但仍存在局限性——这正是接下来要探讨的重点。

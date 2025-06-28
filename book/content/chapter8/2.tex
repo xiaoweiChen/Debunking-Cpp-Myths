@@ -1,1 +1,88 @@
+
+
+\begin{cpp}
+#include <cstdio>
+int main() {
+  int sum = 0;
+  for (int i = 1; i <= 100; ++i) {
+    if (i % 2 != 0) { // Check if the number is odd
+      sum += i; // Add the odd number to the sum
+    }
+  }
+
+  printf("The sum is: %d\n",sum);
+  return 0;
+}
+\end{cpp}
+
+\begin{cpp}
+#include <cstdio>
+
+int main() {
+  int sum = 0;
+  int i = 1; // Start with the first odd number
+
+  __asm__ (
+    "movl $1, %[i]\n" // Initialize i to 1
+    "movl $0, %[sum]\n" // Initialize sum to 0
+    "loop_start:\n"
+    "cmpl $100, %[i]\n" // Compare i with 100
+    "jg loop_end\n" // If i > 100, exit the
+    "addl %[i], %[sum]\n" // sum += i
+    "addl $2, %[i]\n" // i += 2
+    "jmp loop_start\n" // Repeat the loop
+    "loop_end:\n"
+    : [sum] "+r" (sum), [i] "+r" (i)
+  );
+
+  printf("The sum is: %d\n", sum);
+  return 0;
+}
+\end{cpp}
+
+
+\begin{shell}
+`string' DB 'The sum is: %d', 0aH, 00H ; `string'
+_main PROC
+  xor ecx, ecx  ; Clear the ECX register (set ECX to 0)
+  xor edx, edx  ; Clear the EDX register (set EDX to 0)
+  inc ecx       ; Increment ECX, setting it to 1
+  $LL4@main:
+  test cl, 1    ; Test the least significant bit of CL
+                ; (ECX) to check if ECX is odd or even
+  lea eax, DWORD PTR [ecx+edx] ; Load the effective
+                ; address of ECX + EDX into EAX
+  cmove eax, edx; If the zero flag is set
+                ; (ECX was even), move EDX into EAX
+  inc ecx       ; Increment ECX by 1
+  mov edx, eax  ; Move the value in EAX to EDX
+                ; (update EDX for the next iteration)
+  cmp ecx, 100  ; Compare ECX with 100
+  jle SHORT $LL4@main ; Jump to the start of the loop
+                ; (loop until ECX > 100)
+  push edx      ; Push the final value of EDX (the sum)
+                ; after the loop onto the stack
+  push OFFSET `string' ; Push the offset of the string
+  call _printf  ; Call the printf function
+  pop ecx       ; Clean up the stack (remove string)
+  pop ecx       ; Clean up the stack (remove EDX)
+  ret 0         ; Return from the _main function
+_main ENDP
+\end{shell}
+
+
+\begin{shell}
+main:
+  push rax
+  lea rdi, [rip + .L.str]
+  mov esi, 2500
+  xor eax, eax
+  call printf@PLT
+  xor eax, eax
+  pop rcx
+  ret
+.L.str:
+  .asciz "The sum is: %d\n"
+\end{shell}
+
 \mySubsubsection{8.2.1}{A glimpse into the future}

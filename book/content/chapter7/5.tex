@@ -1,0 +1,81 @@
+
+我们身处的世界天然就以并行方式运转。每棵树、每株植物或每个人都在独立运作，偶尔它们会相互作用，从而改变相关方的状态。因此，我们早已具备理解并行程序运作的心智模型：在确保同步机制的基础设施上，独立封装行为的实体通过某种方式交互。
+
+这个理念促使Carl Hewitt于1973年提出Actor模型。该模型将程序拆分为能执行三种行为的actor：
+
+\begin{itemize}
+\item 
+向其他actor发送消息
+
+\item 
+创建新actor
+
+\item 
+定义处理下条消息的行为准则
+\end{itemize}
+
+每个actor拥有类似电子邮件地址的标识符，且仅能与已知地址的actor通信。这些地址可通过接收消息或创建新actor获取。
+
+Actor模型将通信机制与业务逻辑解耦，由此产生的实现方案让我们无需处理线程原语即可编写高度并行化的代码。
+
+C++领域最悠久稳定的实现是CAF（\url{https://www.actor-framework.org/}）。较新的替代方案是阿里巴巴的Hiactor（\url{https://github.com/alibaba/hiactor}）。但最著名的实现来自Java生态——Akka工具包（\url{https://akka.io/}）。
+
+让我们看一个使用CAF实现两个actor之间聊天的简单示例。以下代码将actor的行为定义为Lambda表达式，实例化两个聊天actor，并在它们之间发送消息。每个actor都会将自己的消息写入控制台：
+
+\begin{cpp}
+behavior chatter(event_based_actor* self, const string& name) {
+  return {
+    [=] (const string& msg) {
+      cout << name << " received: " << msg << endl;
+    }
+  };
+}
+
+void caf_main(actor_system& system) {
+  auto alice = system.spawn(chatter, "Alice");
+  auto bob = system.spawn(chatter, "Bob");
+  scoped_actor self{system};
+  self->send(alice, "Hello Alice!");
+  self->send(bob, "Hello Bob!");
+  self->send(alice, "How are you?");
+  self->send(bob, "I'm good, thanks!");
+  sleep_for(seconds(1));
+}
+
+CAF_MAIN()
+\end{cpp}
+
+运行这段代码会产生不同的输出。最理想的结果正是我们所预期的：
+
+\begin{shell}
+Bob received: Hello Bob!
+Alice received: Hello Alice!
+Alice received: How are you?
+Bob received: I'm good, thanks!
+\end{shell}
+
+但反复运行这段代码会产生不同的结果，如下所示：
+
+\begin{shell}
+Bob received: Hello Bob!
+Bob received: I'm good, thanks!
+Alice received: Hello Alice!
+Alice received: How are you?
+\end{shell}
+
+我们还可能得到更糟糕的输出结果：
+
+\begin{shell}
+Alice received: Hello Alice!
+BobAlice received: How are you? received: Hello Bob!
+
+Bob received: I'm good, thanks!
+\end{shell}
+
+这些结果清楚地表明actor是并行运行的。这也说明并行编程的复杂性在这些框架的魔法之下只能被掩盖到一定程度。
+
+不过，actor模型为我们提供了一种将并行编程视为响应请求的对象的方式，并允许我们选择最适合系统的actor类型和通信方式。前面的例子展示了一个接收异步消息的基于事件的actor，但该框架也支持阻塞消息和各种生命周期不同的actor类型。
+
+actor模型的一个优势是我们可以将actor分布在不同计算机上，从而相对容易地扩展模型。当然，这也意味着从使用该模型的第一行代码开始，我们就直接面临着分布式系统的挑战。
+
+至此，我们已经了解了标准库和久经考验的actor模型目前能实现的功能。但还有什么是仍然无法实现的呢？

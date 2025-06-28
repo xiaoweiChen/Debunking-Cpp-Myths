@@ -1,0 +1,82 @@
+
+如我们所见，并行和并发任务的核心问题之一在于资源的共享访问。
+纯函数式编程通过不可变性(immutability)天生解决了这个问题——默认情况下所有数据都不可变，任何值的改变都通过指向新值实现而非修改原值，因此线程永远无需担心修改其他线程正在使用的数据。我们在讨论C++多范式编程时已阐释过这一机制。
+
+但函数式编程的优势不止于此：它天然提供可并行化算法。C++标准委员会在引入函数式算法的同时，还加入了执行策略(execution policy)机制，允许对集合操作进行并行化处理。
+
+以一个简单示例说明：计算集合中数值的平方和。
+
+以一个简单示例说明：计算集合中数值的平方和。
+
+这类算法的函数式版本是一个典型的 map-reduce 过程：首先，我们传入初始集合并将其映射到一个包含值平方的集合，然后通过将所有元素相加来归约它。在 STL 中，这些操作分别由 std::transform 和 std::reduce 实现。std::transform\_reduce 提供了一个结合两者的版本，但为了让例子更贴切，我们暂时忽略它。
+
+函数如下所示：
+
+\begin{cpp}
+long long sumOfSquares(const vector<int> numbers){
+  vector<long long> squaredNumbers(numbers.size());
+  auto squareNumber = [](const long it ){ return it * it; };
+
+  transform(numbers.begin(), numbers.end(), squaredNumbers.begin(), squareNumber);
+
+  return reduce(squaredNumbers.begin(), squaredNumbers.end(), 0);
+}
+
+TEST_CASE("sum of squares in parallel") {
+  vector<int> numbers{234, 423, 345, 212, 112, 2412};
+
+  CHECK_EQ(6227942, sumOfSquares(numbers));
+}
+\end{cpp}
+
+要让这些操作并行运行，我们唯一需要做的就是向两个函数式算法添加一个指定执行策略的参数。我们将使用的执行策略是 std::execution::par，这是标准库提供的 std::execution::parallel\_policy 实例，用于指定算法需要并行运行：
+
+\begin{cpp}
+long long sumOfSquares(const vector<int> numbers){
+  vector<long long> squaredNumbers(numbers.size());
+  auto squareNumber = [](const long it ){ return it * it; };
+
+  transform(std::execution::par, numbers.begin(), numbers.end(), squaredNumbers.begin(), squareNumber);
+
+  return reduce(std::execution::par, squaredNumbers.begin(), squaredNumbers.end(), 0);
+}
+\end{cpp}
+
+从这个例子中，我们可以注意到几点。
+
+首先，在使用函数式编程时，切换不同的执行策略非常容易。这使得我们能够更轻松地解决并行化相关的问题，并优化代码。
+但并非在所有情况下并行运行算法都比顺序执行更好。对于少量数据或短集合，启动和管理线程所消耗的资源可能比节省的时间更多。
+
+其次，我们可以将执行策略作为参数或通用配置。这样既可以在不考虑线程同步的情况下测试算法的顺序执行，也能根据输入数据的特性在运行时动态选择策略。
+
+第三，每种执行策略都对代码施加了限制。例如，这里使用的并行策略要求迭代器在过程中保持有效，因此禁止写入操作和使用 std::back\_inserter。除了 std::execution::parallel\_policy，STL 还提供了其他策略：
+
+\begin{itemize}
+\item 
+std::execution::sequenced\_policy
+
+\item 
+std::execution::parallel\_unsequenced\_policy
+
+\item 
+std::execution::unsequenced\_policy
+\end{itemize}
+
+值得注意的是，标准化委员会未来可能会为 std::parallel::cuda 和 std::parallel::opencl 添加内置策略。由于每种策略都有其限制，因此最具可移植性的代码通常追求最大程度的不可变性和函数式算法。
+
+第四，这些算法按顺序运行，但每个算法内部是并行化的。如果需要进一步榨取计算资源，我们可以使用组合算法 std::transform\_reduce 或自行编写合并逻辑。但必须意识到，并行化是一种权衡：部分计算资源会消耗在线程启动和同步上，某些场景下可能得不偿失。
+
+最后第五点，map-reduce 模式非常强大。任何一元函数都可用于 map，任何二元函数都可用于 reduce。我们还可以通过绑定参数将多元函数转换为一元或二元形式。map 和 reduce 能以多种方式链式组合。如果将程序视为「数据输入→处理→输出」，就会发现大多数程序都能表示为「数据输入→函数式转换→数据输出」，而其中许多转换正是 map/reduce 操作。这种认知催生了强大的编程模型——我们可以自由控制整个算法或其中部分的并行化开关。虽然有时需要为关键代码编写定制化的并行算法，但大部分优化可以直接免费获得。
+
+唯一的前提是：必须使用不可变数据和函数式算法。
+
+至此我们讨论的是以数据为中心的设计风格，它聚焦于数据结构及其转换。但在软件架构中，还存在另一种关注行为的范式。于是，一种将程序拆分为行为单元并支持并行编程的设计风格应运而生——这就是 Actor 模型。
+
+
+
+
+
+
+
+
+

@@ -33,45 +33,43 @@
 
 ## 本书概述
 
-Explore the origins of C++ myths and their relevance today, learn to sidestep common pitfalls, and adopt modern best practices to master the evolving C++ programming landscape
+深入探究C++常见迷思的起源及其当代意义，规避典型陷阱，并采用现代最佳实践，以驾驭不断演进的C++编程格局。
 
 **关于本书**
 
-Think you know C++? Think again.
+你以为自己了解C++？是时候重新审视了。
 
-For decades, C++ has been clouded by myths and misunderstandings—from its early design decisions to misconceptions that still linger today. Claims like "C++ is too hard to learn" or "C++ is obsolete" are often rooted in some truth, but they are outdated and fail to capture the language’s ongoing evolution and modern capabilities.
+数十年来，C++始终笼罩在种种迷思与误解之中——从早期的设计决策到至今仍在流传的认知偏差。"C++学习曲线过于陡峭"或"C++已经过时"等论调或许有其历史根源，却全然忽视了这门语言持续的进化与现代特性。
 
-Written by industry veterans with over 40 years of combined experience, this book uncovers the myths, exploring their origins and relevance in the context of today’s C++ landscape. It equips you with a deeper understanding of advanced features and best practices to elevate your projects. Each chapter tackles a specific misconception, shedding light on C++'s modern features, such as smart pointers, lambdas, and concurrency. You’ll learn practical strategies to navigate common challenges like code portability and compiler compatibility, as well as how to incorporate modern best practices into your C++ codebase to optimize performance and future-proof your projects.
+本书由拥有40余年行业实战经验的专家团队执笔，系统解构这些迷思的起源，并置于当代C++语境下重新审视。通过深入剖析高级特性与最佳实践，助您全面提升项目质量。每一章聚焦一个具体误区，重点解读智能指针、lambda表达式和并发机制等现代特性，同时提供可落地的实战策略：无论是处理代码可移植性、编译器兼容性等经典难题，还是将现代最佳实践融入现有代码库以优化性能并确保长期可维护性。
 
-By the end of this book, you’ll have a comprehensive understanding of C++'s evolution, equipping you to make informed decisions and harness its powerful features to enhance your skills, coding practices, and projects.
+阅读本书后，您将全面掌握C++的演进脉络，从而能够做出明智的技术决策，充分发挥其强大特性，最终实现个人技能、编码实践与项目质量的全面提升。
 
 **主要特点**
 
-* Trace the origins of C++ misconceptions and understand why they persist
-* Learn to avoid pitfalls caused by misunderstood C++ standards
-* Leverage the lesser-known features of the C++ programming language
-* Purchase of the print or Kindle book includes a free PDF eBook
+* 追溯C++常见误解的起源，解析其长期存在的深层原因
+* 掌握规避因误读C++标准而导致陷阱的方法
+* 发掘并善用C++编程语言中被低估的隐藏特性
 
 **内容包括**
 
-* Comprehend the history of C++ and the design decisions that shape modern challenges
-* Master program flow and its underlying principles to resolve issues effectively
-* Tackle incompatibility across compilers and platforms with ease
-* Identify issues and avoid writing code that may lead to undefined behavior
-* Explore advanced C++ features not typically covered in academia
-* Address concerns about compiler code generation and optimizations
-* Understand why undefined behavior remains intentionally undefined
+* 深入理解C++发展历程及影响现代编程的关键设计决策
+* 掌握程序流程控制的核心原理，构建高效调试方法论
+* 从容应对跨编译器与跨平台的兼容性挑战
+* 精准识别潜在风险，规避可能引发未定义行为的代码实现
+* 探索学术教材中鲜少涉及的C++高阶特性
+* 解析编译器代码生成与优化机制的技术本质
+* 领悟未定义行为保持"未定义"的深层设计哲学
 
 **适读人群**
 
-This book is for intermediate-to-advanced C++ developers looking to deepen their understanding of the language’s complexities. It is perfect for coders eager to avoid common mistakes, hackers, scholars with a sense of humor, or anyone with an interest in C++. Programmers who want to expand their knowledge, refine existing skills, explore new paradigms, or dive into the nuances of C++, will find valuable insights. Technical leads and software engineering managers adopting new technologies or navigating the C++ ecosystem will also benefit from this book.
-
+本书适合中高级C++开发者深入探索语言精妙之处。无论是渴望规避常见错误的程序员、富有幽默感的极客学者，还是任何对C++感兴趣的开发者，都将从中获益。想要拓展知识边界、精进既有技能、探索新范式或钻研C++微妙之处的编程人员，均可在此获得珍贵洞见。此外，正在采用新技术或探索C++生态系统的技术主管和软件工程经理，也将从本书中收获良多。
 
 ## 作者简介
 
-[Alex Bolboaca](https://www.amazon.com/stores/author/B07VGJ5RND/about?ingress=0&visitId=3681fba3-55d3-4740-bd35-8040d21f011d&ref_=ap_rdr) was born in the mythical lands of Transylvania, Romania, in 1977, the year when Star Wars launched. He read the first book on computers when he was 10, and found the topic fascinating, which pushed him towards the new domain of software development. Fortunately, the main obstacle towards his desired career was pushed away with the Romanian Revolution from 1989, leaving Alex free to pursue his interests.
+[Alex Bolboaca](https://www.amazon.com/stores/author/B07VGJ5RND/about?ingress=0&visitId=3681fba3-55d3-4740-bd35-8040d21f011d&ref_=ap_rdr)1977年出生于罗马尼亚特兰西瓦尼亚的神秘土地，恰逢《星球大战》上映之年。十岁时他阅读了人生第一本计算机书籍，从此对这个迷人领域产生浓厚兴趣，并投身软件开发这一新兴行业。值得庆幸的是，随着1989年罗马尼亚革命爆发，阻碍他职业发展的主要障碍被扫除，亚历克斯得以自由追逐理想。
 
-[Ferenc Deák](https://www.amazon.com/stores/author/B0DT724DDC/about?ingress=0&visitId=1d5aad24-db29-468e-aa25-2626037f0f87&ref_=ap_rdr) is a software developer with over 15 years of experience specializing in system programming, software security, and application design. Based in Trondheim, Norway, he has worked on projects involving autonomous systems, real-time traffic solutions, and cryptographic applications.
+[Ferenc Deák](https://www.amazon.com/stores/author/B0DT724DDC/about?ingress=0&visitId=1d5aad24-db29-468e-aa25-2626037f0f87&ref_=ap_rdr)是一位拥有15年以上经验的软件开发者，专精于系统编程、软件安全与应用设计领域。现居挪威特隆赫姆的他，曾参与开发自动驾驶系统、实时交通解决方案及密码学应用程序等多个项目。
 
 ## 本书相关
 
