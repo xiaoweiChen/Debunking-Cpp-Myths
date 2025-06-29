@@ -34,7 +34,7 @@ i[a]同样转化为*(i + a)
 安全设计理念：内部实现采用边界检查而非原始指针算术
 \end{itemize}
 
-模拟方案（不建议生产环境使用）：
+模拟方案(不建议生产环境使用)：
 
 \begin{cpp}
 #include <vector>
@@ -60,7 +60,7 @@ int main() {
 }
 \end{cpp}
 
-经过快速审视这段代码后（声明：两位作者中Alex是无辜的，此处使用"我们"仅是行文惯例），我们必须羞愧地承认——这段代码实在难登大雅之堂，更不敢将其实现到std::array或其他容器中。
+经过快速审视这段代码后(声明：两位作者中Alex是无辜的，此处使用"我们"仅是行文惯例)，我们必须羞愧地承认——这段代码实在难登大雅之堂，更不敢将其实现到std::array或其他容器中。
 
 但仔细看来，其中仍存在有趣的技术点。虽然我们最初目标是实现vector/array的无序索引访问，但残酷的现实是：这根本不可行。尝试编译2[vec]表达式时，编译器会直接报错：
 
@@ -77,20 +77,20 @@ error: no match for 'operator[]' (operand types are 'int' and 'std::vector<int>'
 operator[]必须定义为类的成员函数
 
 \item 
-C++不允许存在独立的下标运算符（不存在全局的operator[]）
+C++不允许存在独立的下标运算符(不存在全局的operator[])
 \end{itemize}
 
 2. 运算符优先级机制：
 
 \begin{itemize}
 \item 
-在C++中，操作符优先级（operator precedence）决定了表达式的解析顺序
+在C++中，操作符优先级(operator precedence)决定了表达式的解析顺序
 
 \item 
 高优先级运算符先于低优先级运算符求值
 
 \item 
-当优先级相同时，由结合性（associativity）决定求值顺序
+当优先级相同时，由结合性(associativity)决定求值顺序
 \end{itemize}
 
 虽然最新标准第7章[expr.pre]节指出"运算符优先级并非直接规定，而是通过语法推导"，但仍有权威资料\footnote{\url{https://en.cppreference.com/w/cpp/language/operator_precedence}}完整列出了优先级顺序表——我们强烈建议开发者系统学习这些资料。
@@ -125,7 +125,7 @@ int main() {
 古老的 16 位系统可能为 2 字节
 
 \item 
-某些特殊架构可能达到 8 字节（虽然笔者从未亲眼见过）
+某些特殊架构可能达到 8 字节(虽然笔者从未亲眼见过)
 \end{itemize}
 
 \end{itemize}
@@ -162,7 +162,7 @@ int main() {
 关键解析步骤：
 
 括号的等价性：
-在C++中，(a)基本等同于a（除非遇到"最令人头疼的解析"场景，这个我们稍后再讨论）。因此整个表达式等价于sizeof a["Hello World"]。
+在C++中，(a)基本等同于a(除非遇到"最令人头疼的解析"场景，这个我们稍后再讨论)。因此整个表达式等价于sizeof a["Hello World"]。
 
 数组访问的对称性：
 

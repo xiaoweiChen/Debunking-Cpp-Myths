@@ -1,11 +1,11 @@
 
-让我们暂时跳出C++世界，化身墙头苍蝇观察其他技术栈开发者的工作流程。从项目创建到团队扩容，典型流程如下：开发者通常会启动微软系（如Visual Studio .NET/VS Code）或JetBrains系（如IntelliJ IDEA/PyCharm/Rider）IDE创建项目。少数异类（比如我）会选择命令行+neovim，更古怪的则用Emacs——当然这是玩笑，毕竟《真正程序员》xkcd漫画(\url{https://xkcd.com/378/})告诉我们，硬核程序员都靠大气电场直接操控比特。
+让我们暂时跳出C++世界，化身墙头苍蝇观察其他技术栈开发者的工作流程。从项目创建到团队扩容，典型流程如下：开发者通常会启动微软系(如Visual Studio .NET/VS Code)或JetBrains系(如IntelliJ IDEA/PyCharm/Rider)IDE创建项目。少数异类(比如我)会选择命令行+neovim，更古怪的则用Emacs——当然这是玩笑，毕竟《真正开发者》xkcd漫画(\url{https://xkcd.com/378/})告诉我们，硬核开发者都靠大气电场直接操控比特。
 
 新建项目时，IDE会推荐集成库。虽然初始项目功能有限，但创建过程会关联Git代码库，本地提交后即可推送到共享仓库。团队成员只需克隆仓库，IDE便会自动处理项目配置中的依赖项。
 
 此时项目通常已包含日志和单元测试库。Python标准库自带logging，Java社区偏好Log4J，.NET则采用Microsoft.Extensions.Logging或Log4Net。单元测试方面，Python虽提供标准库但开发者更爱pytest；Java需搭配JUnit/TestNG和Mockito/JMock；.NET虽有内置框架，但技术负责人往往选择NUnit/xUnit+Moq。
 
-那么C++生态如何？日志库早已随C++共同成熟，功能趋同但API略有差异，以致选择困难——许多项目直接使用Boost.Log。GitHub上24k星的spdlog（仅支持C++11）便是例证。单元测试库更是百花齐放：Google的GTest/GMock、标准xUnit结构的CppTest、本书偏好的无依赖单头文件库doctest(\url{(https://github.com/doctest/doctest})，以及适合嵌入式开发的CppUTest(\url{http://cpputest.github.io})。Mocking框架推荐易集成的FakeIt(\url{https://github.com/eranpeer/FakeIt})。
+那么C++生态如何？日志库早已随C++共同成熟，功能趋同但API略有差异，以致选择困难——许多项目直接使用Boost.Log。GitHub上24k星的spdlog(仅支持C++11)便是例证。单元测试库更是百花齐放：Google的GTest/GMock、标准xUnit结构的CppTest、本书偏好的无依赖单头文件库doctest(\url{(https://github.com/doctest/doctest})，以及适合嵌入式开发的CppUTest(\url{http://cpputest.github.io})。Mocking框架推荐易集成的FakeIt(\url{https://github.com/eranpeer/FakeIt})。
 
 这些库通常通过包管理器管理，依赖清单以文本/标记/脚本文件形式存入代码库。企业环境因安全考虑会限制依赖添加：或限定内部源白名单，或需逐包审批，或设置权限门槛。
 
@@ -24,9 +24,9 @@ pipenv install [library name]
 pipenv install
 \end{shell}
 
-Java和.NET的工作流程类似，只是无需虚拟环境。它们分别使用开源包管理器：Java用Maven或Gradle，.NET用NuGet。这三种技术都有统一的库托管平台：Python的PyPI(\url{https://pypi.org/})、Java的Maven中央仓库(\url{https://mvnrepository.com/repos/central})和.NET的NuGet站点(\url{https://www.nuget.org/})。如前所述，大公司会更严格控制库的使用，往往自建仓库（如Java的Artifactory \url{https://jfrog.com/artifactory/}）。
+Java和.NET的工作流程类似，只是无需虚拟环境。它们分别使用开源包管理器：Java用Maven或Gradle，.NET用NuGet。这三种技术都有统一的库托管平台：Python的PyPI(\url{https://pypi.org/})、Java的Maven中央仓库(\url{https://mvnrepository.com/repos/central})和.NET的NuGet站点(\url{https://www.nuget.org/})。如前所述，大公司会更严格控制库的使用，往往自建仓库(如Java的Artifactory \url{https://jfrog.com/artifactory/})。
 
-如今开发者可以轻松搜索、更新和安装库，这些已成为各技术栈的标准实践。相比2000年代需要手动下载二进制文件或自行编译的困境，现代C++通过Conan和vcpkg正在缩小差距。大公司的程序员可能已习惯类似Java/Python/.NET的体验——使用内部审核通过的Conan/vcpkg仓库。虽然新增库到白名单流程繁琐，但可以理解。
+如今开发者可以轻松搜索、更新和安装库，这些已成为各技术栈的标准实践。相比2000年代需要手动下载二进制文件或自行编译的困境，现代C++通过Conan和vcpkg正在缩小差距。大公司的开发者可能已习惯类似Java/Python/.NET的体验——使用内部审核通过的Conan/vcpkg仓库。虽然新增库到白名单流程繁琐，但可以理解。
 
 若无完善的基础设施，体验就大打折扣：库分散各处，工具也不够稳定。笔者亲历Conan在简单项目上报错却无从解决的窘境。虽然讨厌Maven即使简单配置也要下载大量包，但它至少稳定可靠——这正是包管理器的核心价值。因此不得不承认：尽管C++包管理在追赶，但尚未成熟。
 

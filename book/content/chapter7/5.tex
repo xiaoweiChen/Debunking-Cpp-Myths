@@ -18,7 +18,7 @@
 
 Actor模型将通信机制与业务逻辑解耦，由此产生的实现方案让我们无需处理线程原语即可编写高度并行化的代码。
 
-C++领域最悠久稳定的实现是CAF（\url{https://www.actor-framework.org/}）。较新的替代方案是阿里巴巴的Hiactor（\url{https://github.com/alibaba/hiactor}）。但最著名的实现来自Java生态——Akka工具包（\url{https://akka.io/}）。
+C++领域最悠久稳定的实现是CAF(\url{https://www.actor-framework.org/})。较新的替代方案是阿里巴巴的Hiactor(\url{https://github.com/alibaba/hiactor})。但最著名的实现来自Java生态——Akka工具包(\url{https://akka.io/})。
 
 让我们看一个使用CAF实现两个actor之间聊天的简单示例。以下代码将actor的行为定义为Lambda表达式，实例化两个聊天actor，并在它们之间发送消息。每个actor都会将自己的消息写入控制台：
 

@@ -61,10 +61,10 @@
 
 \usepackage{url}
 \hypersetup{hidelinks, %去红框
-    colorlinks=true,
-    allcolors=black,
-    pdfstartview=Fit,
-    breaklinks=true
+  colorlinks=true,
+  allcolors=black,
+  pdfstartview=Fit,
+  breaklinks=true
 }
 
 % 调整itemlist中的行间距
@@ -76,11 +76,11 @@
 % 超链接样式设置
 \usepackage{hyperref}
 \hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    filecolor=blue,
-    urlcolor=blue,
-    citecolor=cyan,
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=blue,
+  urlcolor=blue,
+  citecolor=cyan,
 }
 
 \usepackage{indentfirst}
@@ -97,45 +97,45 @@
 
 %https://tex.stackexchange.com/questions/173850/problem-in-adding-a-background-color-in-a-minted-environment
 \newtcblisting{shell}{
-    listing engine=minted,
-    minted language=text,%bash, % 使用text就不会有语法高亮显示
-    minted options={autogobble,linenos,breaklines},
-    listing only,
-    size=title,
-    arc=0.3mm,
-    breakable,
-    enhanced jigsaw,
-    colframe=black!50!white,
-    boxrule=0.5mm,
-    colback=bashcodebg,
-    coltext=Black,
-    minted options={linenos=false,texcl=true},
+  listing engine=minted,
+  minted language=text,%bash, % 使用text就不会有语法高亮显示
+  minted options={autogobble,linenos,breaklines},
+  listing only,
+  size=title,
+  arc=0.3mm,
+  breakable,
+  enhanced jigsaw,
+  colframe=black!50!white,
+  boxrule=0.5mm,
+  colback=bashcodebg,
+  coltext=Black,
+  minted options={linenos=false,texcl=true},
 }
 \definecolor{bashcodebg}{rgb}{0.85,0.85,0.85}
 
 % https://tex.stackexchange.com/questions/304449/combine-minted-and-tcolorbox-for-code-from-file-inputminted
 \newcounter{inputPrg}
 \newtcblisting[use counter=inputPrg, number format=\arabic]{cpp}{
-    listing engine=minted,
-    minted language=c++,
-    minted options={autogobble,linenos,breaklines},
-    listing only,
-    size=title,
-    arc=0.5mm,
-    breakable,
-    enhanced jigsaw,
-    colframe=black!7!white,
-    %coltitle=White,
-    boxrule=0.5mm,
-    colback=blue!3!white,
-    coltext=Black,
-    %title=\TwoSymbolsAndText{\faCode}{%
-        %    \textbf{Input program \thetcbcounter}\ifthenelse{\equal{#2}{}}{}{\textbf{:} \textit{#2}}%
-        %}{\faCode},
-    %label=inputPrg:#3
-    left=6.5mm,enhanced,
-    overlay={\begin{tcbclipinterior}\fill[black!5] (frame.south west)
-            rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}
+  listing engine=minted,
+  minted language=c++,
+  minted options={autogobble,linenos,breaklines},
+  listing only,
+  size=title,
+  arc=0.5mm,
+  breakable,
+  enhanced jigsaw,
+  colframe=black!7!white,
+  %coltitle=White,
+  boxrule=0.5mm,
+  colback=blue!3!white,
+  coltext=Black,
+  %title=\TwoSymbolsAndText{\faCode}{%
+    %    \textbf{Input program \thetcbcounter}\ifthenelse{\equal{#2}{}}{}{\textbf{:} \textit{#2}}%
+    %}{\faCode},
+  %label=inputPrg:#3
+  left=6.5mm,enhanced,
+  overlay={\begin{tcbclipinterior}\fill[black!5] (frame.south west)
+    rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}}
 }
 
 \usepackage{tikz}
@@ -144,12 +144,12 @@
 % https://liam.page/2017/05/17/help-the-url-command-from-hyperref-to-break-at-line-wrapping-point/
 \makeatletter
 \def\UrlAlphabet{%
-    \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
-    \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
-    \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
-    \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
-    \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
-    \do\Y\do\Z}
+  \do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+  \do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+  \do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+  \do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+  \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+  \do\Y\do\Z}
 \def\UrlDigits{\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\0}
 \g@addto@macro{\UrlBreaks}{\UrlOrds}
 \g@addto@macro{\UrlBreaks}{\UrlAlphabet}
@@ -182,23 +182,22 @@
 \renewcommand{\thesubsubsubsection}{\thesubsubsection.\arabic{subsubsubsection}}
 
 \newcommand{\subsubsubsection}{\@startsection{subsubsubsection}{4}{\z@}%
-    {-3.25ex\@plus -1ex \@minus -.2ex}%
-    {1.5ex \@plus .2ex}%
-    {\normalfont\normalsize\bf\bfseries}}
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\normalsize\bf\bfseries}}
 
 \newcommand*{\l@subsubsubsection}{\@dottedtocline{4}{11em}{5em}}
 
 \newcommand{\subsubsubsectionmark}[1]{}
 \makeatother
 
-
 \makeatletter
 \newcommand{\savefootnote}[1]{%
-    \protected@xdef\@thefnmark{#1}%
-    \global\let\@sf@label\@currentlabel
+  \protected@xdef\@thefnmark{#1}%
+  \global\let\@sf@label\@currentlabel
 }
 \newcommand{\usefootnote}{%
-    \footnotemark[\@sf@label]%
+  \footnotemark[\@sf@label]%
 }
 \makeatother
 
@@ -233,10 +232,10 @@
 
 \NewDocumentCommand { \myGraphic } { mmm }
 {
-    \begin{center}
-        \includegraphics[width=#1\textwidth]{#2}\\
-        {#3}
-    \end{center}
+  \begin{center}
+    \includegraphics[width=#1\textwidth]{#2}\\
+    {#3}
+  \end{center}
 }
 
 % Def \inlcpp
@@ -334,12 +333,12 @@
 
 \NewDocumentCommand { \myChapterNoContents } { mmm }
 {
-    \color{black}
-    \pagecolor{white}
-    %\ThisULCornerWallPaper{1.0}{images/section-header.png}
-    \section*{\zihao{2}{#1}\hspace{0.5cm}{#2}}
-    %\addcontentsline{toc}{chapter}{{#1}\hspace{0.5cm}{#2}}
-    \subfile{{#3}}
+  \color{black}
+  \pagecolor{white}
+  %\ThisULCornerWallPaper{1.0}{images/section-header.png}
+  \section*{\zihao{2}{#1}\hspace{0.5cm}{#2}}
+  %\addcontentsline{toc}{chapter}{{#1}\hspace{0.5cm}{#2}}
+  \subfile{{#3}}
 }
 
 \NewDocumentCommand { \myPart } { mmm }
@@ -370,16 +369,16 @@
 \IfFontExistsTF{Apple Color Emoji}{
 \newfontfamily\emojifont{Apple Color Emoji}
 }{
-    % 判断是否为 Windows(Segoe UI Emoji 存在)
+  % 判断是否为 Windows(Segoe UI Emoji 存在)
 \IfFontExistsTF{Segoe UI Emoji}{
-    \newfontfamily\emojifont{Segoe UI Emoji}
+  \newfontfamily\emojifont{Segoe UI Emoji}
 }{
-    % 否则可能是 Linux(Noto Color Emoji)
-    \IfFontExistsTF{Noto Color Emoji}{
-        \newfontfamily\emojifont{Noto Color Emoji}
-    }{
-        \newfontfamily\emojifont{Symbola} % fallback
-    }
+  % 否则可能是 Linux(Noto Color Emoji)
+  \IfFontExistsTF{Noto Color Emoji}{
+    \newfontfamily\emojifont{Noto Color Emoji}
+  }{
+    \newfontfamily\emojifont{Symbola} % fallback
+  }
 }
 }
 
