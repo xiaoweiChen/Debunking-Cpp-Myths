@@ -1,4 +1,4 @@
-亲爱的读者，在本章前文中，我们已不幸耗尽了从各种文化典故中借来的华丽开场白——无论是关于技术面试、职业抉择、人生选择，还是该选红色药丸还是蓝色药丸的哲学探讨。因此，现在让我们聚焦于求职者在技术面试中可能遇到的技术性问题(短短这段引言中，"技术"一词已出现四次)。
+在本章前文中，我们已不幸耗尽了从各种文化典故中借来的华丽开场白 --- 无论是关于技术面试、职业抉择、人生选择，还是该选红色药丸还是蓝色药丸的哲学探讨。因此，现在聚焦于求职者在技术面试中可能遇到的技术性问题(短短这段引言中，"技术"一词已出现四次)。
 
 数年前，笔者本人就曾被要求编写一个计算32位整数中"1"比特位(即置位比特)数量的代码片段。下面让我们快速实现这个功能：
 
@@ -13,13 +13,13 @@ int countOneBits(uint32_t n) {
 }
 \end{cpp}
 
-其实现原理如下：首先初始化计数器为0。接着进入循环处理每个比特位——只要整数n不为零，就将最低有效位(通过n\&1获取)累加到计数器，然后将n右移一位(丢弃已处理的最低位)。当所有比特处理完毕(n变为0时)，返回统计到的置位比特总数。整个过程虽不复杂，却需要扎实的位运算功底。
+其实现原理如下：首先初始化计数器为0。接着进入循环处理每个比特位 --- 只要整数n不为零，就将最低有效位(通过n\&1获取)累加到计数器，然后将n右移一位(丢弃已处理的最低位)。当所有比特处理完毕(n变为0时)，返回统计到的置位比特总数。整个过程虽不复杂，却需要扎实的位运算功底。
 
-这种比特计数算法在计算领域有着奇特的重要性：从错误检测校正、数据压缩、密码学、算法优化，到数字信号处理、硬件设计和性能评估均有应用。难怪它最终以std::popcount的形式被纳入C++20标准模板库(STL)。
+这种比特计数算法在计算领域有着奇特的重要性：从错误检测校正、数据压缩、密码学、算法优化，到数字信号处理、硬件设计和性能评估均有应用。难怪它最终以std::popcount的形式纳入C++20标准模板库(STL)。
 
-更有趣的是，该操作不仅存在于STL中，甚至被固化到处理器指令层面，即著名的POPCNT指令——其"著名"程度在2024年达到顶峰，因微软利用该指令阻止老旧设备安装Windows 11而引发争议\footnote{\url{https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/}}。
+更有趣的是，该操作不仅存在于STL中，甚至被固化到处理器指令层面，即著名的POPCNT指令 --- 其"著名"程度在2024年达到顶峰，微软利用该指令阻止老旧设备安装Windows 11而引发争议\footnote{\url{https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/}}。
 
-对应聘者而言，这意味着他们可以用以下简洁代码替代之前的复杂实现来征服面试官：
+对应聘者而言，也可以用以下简洁代码替代之前的复杂实现来征服面试官：
 
 \begin{cpp}
 int countOneBits(uint32_t n) {
@@ -38,9 +38,11 @@ countOneBits(unsigned int):
   ret
 \end{shell}
 
-这意味着我们的代码在编译过程中，竟悄然隐没于GCC提供的库函数深处——这个名为\verb|__popcountdi2|\footnote{\url{https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html}}的神秘调用就此登场。若要让GCC充分发挥当前处理器的硬件潜能，我们必须祭出一些鲜为人知的编译选项，比如通用架构优化指令-march，或是针对此场景特化的-mpopcnt指令开关。
+代码在编译过程中，悄然隐没于GCC提供的库函数深处 --- 这个名为\verb|__popcountdi2|\footnote{\url{https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html}}的神秘调用就此登场。这个内部函数用于实现 64 位整数的“位计数”操作（即统计二进制中 1 的个数），但其背后隐藏着能否真正利用现代 CPU 硬件特性的关键。若要让 GCC 充分发挥当前处理器的硬件潜能，我们必须祭出一些鲜为人知的编译选项。例如通用架构优化标志 -march，或是针对此场景特化的 -mpopcnt 指令开关。
 
-根据官方文档说明\footnote{\url{https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html}}，该编译选项将自动选择适配的处理器指令集以启用特定CPU的扩展功能。鉴于我们已知POPCNT指令最早出现在Nehalem架构的初代Core i5/i7处理器中，此时只需向GCC指定：-march=nehalem。果然，编译器现在生成的指令变得干净利落：
+根据官方文档说明\footnote{\url{https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html}}，该编译选项将自动选择适配的处理器指令集以启用特定CPU的扩展功能。这些选项将指示编译器自动选择最适合目标处理器的指令集，并启用相关的扩展功能。考虑到 POPCNT 指令最早出现在 Nehalem 架构的初代 Core i5/i7 处理器中，只需向 GCC 明确指定：-march=nehalem。
+
+编译器现在生成的指令变得干净利落、高效简洁，直接使用了硬件支持的 popcnt 指令，而非回退到软件模拟或低效循环计算。
 
 \begin{shell}
 countOneBits(unsigned int):
@@ -48,7 +50,7 @@ countOneBits(unsigned int):
   ret
 \end{shell}
 
-有趣的是，若仅使用-mpopcnt编译选项，编译器会额外生成xor eax, eax指令(即将EAX寄存器清零)——这或许暗示着选择Nehalem架构时触发了某些处理器特定的优化机制：
+有趣的是，若仅使用-mpopcnt编译选项，编译器会额外生成xor eax, eax指令(即将EAX寄存器清零) --- 这或许暗示着选择Nehalem架构时触发了某些处理器特定的优化机制：
 
 \begin{shell}
 countOneBits(unsigned int):
@@ -57,7 +59,7 @@ countOneBits(unsigned int):
   ret
 \end{shell}
 
-在GCC上我们已无法进一步优化，该功能确实已至底层极限。于是我们将目光转向下一个测试对象——Clang。
+在GCC上我们已无法进一步优化，该功能确实已至底层极限。于是我们将目光转向下一个测试对象---Clang。
 
 未启用优化时，Clang同样会调用其标准库中的通用std::popcount函数。但一旦开启优化，各层级优化选项均会产生如下精炼输出：
 
@@ -81,7 +83,7 @@ countOneBits(unsigned int):
   ret
 \end{shell}
 
-看似不可思议，但这段代码其实有非常合理的解释——斯坦福大学Sean Eron Anderson的位操作魔法网站\footnote{\url{https://graphics.stanford.edu/~seander/bithacks.html\#CountBitsSetParallel}}中就记载着相关原理。抛开这个额外发现不谈，在处理器架构适配和指定CPU扩展指令集方面，Clang的表现与GCC如出一辙。
+看似不可思议，但这段代码其实有非常合理的解释---斯坦福大学Sean Eron Anderson的位操作魔法网站\footnote{\url{https://graphics.stanford.edu/~seander/bithacks.html\#CountBitsSetParallel}}中就详细记载了相关的实现原理。该网站堪称位运算领域的“圣典”，其中展示了如何通过一系列巧妙的位掩码与算术运算，高效统计一个整数中比特 1 的数量。抛开这个额外发现不谈，在处理器架构适配和指令集扩展方面，Clang 的表现与 GCC 如出一辙：它也能根据目标架构自动选择是否使用 POPCNT 指令，或回退到高效的位操作实现。
 
 作为三大编译器最后一位测试对象，微软那个(我们都知道的)小巧软萌的C++编译器表现与Clang惊人相似：当指定不支持POPCNT指令的架构时，它会生成类似Clang低级位操作的黑魔法代码；而若架构支持POPCNT指令，它就会自动适配并正确调用该指令(编译参数：/std:c++latest /arch:SSE4.2 /O1)。
 

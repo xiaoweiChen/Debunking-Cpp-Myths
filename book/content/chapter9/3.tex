@@ -1,5 +1,5 @@
 
-说到这里，我们不得不提本章已多次涉及圆括号的话题。现在，我们将展示本书中可能最重要的那对圆括号——请看以下两个函数：
+这里，来聊聊本章已多次涉及圆括号的话题。现在，我们将展示本书中可能最重要的那对圆括号 --- 请看以下两个函数：
 
 \begin{cpp}
 static int y;
@@ -36,9 +36,9 @@ if (is_reference<decltype(number(42))>::value) {
 Not a reference: int
 \end{shell}
 
-其他编译器的行为基本一致,只不过它们不会打印完整类型名称——比如gcc和clang对于int类型仅显示单个字母i,这就没那么直观了。
+其他编译器的行为基本一致,只不过它们不会打印完整类型名称 --- 比如gcc和clang对于int类型仅显示单个字母i,这就没那么直观了。
 
-现在让我们检验以下代码序列:
+检验以下代码:
 
 \begin{cpp}
 if (is_reference<decltype(reference(42))>::value) {
@@ -56,7 +56,7 @@ if (is_reference<decltype(reference(42))>::value) {
 Reference to: int
 \end{shell}
 
-至此我们已证明：一对额外的括号与decltype(auto)结合能产生惊人的效果。但请注意，如果我们省略decltype，像下面这样：
+至此我们已证明：一对括号与decltype(auto)结合能产生惊人的效果。但请注意，如果省略decltype，像下面这样：
 
 \begin{cpp}
 auto reference(int x) {
@@ -66,7 +66,7 @@ auto reference(int x) {
 
 此时编译器会忽略括号，直接返回普通数值。C++标准在[dcl.type.decltype]章节明确规定了这一行为，笔者强烈建议阅读该章节，以透彻理解背后的原理及其合理性。
 
-既然我们C++开发者始终追求高效、优质和清晰的代码，您可能会问：为何要通过重复代码来判断返回类型是否为引用？难道不能直接写成下面这样吗？
+既然C++开发者始终追求高效、优质和清晰的代码，您可能会问：为何要通过重复代码来判断返回类型是否为引用？难道不能直接写成下面这样吗？
 
 \begin{cpp}
 template <typename T>
@@ -85,7 +85,7 @@ void printType(T&& var) {
 }
 \end{cpp}
 
-这段代码与前前段("前前段"即当前参照点往前数第二段)几乎相同,只是增加了验证引用类型的额外检查(同时将std::cout替换为printf以生成更简洁的汇编代码,并封装为函数体)。让我们将其置于以下上下文并调用:
+这段代码与前前段("前前段"即当前参照点往前数第二段)几乎相同，只是增加了验证引用类型的额外检查(同时将std::cout替换为printf以生成更简洁的汇编代码,并封装为函数体)。让我们将其置于以下上下文并调用:
 
 \begin{cpp}
 printType(number(42));
@@ -101,7 +101,7 @@ lvalue ref int
 
 值得一提的是，其他非"小巧软萌"的编译器也能得到相同结果。
 
-该函数模板通过转发引用(\verb|T&& var|)同时处理左值和右值引用，从而能够推导并保留传入变量的引用类型。借助类型特征库，我们使用\verb|is_reference<T>::value|检查T是否为引用类型，并通过\verb|is_lvalue_reference<T>::value|进一步区分左值/右值引用。
+该函数模板通过转发引用(\verb|T&& var|)同时处理左值和右值引用，从而能够推导并保留传入变量的引用类型。借助类型特征库，使用\verb|is_reference<T>::value|检查T是否为引用类型，并通过\verb|is_lvalue_reference<T>::value|进一步区分左值/右值引用。
 
 % Please add the following required packages to your document preamble:
 % \usepackage{longtable}
@@ -124,7 +124,7 @@ lvalue ref int
 表9.1：不同printType实例化的汇编代码对比
 \end{center}
 
-我们可以清晰地看到，针对两个函数返回的不同类型，编译器分别生成了printType函数的两个实例化版本。值得注意的是，所有类型特征(type traits)的调用都在源代码层面得到了完美实现，从而消除了不必要的条件分支。此外，编译器还优化移除了未使用的字符串(比如生成的汇编代码中完全找不到"rvalue ref"字样，因为编译器已识别出相关分支在最终代码中永远不会被执行)。
+我们可以清晰地看到，针对两个函数返回的不同类型，编译器分别生成了printType函数的两个实例化版本。所有类型特征(type traits)的调用都在源代码层面得到了完美实现，从而消除了不必要的条件分支。此外，编译器还优化移除了未使用的字符串(比如生成的汇编代码中完全找不到"rvalue ref"字样，因为编译器已识别出相关分支在最终代码中永远不会被执行)。
 
 这难道不是C++精妙之处的绝佳体现吗？
 

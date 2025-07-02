@@ -1,4 +1,4 @@
-C++语言中存在一个鲜为人知的黑暗角落——当来自这个角落的代码偶然现世时，总会引发核心开发者们的集体重构。以数组访问为例，为什么在C++中a[2]和2[a]这两种写法完全等效？
+在C++语言中，有一个鲜为人知却令人颇感意外的“黑暗角落” --- 当某些源自这一特性的代码偶然出现时，会让开发者们陷入困惑，甚至引发大规模的重构。一个典型的例子就是数组访问的写法：为什么在C++中，a[2]与2[a]是完全等效的？
 
 \begin{cpp}
 int main() {
@@ -8,23 +8,20 @@ int main() {
 }
 \end{cpp}
 
-这段看似怪异的代码能够编译，其根本原因在于：
-
-
-指针算术本质：
+这段看似怪异的代码能够编译，其根本原因在于：指针的算术本质。
 
 \begin{itemize}
 \item 
-a[i]被编译器转化为*(a + i)
+a[i]可转化为*(a + i)
 
 \item 
-i[a]同样转化为*(i + a)
+i[a]同样可转化为*(i + a)
 
 \item 
 加法交换律使这两种形式完全等价
 \end{itemize}
 
-现代容器的限制。std::vector和std::array不支持这种"乱序"语法，因为：
+现代容器的限制。std::vector和std::array不支持这种"乱序"语法：
 
 \begin{itemize}
 \item 
@@ -60,9 +57,9 @@ int main() {
 }
 \end{cpp}
 
-经过快速审视这段代码后(声明：两位作者中Alex是无辜的，此处使用"我们"仅是行文惯例)，我们必须羞愧地承认——这段代码实在难登大雅之堂，更不敢将其实现到std::array或其他容器中。
+经过快速审视这段代码后(声明：两位作者中Alex是无辜的，此处使用"我们"仅是行文惯例)，必须承认 --- 这段代码实在难登大雅之堂，更不敢将其实现到std::array或其他容器中。
 
-但仔细看来，其中仍存在有趣的技术点。虽然我们最初目标是实现vector/array的无序索引访问，但残酷的现实是：这根本不可行。尝试编译2[vec]表达式时，编译器会直接报错：
+但仔细看来，其中仍存在有趣的技术点。虽然最初目标是实现vector/array的无序索引访问，但残酷的现实是：这根本不可行。尝试编译2[vec]表达式时，编译器会直接报错：
 
 \begin{shell}
 error: no match for 'operator[]' (operand types are 'int' and 'std::vector<int>')
@@ -93,11 +90,11 @@ C++不允许存在独立的下标运算符(不存在全局的operator[])
 当优先级相同时，由结合性(associativity)决定求值顺序
 \end{itemize}
 
-虽然最新标准第7章[expr.pre]节指出"运算符优先级并非直接规定，而是通过语法推导"，但仍有权威资料\footnote{\url{https://en.cppreference.com/w/cpp/language/operator_precedence}}完整列出了优先级顺序表——我们强烈建议开发者系统学习这些资料。
+虽然最新标准第7章[expr.pre]节指出"运算符优先级并非直接规定，而是通过语法推导"，但仍有权威资料\footnote{\url{https://en.cppreference.com/w/cpp/language/operator_precedence}}完整列出了优先级顺序表 --- 强烈建议开发者系统阅读这些资料。
 
-\mySubsubsection{5.4.1}{最关键的问题在于}
+\mySubsubsection{5.4.1}{最关键的问题}
 
-亲爱的读者，此刻您应该能轻松回答这个问题了：下面这段程序的输出结果是什么？
+此刻各位读者应该能轻松回答这个问题了：下面这段程序的输出结果是什么？
 
 \begin{cpp}
 #include <iostream>
@@ -108,11 +105,11 @@ int main() {
 }
 \end{cpp}
 
-但在您急着将代码扔进编译器之前，不妨暂停片刻，沉下心来仔细推敲其中的运行机制。本节已为您提供了所有解题线索——从关键提示到潜在方向一应俱全。我们暂不揭晓答案，也不做完整解析，仅列出现象要点，相信这些足以引导您得出正确结论：
+在将代码扔进编译器之前，不妨暂停片刻，沉下心来仔细推敲其中的运行机制。本节已为提供了所有解题线索 --- 从关键提示到潜在方向一应俱全。我们暂不揭晓答案，也不做完整解析，仅列出现象要点，相信这些足以帮助您得出正确结论：
 
 \begin{itemize}
 \item 
-在表达式 auto a = 4; 中，变量 a 被推导为 int 类型并初始化为 4 —— 这正是现代 C++ 中 auto 与整数字面量的配合方式。
+在表达式 auto a = 4; 中，变量 a 推导为 int 类型并初始化为 4 --- 这正是现代 C++ 中 auto 与整数字面量的配合方式。
 
 \item 
 接下来是精妙之处：通过代码解析可知，sizeof(a) 表达式将返回 sizeof(int) 的值：
@@ -130,46 +127,40 @@ int main() {
 
 \end{itemize}
 
-这正是我们所有推理的关键转折点——C++的运算符优先级在此发挥了决定性作用。以下是从优先级表中提取的与当前案例直接相关的部分：
+这正是推理的关键转折点 --- C++的运算符优先级在此发挥了决定性作用。以下是从优先级表中提取的与当前案例直接相关的部分：
 
 % Please add the following required packages to your document preamble:
 % \usepackage{longtable}
 % Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
 \begin{longtable}{|l|l|l|}
 \hline
-\textbf{Precedence} & \textbf{Operator}                                  & \textbf{Description}            \\ \hline
+\textbf{优先级} & \textbf{操作符}                                  & \textbf{描述}            \\ \hline
 \endfirsthead
 %
 \multicolumn{3}{c}%
-{{\bfseries Table \thetable\ continued from previous page}} \\
+{{\bfseries 表格续自上一页}} \\
 \endhead
 %
-1 & ::       & Scope resolution operator   \\ \hline
-2                   & \begin{tabular}[c]{@{}l@{}}a++ \\ a--\end{tabular} & Postfix increment and decrement \\ \hline
-  & a()      & Function call               \\ \hline
-  & a{[}{]}  & Subscript                   \\ \hline
-3                   & \begin{tabular}[c]{@{}l@{}}++a \\ --a\end{tabular} & Prefix increment and decrement  \\ \hline
-                    & \begin{tabular}[c]{@{}l@{}}+a \\ -a\end{tabular}   & Unary plus and minus            \\ \hline
-  & ! $\sim$ & Logical NOT and bitwise NOT \\ \hline
-  & *a       & Dereference                 \\ \hline
-  & \&a      & Address-of                  \\ \hline
-  & sizeof   & Size of operator            \\ \hline
+1 & ::       & 命名空间解析操作符   \\ \hline
+2                   & \begin{tabular}[c]{@{}l@{}}a++ \\ a--\end{tabular} & 后缀自增和自减 \\ \hline
+  & a()      & 函数调用               \\ \hline
+  & a{[}{]}  & 下标                   \\ \hline
+3                   & \begin{tabular}[c]{@{}l@{}}++a \\ --a\end{tabular} & 前缀自增和自减  \\ \hline
+                    & \begin{tabular}[c]{@{}l@{}}+a \\ -a\end{tabular}   & 一元正负            \\ \hline
+  & ! $\sim$ & 逻辑非和位非 \\ \hline
+  & *a       & 解引用                 \\ \hline
+  & \&a      & 取地址                  \\ \hline
+  & sizeof   & sizeof(内存大小)运算符            \\ \hline
 \end{longtable}
 
-
-现在我们可以清楚地看到：在这段代码中，sizeof(a)实际上并不会被执行。由于C++编译器处理运算符优先级的方式，[]运算符的优先级高于sizeof，因此编译器会优先计算(a)["Hello World"]这个表达式。
+现在我们可以更清晰地理解：在这段代码中，sizeof(a)实际上并不会被真正执行。这是由于C++编译器在处理运算符优先级时的规则 --- [] 运算符的优先级高于 sizeof，因此编译器会优先解析 \verb|(a)["Hello World"]| 这个表达式。
 
 关键解析步骤：
 
-括号的等价性：
-在C++中，(a)基本等同于a(除非遇到"最令人头疼的解析"场景，这个我们稍后再讨论)。因此整个表达式等价于sizeof a["Hello World"]。
+括号的等价性：在C++中，(a)基本等同于a(除非遇到"最令人头疼的解析"场景，这个我们稍后再讨论)。因此整个表达式等价于\verb|sizeof a["Hello World"]|。
 
-数组访问的对称性：
+数组访问的对称性：如前所述，\verb|a["Hello World"]|与\verb|"Hello World"[a]|效果相同。当a的值为4时，这将返回字符串中的字符‘o’。
 
-如前所述，a["Hello World"]与"Hello World"[a]效果相同。当a的值为4时，这将返回字符串中的字符'o'。
-
-sizeof运算符的特性：
-
-表达式最终简化为sizeof 'o'，对于char类型，sizeof运算结果总是1。
+sizeof运算符的特性：表达式最终简化为\verb|sizeof 'o'|，对于char类型，sizeof运算结果总是1。
 
 至此，问题的答案应该已经显而易见了。
