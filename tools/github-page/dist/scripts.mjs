@@ -581,60 +581,6 @@ async function readFileAsync(filePath) {
   }
 }
 
-// 从README.md中按行号提取书籍信息
-function extractBookInfoFromReadme(readmeContent) {
-  if (!readmeContent) return {};
-
-  const lines = readmeContent.split('\n');
-  const info = {};
-
-  // 根据README.md的固定结构提取信息
-  // 第1行: # 走出C++谜云
-  if (lines[0] && lines[0].startsWith('# ')) {
-    info.title = lines[0].substring(2).trim();
-  }
-
-  // 第3行: *揭开C++的真相与误解*
-  if (lines[2] && lines[2].startsWith('*') && lines[2].endsWith('*')) {
-    info.subtitle = lines[2].substring(1, lines[2].length - 1).trim();
-  }
-
-  // 第7行: * 作者：Alexandru Bolboacă，Ferenc-Lajos Deák
-  if (lines[6] && lines[6].includes('作者：')) {
-    info.authors = lines[6].replace('* 作者：', '').trim();
-  }
-
-  // 第8行: * 译者：陈晓伟
-  if (lines[7] && lines[7].includes('译者：')) {
-    info.translator = lines[7].replace('* 译者：', '').trim();
-  }
-
-  // 第9行: * 出版于: 2024年12月
-  if (lines[8] && lines[8].includes('出版于:')) {
-    info.publishDate = lines[8].replace('* 出版于:', '').trim();
-  }
-
-  // 提取书籍概述 (从 "## 本书概述" 开始)
-  const overviewStartIndex = lines.findIndex(line => line.trim() === '## 本书概述');
-  if (overviewStartIndex !== -1 && lines[overviewStartIndex + 2]) {
-    info.overview = lines[overviewStartIndex + 2].trim();
-  }
-
-  // 提取关于本书的详细描述 (从 "**关于本书**" 开始)
-  const aboutStartIndex = lines.findIndex(line => line.trim() === '**关于本书**');
-  if (aboutStartIndex !== -1) {
-    let aboutText = '';
-    for (let i = aboutStartIndex + 2; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (line === '' || line.startsWith('**')) break;
-      aboutText += line + ' ';
-    }
-    info.about = aboutText.trim();
-  }
-
-  return info;
-}
-
 // 安全提取路径
 function safeExtractPath(text) {
   if (!text) return null;
