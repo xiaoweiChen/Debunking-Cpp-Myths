@@ -292,31 +292,9 @@ blockquote {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-.subtitle {
-  font-size: 1.2em;
-  color: var(--footer-text-color);
-  font-style: italic;
-  text-align: center;
-  margin: 10px 0;
-}
-
 .author-info {
   text-align: center;
   margin: 20px 0;
-}
-
-.author-info p {
-  margin: 8px 0;
-  font-size: 1.1em;
-}
-
-.author-info a {
-  color: var(--link-color);
-  text-decoration: none;
-}
-
-.author-info a:hover {
-  text-decoration: underline;
 }
 
 .tikz-figure {
@@ -601,6 +579,60 @@ async function readFileAsync(filePath) {
     console.error(`Error reading file ${filePath}:`, err);
     return '';
   }
+}
+
+// 从README.md中按行号提取书籍信息
+function extractBookInfoFromReadme(readmeContent) {
+  if (!readmeContent) return {};
+
+  const lines = readmeContent.split('\n');
+  const info = {};
+
+  // 根据README.md的固定结构提取信息
+  // 第1行: # 走出C++谜云
+  if (lines[0] && lines[0].startsWith('# ')) {
+    info.title = lines[0].substring(2).trim();
+  }
+
+  // 第3行: *揭开C++的真相与误解*
+  if (lines[2] && lines[2].startsWith('*') && lines[2].endsWith('*')) {
+    info.subtitle = lines[2].substring(1, lines[2].length - 1).trim();
+  }
+
+  // 第7行: * 作者：Alexandru Bolboacă，Ferenc-Lajos Deák
+  if (lines[6] && lines[6].includes('作者：')) {
+    info.authors = lines[6].replace('* 作者：', '').trim();
+  }
+
+  // 第8行: * 译者：陈晓伟
+  if (lines[7] && lines[7].includes('译者：')) {
+    info.translator = lines[7].replace('* 译者：', '').trim();
+  }
+
+  // 第9行: * 出版于: 2024年12月
+  if (lines[8] && lines[8].includes('出版于:')) {
+    info.publishDate = lines[8].replace('* 出版于:', '').trim();
+  }
+
+  // 提取书籍概述 (从 "## 本书概述" 开始)
+  const overviewStartIndex = lines.findIndex(line => line.trim() === '## 本书概述');
+  if (overviewStartIndex !== -1 && lines[overviewStartIndex + 2]) {
+    info.overview = lines[overviewStartIndex + 2].trim();
+  }
+
+  // 提取关于本书的详细描述 (从 "**关于本书**" 开始)
+  const aboutStartIndex = lines.findIndex(line => line.trim() === '**关于本书**');
+  if (aboutStartIndex !== -1) {
+    let aboutText = '';
+    for (let i = aboutStartIndex + 2; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line === '' || line.startsWith('**')) break;
+      aboutText += line + ' ';
+    }
+    info.about = aboutText.trim();
+  }
+
+  return info;
 }
 
 // 安全提取路径
@@ -948,8 +980,8 @@ function createHtmlTemplate(title, content, headExtra = '') {
       ${content}
       
       <footer>
-        <p>© 2025 Alexandru Bolboacă, Ferenc-Lajos Deák - 版权所有</p>
-        <p>中文翻译由 陈晓伟 完成</p>
+        <p>© 2025 Rich Yonts - 版权所有</p>
+        <p>中文翻译由陈晓伟完成</p>
       </footer>
     </div>
     
@@ -1086,12 +1118,12 @@ async function generateHtml() {
     // Create dist directory if it doesn't exist
     await promises.mkdir(distDir, { recursive: true });
 
-    // Process the index.tex file to get book info and chapters
-    console.log('Processing index.tex file...');
-    const { content: indexContent, chapters } = await processTex(path.join(bookDir, 'index.tex'), false);
+    // Process the main book file
+    console.log('Processing main book file...');
+    const { content: bookContent, chapters } = await processTex(path.join(rootDir, 'book.tex'), true);
 
     console.log('Converting LaTeX to HTML...');
-    let htmlContent = convertLatexToHtml(indexContent);
+    let htmlContent = convertLatexToHtml(bookContent);
 
     // 为每个章节内容创建占位符的映射
     const chapterMap = new Map();
@@ -1103,23 +1135,18 @@ async function generateHtml() {
       chapterMap.set(chapter.id, chapter);
     }
 
-    // 从index.tex中提取书籍信息
-    const bookTitle = '走出C++谜云';
-    const bookSubtitle = '揭开C++的真相与误解';
-    const authors = 'Alexandru Bolboacă, Ferenc-Lajos Deák';
-    const translator = '陈晓伟';
-
     // 生成目录
     const tocHtml = generateTOC(chapters);
 
     // 创建首页HTML
-    const indexHtml = createHtmlTemplate(bookTitle, `
+    const indexHtml = createHtmlTemplate('C++编程避坑指南：100个常见错误及解决方案', `
       <header>
-        <h1>${bookTitle}</h1>
-        <p class="subtitle">${bookSubtitle}</p>
+        <h1>C++编程避坑指南：100个常见错误及解决方案</h1>
+        <p><em>100 C++ Mistakes and How to Avoid Them</em></p>
         <div class="author-info">
-          <p>作者：${authors}</p>
-          <p>译者：${translator}</a></p>
+          <p>作者：Rich Yonts</p>
+          <p>译者：陈晓伟</p>
+          <p>出版于: 2025年3月25日</p>
         </div>
         <img src="cover.png" alt="Book Cover" class="book-cover">
       </header>
@@ -1189,7 +1216,7 @@ async function generateHtml() {
 
       // 创建章节HTML内容
       const chapterHtml = createHtmlTemplate(
-        `${chapter.title} - ${bookTitle}`,
+        `${chapter.title} - C++编程避坑指南`,
         `
         <div class="chapter-container">
           ${navigation}
