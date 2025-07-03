@@ -442,6 +442,7 @@ function convertLatexToHtml(latex) {
   // 处理自定义章节命令
   html = html.replace(/\\mySubsubsection\{(.*?)\}\{(.*?)\}/g, '<h4>$1 $2</h4>');
   html = html.replace(/\\mySubsection\{(.*?)\}\{(.*?)\}/g, '<h3>$1 $2</h3>');
+  html = html.replace(/\\mySubsectionNoFile\{(.*?)\}\{(.*?)\}/g, '<h3>$1$2</h3>');
 
   // 处理文件名命令
   html = html.replace(/\\filename\{(.*?)\}/g, '<div class="filename">$1</div>');
