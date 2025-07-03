@@ -292,9 +292,31 @@ blockquote {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.subtitle {
+  font-size: 1.2em;
+  color: var(--footer-text-color);
+  font-style: italic;
+  text-align: center;
+  margin: 10px 0;
+}
+
 .author-info {
   text-align: center;
   margin: 20px 0;
+}
+
+.author-info p {
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.author-info a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.author-info a:hover {
+  text-decoration: underline;
 }
 
 .tikz-figure {
@@ -926,8 +948,8 @@ function createHtmlTemplate(title, content, headExtra = '') {
       ${content}
       
       <footer>
-        <p>© 2025 Rich Yonts - 版权所有</p>
-        <p>中文翻译由陈晓伟完成</p>
+        <p>© 2025 Alexandru Bolboacă, Ferenc-Lajos Deák - 版权所有</p>
+        <p>中文翻译由 陈晓伟 完成</p>
       </footer>
     </div>
     
@@ -1064,12 +1086,12 @@ async function generateHtml() {
     // Create dist directory if it doesn't exist
     await promises.mkdir(distDir, { recursive: true });
 
-    // Process the main book file
-    console.log('Processing main book file...');
-    const { content: bookContent, chapters } = await processTex(path.join(rootDir, 'book.tex'), true);
+    // Process the index.tex file to get book info and chapters
+    console.log('Processing index.tex file...');
+    const { content: indexContent, chapters } = await processTex(path.join(bookDir, 'index.tex'), false);
 
     console.log('Converting LaTeX to HTML...');
-    let htmlContent = convertLatexToHtml(bookContent);
+    let htmlContent = convertLatexToHtml(indexContent);
 
     // 为每个章节内容创建占位符的映射
     const chapterMap = new Map();
@@ -1081,18 +1103,23 @@ async function generateHtml() {
       chapterMap.set(chapter.id, chapter);
     }
 
+    // 从index.tex中提取书籍信息
+    const bookTitle = '走出C++谜云';
+    const bookSubtitle = '揭开C++的真相与误解';
+    const authors = 'Alexandru Bolboacă, Ferenc-Lajos Deák';
+    const translator = '陈晓伟';
+
     // 生成目录
     const tocHtml = generateTOC(chapters);
 
     // 创建首页HTML
-    const indexHtml = createHtmlTemplate('C++编程避坑指南：100个常见错误及解决方案', `
+    const indexHtml = createHtmlTemplate(bookTitle, `
       <header>
-        <h1>C++编程避坑指南：100个常见错误及解决方案</h1>
-        <p><em>100 C++ Mistakes and How to Avoid Them</em></p>
+        <h1>${bookTitle}</h1>
+        <p class="subtitle">${bookSubtitle}</p>
         <div class="author-info">
-          <p>作者：Rich Yonts</p>
-          <p>译者：陈晓伟</p>
-          <p>出版于: 2025年3月25日</p>
+          <p>作者：${authors}</p>
+          <p>译者：${translator}</a></p>
         </div>
         <img src="cover.png" alt="Book Cover" class="book-cover">
       </header>
@@ -1162,7 +1189,7 @@ async function generateHtml() {
 
       // 创建章节HTML内容
       const chapterHtml = createHtmlTemplate(
-        `${chapter.title} - C++编程避坑指南`,
+        `${chapter.title} - ${bookTitle}`,
         `
         <div class="chapter-container">
           ${navigation}
