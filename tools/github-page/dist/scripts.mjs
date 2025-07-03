@@ -292,9 +292,31 @@ blockquote {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
+.subtitle {
+  font-size: 1.2em;
+  color: var(--footer-text-color);
+  font-style: italic;
+  text-align: center;
+  margin: 10px 0;
+}
+
 .author-info {
   text-align: center;
   margin: 20px 0;
+}
+
+.author-info p {
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.author-info a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.author-info a:hover {
+  text-decoration: underline;
 }
 
 .tikz-figure {
@@ -491,6 +513,9 @@ function convertLatexToHtml(latex) {
   // Replace center environment
   html = html.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, '<div style="text-align:center">$1</div>');
 
+  // Replace flushright environment
+  html = html.replace(/\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}/g, '<div style="text-align:right">$1</div>');
+
   // Remove sloppypar
   html = html.replace(/\\begin\{sloppypar\}([\s\S]*?)\\end\{sloppypar\}/g, '$1');
 
@@ -544,6 +569,9 @@ function convertLatexToHtml(latex) {
   // Handle footnotes
   html = html.replace(/\\footnote\{(.*?)\}/g, '<span class="footnote">$1</span>');
 
+  // Handle hspace*{fill} - convert to empty line
+  html = html.replace(/\\hspace\*\{\\fill\}/g, '<br>');
+
   // Replace LaTeX line breaks
   html = html.replace(/\\\\(\s*)/g, '<br>$1');
   html = html.replace(/\\newline\s*/g, '<br>');
@@ -578,6 +606,41 @@ async function readFileAsync(filePath) {
   } catch (err) {
     console.error(`Error reading file ${filePath}:`, err);
     return '';
+  }
+}
+
+// Function to extract book information from README.md
+async function extractBookInfoFromReadme() {
+  try {
+    const readmePath = path.join(rootDir, 'README.md');
+    const readmeContent = await readFileAsync(readmePath);
+    
+    // 提取标题 (第一行的 # 标题)
+    const titleMatch = readmeContent.match(/^#\s+(.+)$/m);
+    const title = titleMatch[1].trim();
+
+    // 提取副标题 (斜体文本)
+    const subtitleMatch = readmeContent.match(/^\*(.+)\*$/m);
+    const subtitle = subtitleMatch[1].trim();
+
+    // 提取作者信息
+    const authorsMatch = readmeContent.match(/\*\s*作者：(.+)$/m);
+    const authors = authorsMatch[1].trim();
+
+    // 提取译者信息
+    const translatorMatch = readmeContent.match(/\*\s*译者：(.+)$/m);
+    const translator = translatorMatch[1].trim();
+
+    return {
+      title,
+      subtitle,
+      authors,
+      translator
+    };
+  } catch (err) {
+    console.error('Error extracting book info from README:', err);
+    // 返回默认值
+    return null;
   }
 }
 
@@ -924,11 +987,6 @@ function createHtmlTemplate(title, content, headExtra = '') {
   <body>
     <div class="container">
       ${content}
-      
-      <footer>
-        <p>© 2025 Rich Yonts - 版权所有</p>
-        <p>中文翻译由陈晓伟完成</p>
-      </footer>
     </div>
     
     <!-- 先加载核心库 -->
@@ -1064,12 +1122,12 @@ async function generateHtml() {
     // Create dist directory if it doesn't exist
     await promises.mkdir(distDir, { recursive: true });
 
-    // Process the main book file
-    console.log('Processing main book file...');
-    const { content: bookContent, chapters } = await processTex(path.join(rootDir, 'book.tex'), true);
+    // Process the index.tex file to get book info and chapters
+    console.log('Processing index.tex file...');
+    const { content: indexContent, chapters } = await processTex(path.join(bookDir, 'index.tex'), false);
 
     console.log('Converting LaTeX to HTML...');
-    let htmlContent = convertLatexToHtml(bookContent);
+    let htmlContent = convertLatexToHtml(indexContent);
 
     // 为每个章节内容创建占位符的映射
     const chapterMap = new Map();
@@ -1081,18 +1139,22 @@ async function generateHtml() {
       chapterMap.set(chapter.id, chapter);
     }
 
+    // 从README.md中提取书籍信息
+    console.log('Extracting book information from README.md...');
+    const bookInfo = await extractBookInfoFromReadme();
+    const { title: bookTitle, subtitle: bookSubtitle, authors, translator } = bookInfo;
+
     // 生成目录
     const tocHtml = generateTOC(chapters);
 
     // 创建首页HTML
-    const indexHtml = createHtmlTemplate('C++编程避坑指南：100个常见错误及解决方案', `
+    const indexHtml = createHtmlTemplate(bookTitle, `
       <header>
-        <h1>C++编程避坑指南：100个常见错误及解决方案</h1>
-        <p><em>100 C++ Mistakes and How to Avoid Them</em></p>
+        <h1 style="text-align: center;">${bookTitle}</h1>
+        <p class="subtitle">${bookSubtitle}</p>
         <div class="author-info">
-          <p>作者：Rich Yonts</p>
-          <p>译者：陈晓伟</p>
-          <p>出版于: 2025年3月25日</p>
+          <p>作者：${authors}</p>
+          <p>译者：${translator}</a></p>
         </div>
         <img src="cover.png" alt="Book Cover" class="book-cover">
       </header>
@@ -1162,7 +1224,7 @@ async function generateHtml() {
 
       // 创建章节HTML内容
       const chapterHtml = createHtmlTemplate(
-        `${chapter.title} - C++编程避坑指南`,
+        `${chapter.title} - ${bookTitle}`,
         `
         <div class="chapter-container">
           ${navigation}
