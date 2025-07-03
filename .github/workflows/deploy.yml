@@ -25,6 +25,9 @@ jobs:
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          # 自动启用 Pages（如果尚未启用）
+          enablement: true
         
       - name: Build E-book
         # 使用 npx 运行 GitHub 仓库中的 LaTeX 渲染脚本
