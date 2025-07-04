@@ -526,14 +526,12 @@ function convertLatexToHtml(latex) {
   // Replace LaTeX commands with HTML equivalents
   let html = latex || '';
 
-  html = convertItemizeToHtml(html);
-  html = convertEnumerateToHtml(html);
-
+  html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
   html = html.replace(/\\verb(.)(.+?)\1/g, '<code>$2</code>');
-
   html = html.replace(/\\#/g, '#')
 
-  html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
+  html = convertItemizeToHtml(html);
+  html = convertEnumerateToHtml(html);
 
   html = html.replace(/\\myGraphic\{([\d.]+)\}\{(.*?)\}\{(.*?)\}/g, (match, scale, path, caption) => {
     const percentage = parseFloat(scale) * 100;
