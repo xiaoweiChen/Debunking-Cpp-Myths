@@ -34,7 +34,7 @@ jobs:
         # -s latex-render: 指定使用 latex-render 服务
         # -i .: 输入目录为当前目录
         # -o ./github-page-dist: 输出目录为 github-page-dist 文件夹
-        run: npx ./tools/github-page -s latex-render -i . -o ./github-page-dist
+        run: node ./tools/github-page/dist/scripts.mjs -i . -o ./github-page-dist
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
