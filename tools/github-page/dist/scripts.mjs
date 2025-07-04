@@ -491,7 +491,9 @@ function convertLatexToHtml(latex) {
   // Replace LaTeX commands with HTML equivalents
   let html = latex || '';
 
-  html = html.replace(/\\begin\{longtable\}\s*\{[^\}]*\}/g, '\\begin{longtable}');
+  html = html.replace(/\\#/g, '#')
+
+  html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
 
   html = html.replace(/\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}/g, (match, title, content) => {
     // 处理内部的 itemize 转成 ul/li
