@@ -30,7 +30,7 @@ jobs:
           enablement: true
         
       - name: Build E-book
-        run: node .\tools\github-page\latex2html.mjs -i . -o ./github-page-dist
+        run: node ./tools/github-page/latex2html.mjs -i . -o ./github-page-dist
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
