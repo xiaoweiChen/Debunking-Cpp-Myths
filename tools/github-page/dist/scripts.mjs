@@ -375,6 +375,25 @@ footer {
   font-size: 1.1em;
   margin-bottom: 10px;
 }
+
+.image-block {
+  text-align: center;
+  margin: 1em 0;
+}
+
+.image-block img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.image-block .caption {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.95em;
+  color: #555;
+}
 `;
 
 const themeToggleScript = `
@@ -494,6 +513,16 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\#/g, '#')
 
   html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
+
+  html = html.replace(/\\myGraphic\{([\d.]+)\}\{(.*?)\}\{(.*?)\}/g, (match, scale, path, caption) => {
+    const percentage = parseFloat(scale) * 100;
+
+    return `
+    <div class="image-block" style="text-align: center;">
+      <div><img src="${path}" style="width: ${percentage}%;" alt="${caption}"></div>
+      <div class="caption">${caption}</div>
+    </div>`;
+  });
 
   html = html.replace(/\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}/g, (match, title, content) => {
     // 处理内部的 itemize 转成 ul/li
@@ -728,18 +757,8 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\{\\footnotesize\s+([\s\S]*?)\}/g, '<div class="footnote-text">$1</div>');
   html = html.replace(/\\footnotesize\s+([\s\S]*?)(?=\\|$)/g, '<div class="footnote-text">$1</div>');
 
-  // 先处理列表环境 - 必须放在其他转换之前
-  html = html.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, function (match, content) {
-    // 在列表环境内部处理\item
-    const processedContent = content.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, '<li>$1</li>');
-    return '<ul>' + processedContent + '</ul>';
-  });
-
-  html = html.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, function (match, content) {
-    // 在列表环境内部处理\item
-    const processedContent = content.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, '<li>$1</li>');
-    return '<ol>' + processedContent + '</ol>';
-  });
+  // 先处理列表环境 - 必须放在其他转换之前，使用递归函数处理嵌套列表
+  html = convertItemizeToHtml(html);
 
   // 处理未在列表环境中的\item - 找出所有独立的item
   const items = [];
@@ -917,6 +936,85 @@ function convertLatexToHtml(latex) {
   // Remove empty paragraphs
   html = html.replace(/<p>\s*<\/p>/g, '');
 
+  return html;
+}
+
+/**
+ * 递归转换 itemize 环境为 HTML ul/li 结构
+ * 支持嵌套的 itemize 环境
+ */
+function convertItemizeToHtml(content) {
+  let html = content;
+  
+  // 递归处理嵌套的 itemize 环境，从内层开始
+  let hasItemize = true;
+  let iterations = 0;
+  const maxIterations = 10; // 防止无限循环
+  
+  while (hasItemize && iterations < maxIterations) {
+    const beforeReplace = html;
+    
+    // 处理 itemize 环境（从最内层开始）
+    html = html.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, function(match, itemizeContent) {
+      // 检查内容中是否还有嵌套的 itemize
+      const hasNestedItemize = /\\begin\{itemize\}/.test(itemizeContent);
+      
+      if (hasNestedItemize) {
+        // 如果有嵌套，先返回原内容，等待下一轮处理
+        return match;
+      }
+      
+      // 处理 \item，支持多行内容
+      let processedContent = itemizeContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
+        // 清理内容首尾空白
+        const cleanContent = itemContent.trim();
+        if (!cleanContent) {
+          return ''; // 跳过空的 item
+        }
+        return `<li>${cleanContent}</li>`;
+      });
+      
+      // 清理多余的空白和换行
+      processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
+      
+      // 如果没有有效的 li 元素，返回空
+      if (!processedContent.includes('<li>')) {
+        return '';
+      }
+      
+      return `<ul>${processedContent}</ul>`;
+    });
+    
+    // 检查是否还有未处理的 itemize
+    hasItemize = /\\begin\{itemize\}/.test(html);
+    
+    // 如果这轮没有变化，说明可能有问题，跳出循环
+    if (html === beforeReplace) {
+      break;
+    }
+    
+    iterations++;
+  }
+  
+  // 处理 enumerate 环境（有序列表）
+  html = html.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, function(match, enumerateContent) {
+    let processedContent = enumerateContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
+      const cleanContent = itemContent.trim();
+      if (!cleanContent) {
+        return '';
+      }
+      return `<li>${cleanContent}</li>`;
+    });
+    
+    processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
+    
+    if (!processedContent.includes('<li>')) {
+      return '';
+    }
+    
+    return `<ol>${processedContent}</ol>`;
+  });
+  
   return html;
 }
 
@@ -1504,7 +1602,7 @@ async function generateHtml() {
       }
 
       // 遍历整个content目录寻找图片文件
-      async function copyImagesFromDir(dir) {
+      async function copyImagesFromDir(dir, rootDir = dir) {
         try {
           const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -1512,16 +1610,17 @@ async function generateHtml() {
             const fullPath = path.join(dir, entry.name);
 
             if (entry.isDirectory()) {
-              // 递归处理子目录
-              await copyImagesFromDir(fullPath);
+              await copyImagesFromDir(fullPath, rootDir); // 递归并保留 rootDir
             } else if (entry.isFile() && /\.(png|jpe?g|gif|svg)$/i.test(entry.name)) {
-              // 是图片文件，复制到images目录
-              const destPath = path.join(distDir, 'images', entry.name);
+              const relativePath = path.relative(rootDir, fullPath); // 保留相对路径
+              const destPath = path.join(distDir, 'content', relativePath);
+
               try {
+                await fs.mkdir(path.dirname(destPath), { recursive: true });
                 await fs.copyFile(fullPath, destPath);
-                console.log(`Copied image: ${entry.name}`);
+                console.log(`Copied image: ${destPath}`);
               } catch (err) {
-                console.warn(`Could not copy image ${entry.name}:`, err.message);
+                console.warn(`Could not copy image ${relativePath}:`, err.message);
               }
             }
           }

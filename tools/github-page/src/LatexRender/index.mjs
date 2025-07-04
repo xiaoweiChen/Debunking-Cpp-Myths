@@ -456,6 +456,85 @@ const themeToggleScript = `
 `;
 
 /**
+ * 递归转换 itemize 环境为 HTML ul/li 结构
+ * 支持嵌套的 itemize 环境
+ */
+function convertItemizeToHtml(content) {
+  let html = content;
+  
+  // 递归处理嵌套的 itemize 环境，从内层开始
+  let hasItemize = true;
+  let iterations = 0;
+  const maxIterations = 10; // 防止无限循环
+  
+  while (hasItemize && iterations < maxIterations) {
+    const beforeReplace = html;
+    
+    // 处理 itemize 环境（从最内层开始）
+    html = html.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, function(match, itemizeContent) {
+      // 检查内容中是否还有嵌套的 itemize
+      const hasNestedItemize = /\\begin\{itemize\}/.test(itemizeContent);
+      
+      if (hasNestedItemize) {
+        // 如果有嵌套，先返回原内容，等待下一轮处理
+        return match;
+      }
+      
+      // 处理 \item，支持多行内容
+      let processedContent = itemizeContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
+        // 清理内容首尾空白
+        const cleanContent = itemContent.trim();
+        if (!cleanContent) {
+          return ''; // 跳过空的 item
+        }
+        return `<li>${cleanContent}</li>`;
+      });
+      
+      // 清理多余的空白和换行
+      processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
+      
+      // 如果没有有效的 li 元素，返回空
+      if (!processedContent.includes('<li>')) {
+        return '';
+      }
+      
+      return `<ul>${processedContent}</ul>`;
+    });
+    
+    // 检查是否还有未处理的 itemize
+    hasItemize = /\\begin\{itemize\}/.test(html);
+    
+    // 如果这轮没有变化，说明可能有问题，跳出循环
+    if (html === beforeReplace) {
+      break;
+    }
+    
+    iterations++;
+  }
+  
+  // 处理 enumerate 环境（有序列表）
+  html = html.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, function(match, enumerateContent) {
+    let processedContent = enumerateContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
+      const cleanContent = itemContent.trim();
+      if (!cleanContent) {
+        return '';
+      }
+      return `<li>${cleanContent}</li>`;
+    });
+    
+    processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
+    
+    if (!processedContent.includes('<li>')) {
+      return '';
+    }
+    
+    return `<ol>${processedContent}</ol>`;
+  });
+  
+  return html;
+}
+
+/**
  * Simple LaTeX to HTML converter
  * This is a basic implementation - for complex documents, using a proper LaTeX to HTML
  * converter like LaTeXML or pandoc would be better
@@ -689,85 +768,6 @@ function convertLatexToHtml(latex) {
 
     if (!inList) {
       items.push({
-        start: itemMatch.index,
-        end: itemMatch.index + itemMatch[0].length,
-        content: itemMatch[1]
-      });
-    }
-  }
-
-  // 从后向前替换，这样不会影响前面item的位置
-  for (let i = items.length - 1; i >= 0; i--) {
-    const item = items[i];
-    const replacement = '<div class="list-item">• ' + item.content + '</div>';
-    html = html.substring(0, item.start) + replacement + html.substring(item.end);
-  }
-
-  // Replace sections and subsections
-  html = html.replace(/\\chapter\{(.*?)\}/g, '<h1 class="chapter-title">$1</h1>');
-  html = html.replace(/\\section\{(.*?)\}/g, '<h2 class="section-title">$1</h2>');
-  html = html.replace(/\\subsection\{(.*?)\}/g, '<h3>$1</h3>');
-  html = html.replace(/\\subsubsection\{(.*?)\}/g, '<h4>$1</h4>');
-
-  // Replace center environment
-  html = html.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, '<div style="text-align:center">$1</div>');
-
-  // Replace flushright environment
-  html = html.replace(/\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}/g, '<div style="text-align:right">$1</div>');
-
-  // Remove sloppypar
-  html = html.replace(/\\begin\{sloppypar\}([\s\S]*?)\\end\{sloppypar\}/g, '$1');
-
-  // Replace LaTeX formatting
-  html = html.replace(/\\textbf\{(.*?)\}/g, '<strong>$1</strong>');
-  html = html.replace(/\\textit\{(.*?)\}/g, '<em>$1</em>');
-  html = html.replace(/\\emph\{(.*?)\}/g, '<em>$1</em>');
-  html = html.replace(/\\underline\{(.*?)\}/g, '<u>$1</u>');
-  // 处理 \verb|...| 内联代码（使用管道符作为分隔符，并进行HTML转义）
-  html = html.replace(/\\verb\|(.*?)\|/g, (match, content) => {
-    // 对内容进行HTML转义
-    const escapedContent = content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-    return `<code>${escapedContent}</code>`;
-  });
-
-  // Replace hyperlinks
-  html = html.replace(/\\href\{(.*?)\}\{(.*?)\}/g, '<a href="$1">$2</a>');
-
-  // Replace code listings
-  html = html.replace(/\\begin\{lstlisting\}([\s\S]*?)\\end\{lstlisting\}/g, '<pre><code>$1</code></pre>');
-  html = html.replace(/\\begin\{verbatim\}([\s\S]*?)\\end\{verbatim\}/g, '<pre><code>$1</code></pre>');
-
-  // 处理shell代码块
-  html = html.replace(/\\begin\{shell\}([\s\S]*?)\\end\{shell\}/g, (match, content) => {
-    // 对内容进行HTML转义，保留所有原始字符（包括尖括号标签）
-    let cleanContent = content
-      // HTML转义：将 < > & 等特殊字符转换为HTML实体
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      // 清理首尾空白
-      .trim();
-    
-    // 如果内容为空，显示注释提示
-    if (!cleanContent) {
-      cleanContent = '# (此处内容已省略)';
-    }
-    
-    return `<pre><code class="language-shell">${cleanContent}</code></pre>`;
-  });
-  
-  // 处理代码中的##数字标记（将它们转换为HTML注释或行内备注）
-  html = html.replace(/(##\s*\d+)/g, '<span class="code-marker">$1</span>');
-
-  // 步骤4：保护数学公式（在特殊字符处理之前）
-  const protectedMath = [];
-  html = html.replace(/\$([^$]+?)\$/g, (match, mathContent) => {
-    const placeholder = `__PROTECTED_MATH_${protectedMath.length}__`;
     protectedMath.push(match);
     return placeholder;
   });
