@@ -262,6 +262,24 @@ blockquote {
   position: relative;
 }
 
+code {
+  font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
+  background-color: var(--code-bg-color);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.code-marker {
+  display: inline-block;
+  background-color: #ffeb3b;
+  color: #000;
+  padding: 0 5px;
+  margin: 0 2px;
+  border-radius: 3px;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
 .language-cpp {
   color: var(--text-color);
   font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
@@ -510,6 +528,11 @@ function convertLatexToHtml(latex) {
   // Replace LaTeX commands with HTML equivalents
   let html = latex || '';
 
+  html = convertItemizeToHtml(html);
+  html = convertEnumerateToHtml(html);
+
+  html = html.replace(/\\verb(.)(.+?)\1/g, '<code>$2</code>');
+
   html = html.replace(/\\#/g, '#')
 
   html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
@@ -757,9 +780,6 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\{\\footnotesize\s+([\s\S]*?)\}/g, '<div class="footnote-text">$1</div>');
   html = html.replace(/\\footnotesize\s+([\s\S]*?)(?=\\|$)/g, '<div class="footnote-text">$1</div>');
 
-  // 先处理列表环境 - 必须放在其他转换之前，使用递归函数处理嵌套列表
-  html = convertItemizeToHtml(html);
-
   // 处理未在列表环境中的\item - 找出所有独立的item
   const items = [];
   let itemMatch;
@@ -939,83 +959,91 @@ function convertLatexToHtml(latex) {
   return html;
 }
 
-/**
- * 递归转换 itemize 环境为 HTML ul/li 结构
- * 支持嵌套的 itemize 环境
- */
-function convertItemizeToHtml(content) {
-  let html = content;
+
+function convertEnumerateToHtml(latexText) {
+   // 移除多余的空白行和空格
+  let text = latexText;
   
-  // 递归处理嵌套的 itemize 环境，从内层开始
-  let hasItemize = true;
-  let iterations = 0;
-  const maxIterations = 10; // 防止无限循环
+  text = text.replace(/\\begin\{enumerate\}/g, '<ol>');
   
-  while (hasItemize && iterations < maxIterations) {
-    const beforeReplace = html;
-    
-    // 处理 itemize 环境（从最内层开始）
-    html = html.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, function(match, itemizeContent) {
-      // 检查内容中是否还有嵌套的 itemize
-      const hasNestedItemize = /\\begin\{itemize\}/.test(itemizeContent);
-      
-      if (hasNestedItemize) {
-        // 如果有嵌套，先返回原内容，等待下一轮处理
-        return match;
-      }
-      
-      // 处理 \item，支持多行内容
-      let processedContent = itemizeContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
-        // 清理内容首尾空白
-        const cleanContent = itemContent.trim();
-        if (!cleanContent) {
-          return ''; // 跳过空的 item
-        }
-        return `<li>${cleanContent}</li>`;
-      });
-      
-      // 清理多余的空白和换行
-      processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
-      
-      // 如果没有有效的 li 元素，返回空
-      if (!processedContent.includes('<li>')) {
-        return '';
-      }
-      
-      return `<ul>${processedContent}</ul>`;
-    });
-    
-    // 检查是否还有未处理的 itemize
-    hasItemize = /\\begin\{itemize\}/.test(html);
-    
-    // 如果这轮没有变化，说明可能有问题，跳出循环
-    if (html === beforeReplace) {
-      break;
+  text = text.replace(/\\end\{enumerate\}/g, '</ol>');
+  
+  text = text.replace(/\\item\s*\n?(.*?)(?=\\item|\\begin|\\end|$)/gs, (match, content) => {
+    // 清理内容：移除首尾空白，但保留必要的换行
+    const cleanContent = content;
+    if (cleanContent) {
+      return `  <li>${cleanContent}</li>`;
+    } else {
+      return '  <li></li>';
     }
-    
-    iterations++;
-  }
-  
-  // 处理 enumerate 环境（有序列表）
-  html = html.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, function(match, enumerateContent) {
-    let processedContent = enumerateContent.replace(/\\item\s+([\s\S]*?)(?=\\item|$)/g, function(itemMatch, itemContent) {
-      const cleanContent = itemContent.trim();
-      if (!cleanContent) {
-        return '';
-      }
-      return `<li>${cleanContent}</li>`;
-    });
-    
-    processedContent = processedContent.replace(/\s*<li>/g, '<li>').replace(/<\/li>\s*/g, '</li>');
-    
-    if (!processedContent.includes('<li>')) {
-      return '';
-    }
-    
-    return `<ol>${processedContent}</ol>`;
   });
   
-  return html;
+  // 美化输出：添加适当的缩进
+  let lines = text.split('\n');
+  let indentLevel = 0;
+  let result = [];
+  
+  for (let line of lines) {
+    if (!line) continue;
+    
+    if (line.includes('</ol>')) {
+      indentLevel--;
+    }
+    
+    const indent = '  '.repeat(indentLevel);
+    result.push(indent + line);
+    
+    if (line.includes('<ol>')) {
+      indentLevel++;
+    }
+  }
+  
+  return result.join('\n');
+}
+
+function convertItemizeToHtml(latexText) {
+  // 移除多余的空白行和空格
+  let text = latexText;
+  
+  // 替换 \begin{itemize} 为 <ul>
+  text = text.replace(/\\begin\{itemize\}/g, '<ul>');
+  
+  // 替换 \end{itemize} 为 </ul>
+  text = text.replace(/\\end\{itemize\}/g, '</ul>');
+  
+  // 处理 \item，将其后的内容包装在 <li> 标签中
+  // 这个正则表达式会匹配 \item 后面的内容，直到下一个 \item、\begin、\end 或字符串结束
+  text = text.replace(/\\item\s*\n?(.*?)(?=\\item|\\begin|\\end|$)/gs, (match, content) => {
+    // 清理内容：移除首尾空白，但保留必要的换行
+    const cleanContent = content;
+    if (cleanContent) {
+      return `  <li>${cleanContent}</li>`;
+    } else {
+      return '  <li></li>';
+    }
+  });
+  
+  // 美化输出：添加适当的缩进
+  let lines = text.split('\n');
+  let indentLevel = 0;
+  let result = [];
+  
+  for (let line of lines) {
+    if (!line) continue;
+    
+    if (line.includes('</ul>')) {
+      indentLevel--;
+    }
+    
+    const indent = '  '.repeat(indentLevel);
+    result.push(indent + line);
+    
+    if (line.includes('<ul>')) {
+      indentLevel++;
+    }
+  }
+  
+  return result.join('\n');
 }
 
 // Helper function to read a file using the promises API
