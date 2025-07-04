@@ -270,6 +270,11 @@ blockquote {
   font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
 }
 
+.language-rust {
+  color: var(--text-color);
+  font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
+}
+
 .footnote {
   font-size: 0.85em;
   vertical-align: super;
@@ -459,11 +464,139 @@ function convertLatexToHtml(latex) {
   // Replace LaTeX commands with HTML equivalents
   let html = latex || '';
 
-  // Remove LaTeX comments
+  // 步骤1：先保护转义的美元符号
+  const protectedEscapedDollars = [];
+  html = html.replace(/\\\$/g, (match) => {
+    const placeholder = `__PROTECTED_ESCAPED_DOLLAR_${protectedEscapedDollars.length}__`;
+    protectedEscapedDollars.push(match);
+    return placeholder;
+  });
+
+  // 步骤2：保护转义的百分号
+  const protectedPercents = [];
+  html = html.replace(/\\%/g, (match) => {
+    const placeholder = `__PROTECTED_PERCENT_${protectedPercents.length}__`;
+    protectedPercents.push(match);
+    return placeholder;
+  });
+
+  // 步骤3：Remove LaTeX comments (现在可以安全地移除 % 注释了)
   html = html.replace(/%.*$/gm, '');
 
   // Remove tikzpicture environments
   html = html.replace(/\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}/g, '<div class="tikz-figure"></div>');
+
+  // 处理 \begin{longtable} 表格
+  html = html.replace(/\\begin\{longtable\}\s*([\s\S]*?)\\end\{longtable\}/g, function (_, rawContent) {
+    // 清理辅助结构和注释
+    let content = rawContent
+      .replace(/\\endfirsthead[\s\S]*?\\endhead/g, '')
+      .replace(/\\multicolumn\{.*?\}\{.*?\}\{.*?\}\s*\\\\/g, '')
+      .replace(/\\hline/g, '');
+    
+    // 先保护转义的百分号，然后删除注释，最后恢复
+    content = content
+      .replace(/\\%/g, 'TEMP_ESCAPED_PERCENT')
+      .replace(/%.*$/gm, '')
+      .replace(/TEMP_ESCAPED_PERCENT/g, '\\%')
+      .trim();
+    
+    // 清理表格列格式声明（如 {|l|l|}, {l|r|c} 等）
+    content = content.replace(/^\s*\{[|lcr\s]*\}\s*/gm, '');
+    
+    // 先处理特殊字符，避免在分割时造成问题
+    // 临时标记 AT\&T，避免 \& 被当作分隔符处理
+    content = content.replace(/AT\\&T/g, 'TEMP_ATT_MARKER');
+    
+    // 临时标记单元格内的 \\（换行符），先转换成特殊标记
+    // 这里我们需要区分行尾的 \\ 和单元格内的 \\
+    // 将不在行尾的 \\ 标记为换行符
+    const lines = content.split('\n');
+    const processedLines = lines.map(line => {
+      // 查找行内的 \\，但不包括行尾的 \\
+      return line.replace(/\\\\(?!\s*$)/g, 'TEMP_LINEBREAK_MARKER');
+    });
+    content = processedLines.join('\n');
+
+    // 拆分为行（按行尾的 \\ 分割）
+    const rows = content
+      .split(/\\\\\s*/)
+      .map(row => row.trim())
+      .filter(row => row.length > 0);
+
+    // 构造 HTML 表格
+    let htmlTable = '<table border="1">\n';
+    let headerParsed = false;
+
+    for (const row of rows) {
+      // 分割单元格，临时替换 \& 避免误分割
+      const tempRow = row.replace(/\\&/g, 'TEMP_ESCAPED_AMP');
+      const columns = tempRow.split('&').map(col => {
+        // 恢复 \&
+        return col.replace(/TEMP_ESCAPED_AMP/g, '\\&').trim();
+      });
+
+      if (!headerParsed) {
+        htmlTable += '  <thead>\n    <tr>\n';
+        for (const col of columns) {
+          let content = col.replace(/\\textbf\{(.*?)\}/g, '<strong>$1</strong>');
+          
+          // 恢复临时标记
+          content = content.replace(/TEMP_ATT_MARKER/g, 'AT&T');
+          content = content.replace(/TEMP_LINEBREAK_MARKER/g, '<br>');
+          
+          // 处理其他 AT&T 形式
+          content = content.replace(/AT\\&T/g, 'AT&T');  // 处理剩余的 AT\&T
+          content = content.replace(/\bATT\b/g, 'AT&T');   // 处理独立的 ATT
+          
+          // 删除 tabular 环境标签
+          content = content.replace(/\\begin\{tabular\}\[c\]\{@\{\}l@\{\}\}/g, '');
+          content = content.replace(/\\end\{tabular\}/g, '');
+          
+          // 处理特殊字符，但保留数学公式中的 $
+          content = content.replace(/\\\$/g, '&#36;');
+          content = content.replace(/\\%/g, '&#37;');
+          content = content.replace(/\\_/g, '&#95;');
+          content = content.replace(/\\{/g, '&#123;');
+          content = content.replace(/\\}/g, '&#125;');
+          
+          htmlTable += `      <th>${content}</th>\n`;
+        }
+        htmlTable += '    </tr>\n  </thead>\n  <tbody>\n';
+        headerParsed = true;
+      } else {
+        htmlTable += '    <tr>\n';
+        for (const col of columns) {
+          let content = col;
+          
+          // 恢复临时标记
+          content = content.replace(/TEMP_ATT_MARKER/g, 'AT&T');
+          content = content.replace(/TEMP_LINEBREAK_MARKER/g, '<br>');
+          
+          // 处理其他 AT&T 形式
+          content = content.replace(/AT\\&T/g, 'AT&T');  // 处理剩余的 AT\&T
+          content = content.replace(/\bATT\b/g, 'AT&T');   // 处理独立的 ATT
+          
+          // 删除 tabular 环境标签
+          content = content.replace(/\\begin\{tabular\}\[c\]\{@\{\}l@\{\}\}/g, '');
+          content = content.replace(/\\end\{tabular\}/g, '');
+          
+          // 处理特殊字符，但保留数学公式中的 $
+          content = content.replace(/\\\$/g, '&#36;');
+          content = content.replace(/\\%/g, '&#37;');
+          content = content.replace(/\\_/g, '&#95;');
+          content = content.replace(/\\{/g, '&#123;');
+          content = content.replace(/\\}/g, '&#125;');
+          
+          htmlTable += `      <td>${content}</td>\n`;
+        }
+        htmlTable += '    </tr>\n';
+      }
+    }
+
+    htmlTable += '  </tbody>\n</table>\n';
+    return htmlTable;
+  });
 
   // 处理自定义章节命令
   html = html.replace(/\\mySubsubsection\{(.*?)\}\{(.*?)\}/g, '<h4>$1 $2</h4>');
@@ -478,8 +611,48 @@ function convertLatexToHtml(latex) {
   // 处理花括号中的特殊标记
   html = html.replace(/\{(分析|解决|问题|建议)\}/g, '<h4 class="highlight-section">$1</h4>');
 
+  // HTML转义函数
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+  }
+
   // 处理C++代码环境
-  html = html.replace(/\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}/g, '<pre><code class="language-cpp">$1</code></pre>');
+  html = html.replace(/\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}/g, (match, code) => {
+    // 去掉每一行开头和结尾的空格，并删除空行
+    const lines = code.split(/\r?\n/).map(line => line.trimEnd());
+
+    // 过滤掉空行（全为空或仅包含空格）
+    const nonEmptyLines = lines.filter(line => line.trim() !== '');
+
+    // 合并为最终代码块字符串
+    const cleanedCode = nonEmptyLines.join('\n');
+
+    // 转义 HTML 特殊字符
+    const escapedCode = escapeHtml(cleanedCode);
+
+    return `<pre><code class="language-cpp">${escapedCode}</code></pre>`;
+  });
+
+  // 处理Rust代码环境
+  html = html.replace(/\\begin\{rust\}([\s\S]*?)\\end\{rust\}/g, (match, code) => {
+    // 去掉每一行开头和结尾的空格，并删除空行
+    const lines = code.split(/\r?\n/).map(line => line.trimEnd());
+
+    // 过滤掉空行（全为空或仅包含空格）
+    const nonEmptyLines = lines.filter(line => line.trim() !== '');
+
+    // 合并为最终代码块字符串
+    const cleanedCode = nonEmptyLines.join('\n');
+
+    // 转义 HTML 特殊字符
+    const escapedCode = escapeHtml(cleanedCode);
+
+    return `<pre><code class="language-rust">${escapedCode}</code></pre>`;
+  });
 
   // 处理字体大小命令
   html = html.replace(/\{\\footnotesize\s+([\s\S]*?)\}/g, '<div class="footnote-text">$1</div>');
@@ -539,6 +712,9 @@ function convertLatexToHtml(latex) {
   // Replace center environment
   html = html.replace(/\\begin\{center\}([\s\S]*?)\\end\{center\}/g, '<div style="text-align:center">$1</div>');
 
+  // Replace flushright environment
+  html = html.replace(/\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}/g, '<div style="text-align:right">$1</div>');
+
   // Remove sloppypar
   html = html.replace(/\\begin\{sloppypar\}([\s\S]*?)\\end\{sloppypar\}/g, '$1');
 
@@ -547,7 +723,17 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\textit\{(.*?)\}/g, '<em>$1</em>');
   html = html.replace(/\\emph\{(.*?)\}/g, '<em>$1</em>');
   html = html.replace(/\\underline\{(.*?)\}/g, '<u>$1</u>');
-  html = html.replace(/\\texttt\{(.*?)\}/g, '<code>$1</code>');
+  // 处理 \verb|...| 内联代码（使用管道符作为分隔符，并进行HTML转义）
+  html = html.replace(/\\verb\|(.*?)\|/g, (match, content) => {
+    // 对内容进行HTML转义
+    const escapedContent = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    return `<code>${escapedContent}</code>`;
+  });
 
   // Replace hyperlinks
   html = html.replace(/\\href\{(.*?)\}\{(.*?)\}/g, '<a href="$1">$2</a>');
@@ -557,15 +743,37 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\begin\{verbatim\}([\s\S]*?)\\end\{verbatim\}/g, '<pre><code>$1</code></pre>');
 
   // 处理shell代码块
-  html = html.replace(/\{shell\}([\s\S]*?)\{shell\}/g, '<pre><code class="language-shell">$1</code></pre>');
+  html = html.replace(/\\begin\{shell\}([\s\S]*?)\\end\{shell\}/g, (match, content) => {
+    // 对内容进行HTML转义，保留所有原始字符（包括尖括号标签）
+    let cleanContent = content
+      // HTML转义：将 < > & 等特殊字符转换为HTML实体
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      // 清理首尾空白
+      .trim();
+    
+    // 如果内容为空，显示注释提示
+    if (!cleanContent) {
+      cleanContent = '# (此处内容已省略)';
+    }
+    
+    return `<pre><code class="language-shell">${cleanContent}</code></pre>`;
+  });
   
   // 处理代码中的##数字标记（将它们转换为HTML注释或行内备注）
   html = html.replace(/(##\s*\d+)/g, '<span class="code-marker">$1</span>');
 
-  // Replace LaTeX special characters
+  // 步骤4：保护数学公式（在特殊字符处理之前）
+  const protectedMath = [];
+  html = html.replace(/\$([^$]+?)\$/g, (match, mathContent) => {
+    const placeholder = `__PROTECTED_MATH_${protectedMath.length}__`;
+    protectedMath.push(match);
+    return placeholder;
+  });
+
+  // Replace LaTeX special characters (注意：不处理转义的$和%，它们已经被保护了)
   html = html.replace(/\\&/g, '&amp;');
-  html = html.replace(/\\\$/g, '&#36;');
-  html = html.replace(/\\%/g, '&#37;');
   html = html.replace(/\\_/g, '&#95;');
   html = html.replace(/\\{/g, '&#123;');
   html = html.replace(/\\}/g, '&#125;');
@@ -607,8 +815,24 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\setsecnumdepth\{.*?\}/g, '');
   html = html.replace(/\\tableofcontents/g, '');
 
-  // 清理尚未转换的LaTeX命令
+  // 清理尚未转换的LaTeX命令（但不影响受保护的数学公式）
   html = html.replace(/\\[a-zA-Z]+/g, '');
+
+  // 恢复受保护的数学公式
+  protectedMath.forEach((math, index) => {
+    html = html.replace(`__PROTECTED_MATH_${index}__`, math);
+  });
+
+  // 最后处理保护的特殊字符
+  // 恢复转义的百分号
+  protectedPercents.forEach((percent, index) => {
+    html = html.replace(`__PROTECTED_PERCENT_${index}__`, '&#37;');
+  });
+
+  // 恢复转义的美元符号
+  protectedEscapedDollars.forEach((dollar, index) => {
+    html = html.replace(`__PROTECTED_ESCAPED_DOLLAR_${index}__`, '&#36;');
+  });
 
   // Cleanup paragraph tags
   html = html.replace(/\n\s*\n/g, '</p><p>');
@@ -1086,6 +1310,8 @@ function createHtmlTemplate(title, content, headExtra = '') {
       document.querySelectorAll('pre code').forEach(function(block) {
         if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
           block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
         } else if (!block.className) {
           block.className = 'language-plaintext';
         }

@@ -225,7 +225,7 @@ int __cdecl invoke_main(void) {
 
 嗯，这看起来很有趣，尤其是那个神秘的 \verb|.CRT$XCU| 文本。这让我们回想起之前讨论 PE 文件节区时的内容：可执行文件中的每个节区都是一个独立的区域，用于存放不同类型的数据或代码。
 
-每个节区都有特定的用途，并具有定义其行为以及操作系统应如何处理它的属性。微软官方文档\\footnote{\url{https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170}}，对负责初始化 C 运行时（CRT）的各个节区进行了详细讨论。下面是对该文档的一个简要总结：
+每个节区都有特定的用途，并具有定义其行为以及操作系统应如何处理它的属性。微软官方文档\footnote{\url{https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170}}，对负责初始化 C 运行时（CRT）的各个节区进行了详细讨论。下面是对该文档的一个简要总结：
 
 根据文档说明，默认情况下，C 运行时库是通过链接器自动包含的，这确保了 CRT 被正确初始化，调用全局构造函数，最终执行用户定义的 main() 函数。当编译器遇到全局构造函数时，它会创建一个动态初始化器，并将其放置在 \verb|.CRT$XCU| 节区中。
 

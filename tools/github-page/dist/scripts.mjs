@@ -1,66 +1,9 @@
 #!/usr/bin/env node
-import { promises } from 'fs';
-import path, { dirname } from 'path';
+
+import { promises as fs } from 'fs';
+import path from 'path';
 import { fileURLToPath } from 'url';
-
-// 导入所需模块
-
-// 获取当前目录
-const __filename$1 = fileURLToPath(import.meta.url);
-dirname(__filename$1);
-
-// 解析命令行参数
-const args$1 = process.argv.slice(2);
-let scriptType = null;
-const remainingArgs = [];
-
-// 遍历命令行参数
-for (let i = 0; i < args$1.length; i++) {
-  if (args$1[i] === '-s' && i + 1 < args$1.length) {
-    scriptType = args$1[i + 1];
-    i++; // 跳过下一个参数
-  } else {
-    remainingArgs.push(args$1[i]);
-  }
-}
-
-// 如果未提供脚本类型，显示使用说明并退出
-if (!scriptType) {
-  console.log('用法: scripts -s <脚本类型> [脚本特定参数]');
-  console.log('');
-  console.log('可用的脚本类型:');
-  console.log('  latex-render    LaTeX 渲染器，将 LaTeX 文件转换为 HTML');
-  console.log('');
-  console.log('例如:');
-  console.log('  scripts -s latex-render -i /path/to/input -o /path/to/output');
-  process.exit(1);
-}
-
-// 根据脚本类型执行相应的脚本
-async function runScript() {
-  try {
-    switch (scriptType.toLowerCase()) {
-      case 'latex-render':
-        // 设置正确的参数，然后动态导入并执行 LatexRender 模块
-        process.argv = [process.argv[0], process.argv[1], ...remainingArgs];
-        await Promise.resolve().then(function () { return index; });
-        break;
-        
-      default:
-        console.error(`错误: 未知的脚本类型 "${scriptType}"`);
-        console.log('可用的脚本类型: latex-render');
-        process.exit(1);
-    }
-  } catch (err) {
-    console.error('执行脚本时发生错误:', err);
-    process.exit(1);
-  }
-}
-
-runScript().catch(err => {
-  console.error('致命错误:', err);
-  process.exit(1);
-});
+import { dirname } from 'path';
 
 // 解析命令行参数
 const args = process.argv.slice(2);
@@ -92,7 +35,7 @@ outputDir = path.resolve(process.cwd(), outputDir);
 
 // Get the current directory
 const __filename = fileURLToPath(import.meta.url);
-dirname(__filename);
+const __dirname = dirname(__filename);
 const rootDir = inputDir;
 const bookDir = path.join(rootDir, 'book');
 const contentDir = path.join(bookDir, 'content');
@@ -173,31 +116,6 @@ body {
   margin: 0 auto;
   padding: 20px;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-code {
-  font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
-  background-color: var(--code-bg-color);
-  padding: 2px 4px;
-  border-radius: 3px;
-}
-
-pre {
-  background-color: var(--code-bg-color);
-  padding: 15px;
-  border-radius: 5px;
-  overflow-x: auto;
-}
-
-.code-marker {
-  display: inline-block;
-  background-color: #ffeb3b;
-  color: #000;
-  padding: 0 5px;
-  margin: 0 2px;
-  border-radius: 3px;
-  font-weight: bold;
-  font-size: 0.9em;
 }
 
 .language-shell {
@@ -349,6 +267,11 @@ blockquote {
   font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
 }
 
+.language-rust {
+  color: var(--text-color);
+  font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
+}
+
 .footnote {
   font-size: 0.85em;
   vertical-align: super;
@@ -422,6 +345,141 @@ footer {
   color: var(--footer-text-color);
   text-align: center;
 }
+
+.tip-box.note {
+  border-left: 4px solid #007acc; /* 蓝色左边框 */
+  background-color: #e7f3ff;       /* 浅蓝背景 */
+  color: #004080;
+  padding: 12px 20px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  position: relative;
+}
+
+.tip-box.tip {
+  border-left: 4px solid #28a745; /* 绿色左边框 */
+  background-color: #e6f4ea;      /* 淡绿色背景 */
+  color: #215c2a;                 /* 深绿色文本 */
+  padding: 12px 20px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  position: relative;
+}
+
+.tip-box.note strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+`;
+
+const themeToggleScript = `
+  document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换主题');
+    themeToggle.innerHTML = '🌓';
+    document.body.appendChild(themeToggle);
+    
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // 添加深色和浅色主题的样式
+    const darkThemeStyle = document.createElement('style');
+    const lightThemeStyle = document.createElement('style');
+    
+    darkThemeStyle.textContent = \`
+      body.dark-theme {
+        --background-color: #1a1a1a;
+        --text-color: #e6e6e6;
+        --code-bg-color: #2d2d2d;
+        --link-color: #58a6ff;
+        --highlight-color: #58a6ff;
+        --border-color: #333;
+        --table-border-color: #444;
+        --table-header-bg: #2d2d2d;
+        --blockquote-color: #aaa;
+        --blockquote-border: #444;
+        --part-header-bg: #222;
+        --footer-text-color: #aaa;
+        --filename-bg: #2d2d2d;
+        --nav-bg: #2d2d2d;
+        --nav-hover-bg: #444;
+        --toc-bg: #222;
+        --highlight-section-bg: #2d2d2d;
+        --highlight-section-border: #58a6ff;
+      }
+    \`;
+    
+    lightThemeStyle.textContent = \`
+      body.light-theme {
+        --background-color: #ffffff;
+        --text-color: #333333;
+        --code-bg-color: #f5f5f5;
+        --link-color: #0366d6;
+        --highlight-color: #0366d6;
+        --border-color: #eee;
+        --table-border-color: #ddd;
+        --table-header-bg: #f2f2f2;
+        --blockquote-color: #666;
+        --blockquote-border: #ddd;
+        --part-header-bg: #f8f8f8;
+        --footer-text-color: #666;
+        --filename-bg: #f5f5f5;
+        --nav-bg: #f5f5f5;
+        --nav-hover-bg: #e6e6e6;
+        --toc-bg: #f8f8f8;
+        --highlight-section-bg: #f8f8f8;
+        --highlight-section-border: #0366d6;
+      }
+    \`;
+    
+    document.head.appendChild(darkThemeStyle);
+    document.head.appendChild(lightThemeStyle);
+    
+    // 检查本地存储中的设置
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (currentTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      // 如果没有保存的偏好，跟随系统
+      if (prefersDarkScheme.matches) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    themeToggle.addEventListener('click', function() {
+      if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // 确保代码高亮正确运行
+    if (window.Prism) {
+      window.Prism.highlightAll();
+    } else {
+      // 如果Prism还没加载，等待它加载完成
+      const prismReady = setInterval(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+          clearInterval(prismReady);
+        }
+      }, 100);
+    }
+  });
 `;
 
 /**
@@ -433,11 +491,179 @@ function convertLatexToHtml(latex) {
   // Replace LaTeX commands with HTML equivalents
   let html = latex || '';
 
-  // Remove LaTeX comments
+  html = html.replace(/\\begin\{longtable\}\s*\{[^\}]*\}/g, '\\begin{longtable}');
+
+  html = html.replace(/\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}/g, (match, title, content) => {
+    // 处理内部的 itemize 转成 ul/li
+    let innerHtml = content
+      .replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (m, itemsContent) => {
+        const items = itemsContent.match(/\\item\s+([^\n\\]+)/g)?.map(i => i.replace(/\\item\s+/, '').trim()) || [];
+        return `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+      });
+    
+    // 其余换行转 <p>
+    innerHtml = innerHtml
+      .split(/\n{2,}/)  // 连续空行分段
+      .map(p => p.trim())
+      .filter(p => p.length > 0)
+      .map(p => `<p>${p}</p>`)
+      .join('');
+
+    return `<div class="tip-box note"><strong>${title}</strong>${innerHtml}</div>`;
+  });
+
+  html = html.replace(/\\begin\{myTip\}\{(.*?)\}([\s\S]*?)\\end\{myTip\}/g, (match, title, content) => {
+    // 处理内部的 itemize 转成 ul/li
+    let innerHtml = content
+      .replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (m, itemsContent) => {
+        const items = itemsContent.match(/\\item\s+([^\n\\]+)/g)?.map(i => i.replace(/\\item\s+/, '').trim()) || [];
+        return `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+      });
+    
+    // 其余换行转 <p>
+    innerHtml = innerHtml
+      .split(/\n{2,}/)  // 连续空行分段
+      .map(p => p.trim())
+      .filter(p => p.length > 0)
+      .map(p => `<p>${p}</p>`)
+      .join('');
+
+    return `<div class="tip-box tip"><strong>${title}</strong>${innerHtml}</div>`;
+  });
+
+  // 步骤1：先保护转义的美元符号
+  const protectedEscapedDollars = [];
+  html = html.replace(/\\\$/g, (match) => {
+    const placeholder = `__PROTECTED_ESCAPED_DOLLAR_${protectedEscapedDollars.length}__`;
+    protectedEscapedDollars.push(match);
+    return placeholder;
+  });
+
+  // 步骤2：保护转义的百分号
+  const protectedPercents = [];
+  html = html.replace(/\\%/g, (match) => {
+    const placeholder = `__PROTECTED_PERCENT_${protectedPercents.length}__`;
+    protectedPercents.push(match);
+    return placeholder;
+  });
+
+  // 步骤3：Remove LaTeX comments (现在可以安全地移除 % 注释了)
   html = html.replace(/%.*$/gm, '');
 
   // Remove tikzpicture environments
   html = html.replace(/\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}/g, '<div class="tikz-figure"></div>');
+
+  // 处理 \begin{longtable} 表格
+  html = html.replace(/\\begin\{longtable\}\s*([\s\S]*?)\\end\{longtable\}/g, function (_, rawContent) {
+    // 清理辅助结构和注释
+    let content = rawContent
+      .replace(/\\endfirsthead[\s\S]*?\\endhead/g, '')
+      .replace(/\\multicolumn\{.*?\}\{.*?\}\{.*?\}\s*\\\\/g, '')
+      .replace(/\\hline/g, '');
+    
+    // 先保护转义的百分号，然后删除注释，最后恢复
+    content = content
+      .replace(/\\%/g, 'TEMP_ESCAPED_PERCENT')
+      .replace(/%.*$/gm, '')
+      .replace(/TEMP_ESCAPED_PERCENT/g, '\\%')
+      .trim();
+    
+    // 清理表格列格式声明（如 {|l|l|}, {l|r|c} 等）
+    content = content.replace(/^\s*\{[|lcr\s]*\}\s*/gm, '');
+    
+    // 先处理特殊字符，避免在分割时造成问题
+    // 临时标记 AT\&T，避免 \& 被当作分隔符处理
+    content = content.replace(/AT\\&T/g, 'TEMP_ATT_MARKER');
+    
+    // 临时标记单元格内的 \\（换行符），先转换成特殊标记
+    // 这里我们需要区分行尾的 \\ 和单元格内的 \\
+    // 将不在行尾的 \\ 标记为换行符
+    const lines = content.split('\n');
+    const processedLines = lines.map(line => {
+      // 查找行内的 \\，但不包括行尾的 \\
+      return line.replace(/\\\\(?!\s*$)/g, 'TEMP_LINEBREAK_MARKER');
+    });
+    content = processedLines.join('\n');
+
+    // 拆分为行（按行尾的 \\ 分割）
+    const rows = content
+      .split(/\\\\\s*/)
+      .map(row => row.trim())
+      .filter(row => row.length > 0);
+
+    // 构造 HTML 表格
+    let htmlTable = '<table border="1">\n';
+    let headerParsed = false;
+
+    for (const row of rows) {
+      // 分割单元格，临时替换 \& 避免误分割
+      const tempRow = row.replace(/\\&/g, 'TEMP_ESCAPED_AMP');
+      const columns = tempRow.split('&').map(col => {
+        // 恢复 \&
+        return col.replace(/TEMP_ESCAPED_AMP/g, '\\&').trim();
+      });
+
+      if (!headerParsed) {
+        htmlTable += '  <thead>\n    <tr>\n';
+        for (const col of columns) {
+          let content = col.replace(/\\textbf\{(.*?)\}/g, '<strong>$1</strong>');
+          
+          // 恢复临时标记
+          content = content.replace(/TEMP_ATT_MARKER/g, 'AT&T');
+          content = content.replace(/TEMP_LINEBREAK_MARKER/g, '<br>');
+          
+          // 处理其他 AT&T 形式
+          content = content.replace(/AT\\&T/g, 'AT&T');  // 处理剩余的 AT\&T
+          content = content.replace(/\bATT\b/g, 'AT&T');   // 处理独立的 ATT
+          
+          // 删除 tabular 环境标签
+          content = content.replace(/\\begin\{tabular\}\[c\]\{@\{\}l@\{\}\}/g, '');
+          content = content.replace(/\\end\{tabular\}/g, '');
+          
+          // 处理特殊字符，但保留数学公式中的 $
+          content = content.replace(/\\\$/g, '&#36;');
+          content = content.replace(/\\%/g, '&#37;');
+          content = content.replace(/\\_/g, '&#95;');
+          content = content.replace(/\\{/g, '&#123;');
+          content = content.replace(/\\}/g, '&#125;');
+          
+          htmlTable += `      <th>${content}</th>\n`;
+        }
+        htmlTable += '    </tr>\n  </thead>\n  <tbody>\n';
+        headerParsed = true;
+      } else {
+        htmlTable += '    <tr>\n';
+        for (const col of columns) {
+          let content = col;
+          
+          // 恢复临时标记
+          content = content.replace(/TEMP_ATT_MARKER/g, 'AT&T');
+          content = content.replace(/TEMP_LINEBREAK_MARKER/g, '<br>');
+          
+          // 处理其他 AT&T 形式
+          content = content.replace(/AT\\&T/g, 'AT&T');  // 处理剩余的 AT\&T
+          content = content.replace(/\bATT\b/g, 'AT&T');   // 处理独立的 ATT
+          
+          // 删除 tabular 环境标签
+          content = content.replace(/\\begin\{tabular\}\[c\]\{@\{\}l@\{\}\}/g, '');
+          content = content.replace(/\\end\{tabular\}/g, '');
+          
+          // 处理特殊字符，但保留数学公式中的 $
+          content = content.replace(/\\\$/g, '&#36;');
+          content = content.replace(/\\%/g, '&#37;');
+          content = content.replace(/\\_/g, '&#95;');
+          content = content.replace(/\\{/g, '&#123;');
+          content = content.replace(/\\}/g, '&#125;');
+          
+          htmlTable += `      <td>${content}</td>\n`;
+        }
+        htmlTable += '    </tr>\n';
+      }
+    }
+
+    htmlTable += '  </tbody>\n</table>\n';
+    return htmlTable;
+  });
 
   // 处理自定义章节命令
   html = html.replace(/\\mySubsubsection\{(.*?)\}\{(.*?)\}/g, '<h4>$1 $2</h4>');
@@ -453,8 +679,48 @@ function convertLatexToHtml(latex) {
   // 处理花括号中的特殊标记
   html = html.replace(/\{(分析|解决|问题|建议)\}/g, '<h4 class="highlight-section">$1</h4>');
 
+  // HTML转义函数
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;');
+  }
+
   // 处理C++代码环境
-  html = html.replace(/\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}/g, '<pre><code class="language-cpp">$1</code></pre>');
+  html = html.replace(/\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}/g, (match, code) => {
+    // 去掉每一行开头和结尾的空格，并删除空行
+    const lines = code.split(/\r?\n/).map(line => line.trimEnd());
+
+    // 过滤掉空行（全为空或仅包含空格）
+    const nonEmptyLines = lines.filter(line => line.trim() !== '');
+
+    // 合并为最终代码块字符串
+    const cleanedCode = nonEmptyLines.join('\n');
+
+    // 转义 HTML 特殊字符
+    const escapedCode = escapeHtml(cleanedCode);
+
+    return `<pre><code class="language-cpp">${escapedCode}</code></pre>`;
+  });
+
+  // 处理Rust代码环境
+  html = html.replace(/\\begin\{rust\}([\s\S]*?)\\end\{rust\}/g, (match, code) => {
+    // 去掉每一行开头和结尾的空格，并删除空行
+    const lines = code.split(/\r?\n/).map(line => line.trimEnd());
+
+    // 过滤掉空行（全为空或仅包含空格）
+    const nonEmptyLines = lines.filter(line => line.trim() !== '');
+
+    // 合并为最终代码块字符串
+    const cleanedCode = nonEmptyLines.join('\n');
+
+    // 转义 HTML 特殊字符
+    const escapedCode = escapeHtml(cleanedCode);
+
+    return `<pre><code class="language-rust">${escapedCode}</code></pre>`;
+  });
 
   // 处理字体大小命令
   html = html.replace(/\{\\footnotesize\s+([\s\S]*?)\}/g, '<div class="footnote-text">$1</div>');
@@ -527,23 +793,62 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\underline\{(.*?)\}/g, '<u>$1</u>');
   html = html.replace(/\\texttt\{(.*?)\}/g, '<code>$1</code>');
 
+  // 处理 \verb|...| 内联代码（使用管道符作为分隔符，并进行HTML转义）
+  html = html.replace(/\\verb\|(.*?)\|/g, (match, content) => {
+    // 对内容进行HTML转义
+    const escapedContent = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    return `<code>${escapedContent}</code>`;
+  });
+
   // Replace hyperlinks
+  html = html.replace(/---/g, '——');
   html = html.replace(/\\href\{(.*?)\}\{(.*?)\}/g, '<a href="$1">$2</a>');
+  html = html.replace(/\\url\{(https?:\/\/[^\}]+)\}/g, (match, url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
+  html = html.replace(/\\hspace\*\{\\fill\}/g, '<br>');
 
   // Replace code listings
   html = html.replace(/\\begin\{lstlisting\}([\s\S]*?)\\end\{lstlisting\}/g, '<pre><code>$1</code></pre>');
   html = html.replace(/\\begin\{verbatim\}([\s\S]*?)\\end\{verbatim\}/g, '<pre><code>$1</code></pre>');
 
   // 处理shell代码块
-  html = html.replace(/\{shell\}([\s\S]*?)\{shell\}/g, '<pre><code class="language-shell">$1</code></pre>');
+  html = html.replace(/\\begin\{shell\}([\s\S]*?)\\end\{shell\}/g, (match, content) => {
+    // 对内容进行HTML转义，保留所有原始字符（包括尖括号标签）
+    let cleanContent = content
+      // HTML转义：将 < > & 等特殊字符转换为HTML实体
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      // 清理首尾空白
+      .trim();
+    
+    // 如果内容为空，显示注释提示
+    if (!cleanContent) {
+      cleanContent = '# (此处内容已省略)';
+    }
+    
+    return `<pre><code class="language-shell">${cleanContent}</code></pre>`;
+  });
   
   // 处理代码中的##数字标记（将它们转换为HTML注释或行内备注）
   html = html.replace(/(##\s*\d+)/g, '<span class="code-marker">$1</span>');
 
-  // Replace LaTeX special characters
+  // 步骤4：保护数学公式（在特殊字符处理之前）
+  const protectedMath = [];
+  html = html.replace(/\$([^$]+?)\$/g, (match, mathContent) => {
+    const placeholder = `__PROTECTED_MATH_${protectedMath.length}__`;
+    protectedMath.push(match);
+    return placeholder;
+  });
+
+  // Replace LaTeX special characters (注意：不处理转义的$和%，它们已经被保护了)
   html = html.replace(/\\&/g, '&amp;');
-  html = html.replace(/\\\$/g, '&#36;');
-  html = html.replace(/\\%/g, '&#37;');
   html = html.replace(/\\_/g, '&#95;');
   html = html.replace(/\\{/g, '&#123;');
   html = html.replace(/\\}/g, '&#125;');
@@ -570,9 +875,6 @@ function convertLatexToHtml(latex) {
   // Handle footnotes
   html = html.replace(/\\footnote\{(.*?)\}/g, '<span class="footnote">$1</span>');
 
-  // Handle hspace*{fill} - convert to empty line
-  html = html.replace(/\\hspace\*\{\\fill\}/g, '<br>');
-
   // Replace LaTeX line breaks
   html = html.replace(/\\\\(\s*)/g, '<br>$1');
   html = html.replace(/\\newline\s*/g, '<br>');
@@ -588,8 +890,24 @@ function convertLatexToHtml(latex) {
   html = html.replace(/\\setsecnumdepth\{.*?\}/g, '');
   html = html.replace(/\\tableofcontents/g, '');
 
-  // 清理尚未转换的LaTeX命令
+  // 清理尚未转换的LaTeX命令（但不影响受保护的数学公式）
   html = html.replace(/\\[a-zA-Z]+/g, '');
+
+  // 恢复受保护的数学公式
+  protectedMath.forEach((math, index) => {
+    html = html.replace(`__PROTECTED_MATH_${index}__`, math);
+  });
+
+  // 最后处理保护的特殊字符
+  // 恢复转义的百分号
+  protectedPercents.forEach((percent, index) => {
+    html = html.replace(`__PROTECTED_PERCENT_${index}__`, '&#37;');
+  });
+
+  // 恢复转义的美元符号
+  protectedEscapedDollars.forEach((dollar, index) => {
+    html = html.replace(`__PROTECTED_ESCAPED_DOLLAR_${index}__`, '&#36;');
+  });
 
   // Cleanup paragraph tags
   html = html.replace(/\n\s*\n/g, '</p><p>');
@@ -603,7 +921,7 @@ function convertLatexToHtml(latex) {
 // Helper function to read a file using the promises API
 async function readFileAsync(filePath) {
   try {
-    return await promises.readFile(filePath, 'utf-8');
+    return await fs.readFile(filePath, 'utf-8');
   } catch (err) {
     console.error(`Error reading file ${filePath}:`, err);
     return '';
@@ -697,7 +1015,7 @@ async function findCorrectPath(basePath, relativePath) {
 
   for (const tryPath of possiblePaths) {
     try {
-      await promises.access(tryPath);
+      await fs.access(tryPath);
       console.log(`Found file at: ${tryPath}`);
       return tryPath;
     } catch (err) {
@@ -716,6 +1034,8 @@ async function processCustomCommands(content) {
   // 处理 myChapter、mySubsection 等自定义命令
   const commandRegex = /\\my(Chapter|ChapterNoContents|Subsection|Part|PartGray)\{(.*?)\}\{(.*?)\}\{(.*?)\}/g;
   let commandMatch;
+
+  const commandPromises = [];
   const matches = [];
 
   while ((commandMatch = commandRegex.exec(content)) !== null) {
@@ -832,7 +1152,7 @@ async function processCustomCommands(content) {
 async function processTex(filePath, isRoot = false) {
   try {
     console.log(`Processing ${filePath}...`);
-    const content = await promises.readFile(filePath, 'utf-8');
+    const content = await fs.readFile(filePath, 'utf-8');
 
     // 处理文件内容
     let processedContent = content;
@@ -1095,6 +1415,8 @@ function createHtmlTemplate(title, content, headExtra = '') {
       document.querySelectorAll('pre code').forEach(function(block) {
         if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
           block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
         } else if (!block.className) {
           block.className = 'language-plaintext';
         }
@@ -1121,14 +1443,14 @@ async function generateHtml() {
     processedFiles.clear();
 
     // Create dist directory if it doesn't exist
-    await promises.mkdir(distDir, { recursive: true });
+    await fs.mkdir(distDir, { recursive: true });
 
-    // Process the index.tex file to get book info and chapters
-    console.log('Processing index.tex file...');
-    const { content: indexContent, chapters } = await processTex(path.join(bookDir, 'index.tex'), false);
+    // Process the main book file
+    console.log('Processing main book file...');
+    const { content: bookContent, chapters } = await processTex(path.join(rootDir, 'book.tex'), true);
 
     console.log('Converting LaTeX to HTML...');
-    let htmlContent = convertLatexToHtml(indexContent);
+    let htmlContent = convertLatexToHtml(bookContent);
 
     // 为每个章节内容创建占位符的映射
     const chapterMap = new Map();
@@ -1167,13 +1489,13 @@ async function generateHtml() {
     try {
       console.log('Copying images...');
       // 创建images目录
-      await promises.mkdir(path.join(distDir, 'images'), { recursive: true });
+      await fs.mkdir(path.join(distDir, 'images'), { recursive: true });
 
       // 复制封面图片
       const coverPath = path.join(rootDir, 'cover.png');
       try {
-        await promises.access(coverPath);
-        await promises.copyFile(coverPath, path.join(distDir, 'cover.png'));
+        await fs.access(coverPath);
+        await fs.copyFile(coverPath, path.join(distDir, 'cover.png'));
         console.log('Cover image copied.');
       } catch (err) {
         console.warn('Cover image not found or could not be copied:', err.message);
@@ -1182,7 +1504,7 @@ async function generateHtml() {
       // 遍历整个content目录寻找图片文件
       async function copyImagesFromDir(dir) {
         try {
-          const entries = await promises.readdir(dir, { withFileTypes: true });
+          const entries = await fs.readdir(dir, { withFileTypes: true });
 
           for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
@@ -1194,7 +1516,7 @@ async function generateHtml() {
               // 是图片文件，复制到images目录
               const destPath = path.join(distDir, 'images', entry.name);
               try {
-                await promises.copyFile(fullPath, destPath);
+                await fs.copyFile(fullPath, destPath);
                 console.log(`Copied image: ${entry.name}`);
               } catch (err) {
                 console.warn(`Could not copy image ${entry.name}:`, err.message);
@@ -1214,7 +1536,7 @@ async function generateHtml() {
 
     // 写入索引页文件
     console.log('Writing index HTML file...');
-    await promises.writeFile(path.join(distDir, 'index.html'), indexHtml);
+    await fs.writeFile(path.join(distDir, 'index.html'), indexHtml);
 
     // 为每个章节创建单独的HTML文件
     console.log('Creating individual chapter HTML files...');
@@ -1235,13 +1557,13 @@ async function generateHtml() {
         `
       );
 
-      await promises.writeFile(path.join(distDir, filename), chapterHtml);
+      await fs.writeFile(path.join(distDir, filename), chapterHtml);
       console.log(`Created chapter file: ${filename}`);
     }
 
     // 创建CSS文件
     console.log('Writing CSS file...');
-    await promises.writeFile(path.join(distDir, 'styles.css'), cssContent);
+    await fs.writeFile(path.join(distDir, 'styles.css'), cssContent);
 
     console.log('HTML generation completed. Output is in the dist directory.');
   } catch (err) {

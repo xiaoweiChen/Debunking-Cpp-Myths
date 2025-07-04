@@ -108,16 +108,16 @@ lvalue ref int
 % Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
 \begin{longtable}{|l|l|}
 \hline
-\textbf{void printType \textless{}int\textgreater{}(int\&\&):} &
-  \textbf{void printType \textless{}int\&\textgreater{}(int\&):} \\ \hline
+\textbf{void printType <int>(int\&\&)} &
+  \textbf{void printType <int\&>(int\&)} \\ \hline
 \endfirsthead
 %
 \multicolumn{2}{c}%
 {{\bfseries Table \thetable\ continued from previous page}} \\
 \endhead
 %
-\begin{tabular}[c]{@{}l@{}}push rbp\\ mov rbp, rsp\\ sub rsp, 16mov QWORD PTR {[}rbp-8{]}, rdi\\ mov edi, OFFSET \\                   FLAT:typeinfo \\ call std::type\_ info::name() \\ mov rdi, rax\\ call puts \\ nop \\ leave \\ ret\end{tabular} &
-  \begin{tabular}[c]{@{}l@{}}push rbp\\ mov rbp, rsp\\ sub rsp, 16mov QWORD PTR {[}rbp-8{]}, rdi\\ mov edi, OFFSET FLAT:.LC0 \\ mov eax, 0 \\ call printf \\ mov edi, OFFSET \\                  FLAT:typeinfo \\ call std::type\_info::name() \\ mov rdi, rax\\ call puts \\ nop \\ leave \\ ret \\   .LC0:\\     .string "lvalue ref "\end{tabular} \\ \hline
+\begin{tabular}[c]{@{}l@{}}push rbp\\ mov rbp, rsp\\ sub rsp, 16mov QWORD PTR [rbp-8], rdi\\ mov edi, OFFSET \\                   FLAT:typeinfo \\ call std::type\_ info::name() \\ mov rdi, rax\\ call puts \\ nop \\ leave \\ ret\end{tabular} &
+  \begin{tabular}[c]{@{}l@{}}push rbp\\ mov rbp, rsp\\ sub rsp, 16mov QWORD PTR [rbp-8], rdi\\ mov edi, OFFSET FLAT:.LC0 \\ mov eax, 0 \\ call printf \\ mov edi, OFFSET \\                  FLAT:typeinfo \\ call std::type\_info::name() \\ mov rdi, rax\\ call puts \\ nop \\ leave \\ ret \\   .LC0:\\     .string "lvalue ref "\end{tabular} \\ \hline
 \end{longtable}
 
 \begin{center}

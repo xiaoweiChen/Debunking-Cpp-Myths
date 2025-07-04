@@ -190,7 +190,7 @@ double z;
 \endhead
 %
 \begin{tabular}[c]{@{}l@{}}pushf \\ \\ orl \$0x40000,(\%rsp) \\ \\ popf\end{tabular} &
-  \begin{tabular}[c]{@{}l@{}}pushfd\\ \\ or dword ptr {[}esp{]}, 40000h \\ \\ popfd\end{tabular} \\ \hline
+  \begin{tabular}[c]{@{}l@{}}pushfd\\ \\ or dword ptr [esp], 40000h \\ \\ popfd\end{tabular} \\ \hline
 \end{longtable}
 
 这段代码通过位或（OR）操作修改了 x86 架构中 EFLAGS 寄存器的特定比特位。其中，十六进制值 0x40000 对应的是设置 AC（Alignment Check，对齐检查）标志位。当该标志位与 CR0 寄存器中的 AM（Alignment Mask，对齐掩码）位同时被启用时，处理器将对数据访问的内存对齐情况进行严格检查 --- 发现未按自然边界对齐的访问，便会触发异常。
