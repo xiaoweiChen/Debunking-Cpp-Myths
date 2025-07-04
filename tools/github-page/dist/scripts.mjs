@@ -265,7 +265,6 @@ blockquote {
 code {
   font-family: "Hack", Consolas, Monaco, "Andale Mono", monospace;
   background-color: var(--code-bg-color);
-  padding: 2px 4px;
   border-radius: 3px;
 }
 
@@ -273,7 +272,6 @@ code {
   display: inline-block;
   background-color: #ffeb3b;
   color: #000;
-  padding: 0 5px;
   margin: 0 2px;
   border-radius: 3px;
   font-weight: bold;
