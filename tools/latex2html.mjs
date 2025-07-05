@@ -527,6 +527,7 @@ function convertLatexToHtml(latex) {
   let html = latex || '';
 
   html = html.replace(/^\\begin\{longtable\}.*$/gm, '\\begin{longtable}');
+  html = html.replace(/\$\s*\\sim\s*\$/g, '~');
   html = html.replace(/\\verb(.)(.+?)\1/g, '<code>$2</code>');
   html = html.replace(/\\#/g, '#')
 
