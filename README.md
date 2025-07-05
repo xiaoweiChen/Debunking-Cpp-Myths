@@ -56,6 +56,7 @@
 ## 本书相关
 
 * Github翻译地址：https://github.com/xiaoweiChen/Debunking-Cpp-Myths
+* 在线阅读：https://xiaoweichen.github.io/Debunking-Cpp-Myths/
 
 > [!NOTE]
 > 译版在Release中提供生成好的PDF文件以供下载，若需要其他格式请自行安装第三方工具(比如：Calibre)进行转换
