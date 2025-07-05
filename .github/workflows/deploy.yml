@@ -36,6 +36,11 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: './github-page-dist'
+
+      - name: Check output directory
+        run: |
+          echo "Checking github-page-dist contents..."
+          ls -l ./github-page-dist
           
   deploy:
     needs: build

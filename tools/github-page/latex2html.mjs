@@ -1701,7 +1701,7 @@ async function generateHtml() {
     console.log('Writing CSS file...');
     await fs.writeFile(path.join(distDir, 'styles.css'), cssContent);
 
-    console.log('HTML generation completed. Output is in the dist directory.');
+    console.log(`HTML generation completed. Output is in the ${distDir} directory.`);
   } catch (err) {
     console.error('Error generating HTML:', err);
   }
