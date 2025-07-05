@@ -946,11 +946,22 @@ function convertLatexToHtml(latex) {
     html = html.replace(`__PROTECTED_ESCAPED_DOLLAR_${index}__`, '&#36;');
   });
 
-  // Cleanup paragraph tags
-  html = html.replace(/\n\s*\n/g, '</p><p>');
+  // 自动段落包裹处理（保持段落换行）
+  html = html.replace(/<p>\s*(.*?)\s*<\/p>/g, '$1');  // 去除已有 <p> 避免重复包裹
 
-  // Remove empty paragraphs
-  html = html.replace(/<p>\s*<\/p>/g, '');
+  html = html
+    .replace(/\r\n/g, '\n')  // 标准化换行符
+    .split(/\n{2,}/)  // 按两个及以上换行切分段落
+    .map(para => para.trim())
+    .filter(para => para.length > 0)
+    .map(para => {
+      // 跳过本身是 block 标签开头的内容
+      if (/^\s*<(h\d|ul|ol|pre|table|div|section|blockquote|img|code|figure|\/)/i.test(para)) {
+        return para;
+      }
+      return `<p>${para}</p>`;
+    })
+    .join('\n\n');
 
   return html;
 }
