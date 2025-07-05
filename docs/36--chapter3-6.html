@@ -1,0 +1,238 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3.6. 忽略类型 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="35--chapter3-5.html" class="prev-link">« 上一章：3.5. 强类型的极限</a>
+    <a href="37--chapter3-7.html" class="next-link">下一章：3.7. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="36--chapter3-6" class="section">
+            <h2 class="section-title">3.6. 忽略类型</h2>
+            <p>几年前，我曾带领一个团队使用一种名为 Groovy 的语言和其配套框架 Grails 开发了多个 Web 应用程序。Groovy 是一门可选类型化 和 动态类型 的语言：允许运行时决定类型，也支持你为编译器提供类型提示。此外，Groovy 也可以静态编译，由于它构建在 JVM 上，最终会生成 Java 字节码。</p>
+
+<p>在之前的 Web 项目中，我注意到类型在系统的边界处非常有用，例如:用于验证请求参数、与数据库交互或其他 I/O 操作。然而，在 Web 应用的核心逻辑中使用类型往往会带来不必要的复杂性。我们经常需要修改现有代码，或者编写适配层，以适应用户对已有功能提出的新用途。</p>
+
+<p>Web 应用的用户常常会发现某个功能在一个场景下很有用，并希望它能在其他上下文或处理不同类型的数据时也能工作。因此，从一开始就决定：我们只在请求验证和与外部系统交互时使用类型，而在核心业务逻辑中不强制使用类型。</p>
+
+<p>我们的策略始终围绕着一套稳健的自动化测试机制展开，确保所有代码都通过测试来验证其行为的正确性。我原本预计，缺乏类型检查会需要编写更多测试，但实际结果却出乎意料：测试数量并没有显著增加，但代码量明显减少了。</p>
+
+<p>更有趣的是，由于没有类型辅助理解变量和函数的行为，我们需要更加重视命名 —— 因为对于开发者来说，名字成了唯一能帮助他们理解意图的线索。</p>
+
+<p>直到今天，这种风格仍然是我最喜欢的编程方式。我希望按照自己的意愿、尽可能富有表现力地编写代码，然后让编译器去处理类型相关的细节。你可以将这种方法看作是极端多态：只要传入的对象拥有所需的方法，不管它的具体类型是什么，代码都应该能够正常运行。</p>
+
+<p>这种风格并不适合所有人，它只有在配合特定的设计经验与实践（如良好的命名、清晰的接口设计、完善的测试覆盖等）时才真正有效。但它确实是一种值得尝试的编程范式。不过，迈出第一步往往是最难的 —— 需要放下对编译器行为的严格控制欲。对于习惯了细节导向的 C++ 开发者来说，这可能是一件颇具挑战的事情。</p>
+
+<p>那么，如何在 C++ 中实现类似的风格呢？幸运的是，从 C++11 开始引入了 auto 关键字，并在后续标准中逐步增强了其能力。虽然 C++ 并不像 Groovy 那样具备真正的动态类型特性，但可以通过模板和泛型编程来模拟这种行为。</p>
+
+<p>先用一个极具多态性的例子让你开开眼界：</p>
+
+<pre><code class="language-cpp">auto identity(auto value){ return value;}
+TEST_CASE(&quot;Identity&quot;){
+  CHECK_EQ(1, identity(1));
+  CHECK_EQ(&quot;asdfasdf&quot;, identity(&quot;asdfasdf&quot;));
+  CHECK_EQ(vector{1, 2, 3}, identity(vector{1, 2, 3}));
+}</code></pre>
+
+<p>无论你传入什么类型的值，这个函数都能完美运行。是不是简洁又强大？想象一下，如果你的系统核心由一系列这样的函数组成，无需修改就能直接复用 —— 对我来说，这就是理想的编程环境。当然，现实比这要复杂得多，程序通常需要的功能远不止恒等函数那么简单。</p>
+
+<p>再来看一个稍微复杂的例子：判断一个字符串是否是回文，也就是正着读和反着读都一样的字符串。一个典型的 C++ 实现如下：</p>
+
+<pre><code class="language-cpp">bool isStringPalindrome(std::string value){
+  std::vector&lt;char&gt; characters(value.begin(), value.end());
+  std::vector&lt;char&gt; reversedCharacters;
+  std::reverse_copy(characters.begin(), characters.end(), std::back_
+  insert_iterator(reversedCharacters));
+  return characters == reversedCharacters;
+}
+TEST_CASE(&quot;Palindrome&quot;){
+  CHECK(isStringPalindrome(&quot;asddsa&quot;));
+  CHECK(isStringPalindrome(&quot;12321&quot;));
+  CHECK_FALSE(isStringPalindrome(&quot;123123&quot;));
+  CHECK_FALSE(isStringPalindrome(&quot;asd&quot;));
+}</code></pre>
+
+<p>如果我们尝试让这段代码对类型“不再敏感”，会发生什么呢？可以将参数类型改为 auto，并利用现代 C++ 的 Ranges 库来实现通用的反转与比较操作。最终得到的函数不仅适用于字符串，还可以处理诸如 vector<string> 或定义在枚举中的词法单元等结构。</p>
+
+<p>来看看这种极端多态的实际效果：</p>
+
+<pre><code class="language-cpp">bool isPalindrome(auto value){
+  auto tokens = value | std::views::all;
+  auto reversedTokens = value | std::views::reverse;
+  return std::equal(tokens.begin(), tokens.end(), reversedTokens.begin());
+};
+enum Token{
+  X, Y
+};
+TEST_CASE(&quot;Extreme polymorphic palindrome&quot;){
+  CHECK(isPalindrome(string(&quot;asddsa&quot;)));
+  CHECK(isPalindrome(vector&lt;string&gt;{&quot;asd&quot;, &quot;dsa&quot;, &quot;dsa&quot;, &quot;asd&quot;}));
+  CHECK(isPalindrome(vector&lt;Token&gt;{Token::X, Token::Y, Token::Y, Token::X}));
+}</code></pre>
+
+<p>也许你现在已经开始理解为什么我对这种编程风格如此着迷了。当我们忽略类型，或者让函数具备极高的多态性，就能写出适用于未来各种情况的代码，而无需频繁修改。</p>
+
+<p>但这当然也有代价：此时代码的约束条件隐藏在推导出的类型中，函数参数和命名变得至关重要。例如，传入一个整数给 isPalindrome 函数，不会看到一个明确的错误提示（比如“类型不匹配”），而是面对一段冗长且难以理解的编译错误信息。</p>
+
+<p>以下是我在电脑上使用 g++ 编译器尝试传入整数时，所生成的部分错误输出：</p>
+
+<pre><code class="language-shell">In file included from testPalindrome.cpp:3:
+Palindrome.h: In instantiation of 'bool isPalindrome(auto:21)
+[with auto:21 = int]':
+testPalindrome.cpp:30:2: required from here
+Palindrome.h:14:29: error: no match for 'operator|' (operand types are 'int' and 'const std::ranges::views::_All')
+14 | auto tokens = value | std::views::all;
+   | ~~~~~~^~~~~~~~~~~~~~~~~</code></pre>
+
+<p>现在问题来了：你更喜欢哪种方式？强类型带来的安全性与清晰性，还是极端多态所带来的灵活性与表达力？每种方式都有其权衡与适用场景。关键在于你如何看待代码的可维护性、扩展性以及开发效率之间的平衡。</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="35--chapter3-5.html" class="prev-link">« 上一章：3.5. 强类型的极限</a>
+    <a href="37--chapter3-7.html" class="next-link">下一章：3.7. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

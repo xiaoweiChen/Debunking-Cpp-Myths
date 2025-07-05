@@ -1,0 +1,169 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6.6. 仍需努力 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="65-c-chapter6-5.html" class="prev-link">« 上一章：6.5. 现代C++的局限性</a>
+    <a href="67--chapter6-7.html" class="next-link">下一章：6.7. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="66--chapter6-6" class="section">
+            <h2 class="section-title">6.6. 仍需努力</h2>
+            <p>目前，C++ 标准化委员会正在推进一项名为 安全规范（safety profiles） 的重要提案。该方案结合了编译器增强、静态分析和运行时检查工具，旨在系统性地消除绝大多数内存安全相关的问题。尽管其具体落地时间尚未明确，但这项任务的复杂性和挑战性已令人敬畏。</p>
+
+<p>全球范围内，现存的 C++ 代码量可能高达数百亿行。任何新安全机制都必须在兼容性和实用性之间取得平衡：一方面，应尽可能减少对现有代码的破坏性影响，理想情况下只需标注潜在问题而无需大规模重构；另一方面，还必须控制性能开销，以满足众多高性能应用场景的需求。</p>
+
+<p>然而，问题的紧迫性同样不容忽视。随着软件安全日益受到重视，C++ 因内存安全缺陷而纳入美国，乃至其他国家政府项目技术禁用清单的风险正在上升。这一趋势不仅关乎语言本身的技术演进，更将深远影响其未来的使用生态与行业地位。</p>
+
+<p>最终，C++ 是否能在保持灵活性与性能优势的同时，成功应对内存安全挑战，仍有待时间和社区共同努力来揭晓答案。</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="65-c-chapter6-5.html" class="prev-link">« 上一章：6.5. 现代C++的局限性</a>
+    <a href="67--chapter6-7.html" class="next-link">下一章：6.7. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

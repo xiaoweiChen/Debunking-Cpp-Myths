@@ -1,0 +1,239 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11.3. auto的惊喜 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="112--chapter11-2.html" class="prev-link">« 上一章：11.2. 空格：从必须到无视</a>
+    <a href="114--chapter11-4.html" class="next-link">下一章：11.4. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="113-auto-chapter11-3" class="section">
+            <h2 class="section-title">11.3. auto的惊喜</h2>
+            <p>亲爱的读者，若您还记得第9章那个有趣的章节“零的定义”，那就再好不过了。因为我们即将再次探讨这个极具影响力的数字。若您一时想不起来，也无需担心，大可随时翻回第9章重温(就当是温故知新吧)。</p>
+
+<p>现在请看以下程序：</p>
+
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;typeinfo&gt;
+#include &lt;string&gt;
+template&lt;typename T&gt; std::string typeof(T t) {
+  std::string res = typeid(t).name();
+  return res;
+}
+int main() {
+  auto a1 = 0;
+  auto a2(0);
+  auto a3 {0};
+  auto a4 = {0};
+  std::cout &lt;&lt; typeof(a1) &lt;&lt; std::endl
+            &lt;&lt; typeof(a2) &lt;&lt; std::endl
+            &lt;&lt; typeof(a3) &lt;&lt; std::endl
+            &lt;&lt; typeof(a4) &lt;&lt; std::endl;
+}</code></pre>
+
+<p>这段程序依然不算复杂，巧妙地运用了auto关键字，并通过前文章节介绍的各种机制将变量初始化为0。若还不清楚auto的用途，这里简要说明：C++11中的auto关键字是从C语言"征用"而来的，其新使命是实现自动类型推断。让编译器能根据初始化表达式推导变量类型。这种设计通过消除显式类型声明的需求，不仅简化了代码，更让迭代器或模板类型等复杂冗长的类型处理变得简洁。</p>
+
+<p>回到代码分析，经过仔细推敲我们可以得出以下结论：</p>
+
+<ul>
+    <li><code>auto a1 = 0;</code>：这是最基础的拷贝初始化，由于0是整型字面量，a1推导为int类型
+  
+  </li>  <li><code>auto a2(0);</code>：同样简单，通过直接初始化整型字面量0，a2也推导为int
+  
+  </li>  <li><code>auto a3 {0};</code>：采用列表初始化{0}时，a3仍推导为int(注意：此行为在C++17前后有变化)
+  
+  </li>  <li><code>auto a4 = {0};</code>：这里有个特殊规则：当auto遇见带等号的大括号初始化时，会优先推导为<code>std::initializer_list<int></code>，这是C++11为统一初始化引入的特例
+</ul>
+
+<p>使用MSVC编译时，程序输出如下：</p>
+
+</li><pre><code class="language-shell">int
+int
+int
+class std::initializer_list&lt;int&gt;</code></pre>
+
+<p>若使用较新版本的GCC编译，输出会相对简洁(但核心逻辑不变)：</p>
+
+<pre><code class="language-shell">i 
+i 
+i
+St16initializer_listIiE</code></pre>
+
+<p>然而这里有个陷阱。如果用5.0版本之前的GCC编译，会看到如下"惊喜"输出：</p>
+
+<pre><code class="language-shell">i 
+i
+St16initializer_listIiE
+St16initializer_listIiE</code></pre>
+
+<p>这可谓“向后兼容性”带来的意外“惊喜”。不过真正的救星是Clang(3.7+版本),其编译时会给出极具参考价值的提示信息:</p>
+
+<pre><code class="language-shell">&lt;source&gt;:19:13: warning: direct list initialization of a variable
+with a deduced type will change meaning in a future version of Clang;
+insert an '=' to avoid a change in behavior [-Wfuture-compat]
+  auto a3 {0};</code></pre>
+
+<p>由此可见，在C++17标准诞生前后，auto与&#123;x&#125;组合的语义(在这个特定场景下)发生了微妙变化。不过值得庆幸的是，早期编译器开发者早已预见这种特殊情况，给出了非常直接的警告，这“向后兼容”做得可真够别扭的，不是吗？</p>
+
+<p>有了这些铺垫，以下代码无法编译的现象就不足为奇了(假设仍沿用之前的简短程序框架)：</p>
+
+<pre><code class="language-cpp">std::cout &lt;&lt; typeof( {0} );</code></pre>
+
+<p>为什么应该这样做呢?考虑到前面的语法的所有混乱和混乱,{0}会被推断为哪种类型?它被推导出一个 int 类型吗?或者也许是 initializer&#95;list 类型? 它会是空指针 (nullptr) 吗或者可以从数字构建的对象,如下所示:</p>
+
+<pre><code class="language-cpp">struct D { D(int i) {} };
+void fun(D d) { }
+fun({0});</code></pre>
+
+<p>现在，有没有感觉之前的玩笑没那么好笑了？</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="112--chapter11-2.html" class="prev-link">« 上一章：11.2. 空格：从必须到无视</a>
+    <a href="114--chapter11-4.html" class="next-link">下一章：11.4. 总结 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

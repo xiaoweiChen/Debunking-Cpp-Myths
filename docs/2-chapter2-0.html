@@ -1,0 +1,185 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章 理想与现实：C++程序的边界 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="18--chapter1-8.html" class="prev-link">« 上一章：1.8. 总结</a>
+    <a href="21--chapter2-1.html" class="next-link">下一章：2.1. 环境要求 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="2-chapter2-0" class="chapter">
+            <h1 class="chapter-title">第2章 理想与现实：C++程序的边界</h1>
+            <div style="text-align:right">
+<em>—— 然则未必尽然</em>
+</div>
+
+<p>在 C++ 编程世界中，标准合规性通常被视为一项至关重要的原则。C++ 标准的最新版本是编写高质量、可维护和高效代码的权威指南。这套标准由 C++ 委员会与国际标准化组织（ISO）精心制定，并定期更新，旨在为开发者提供一套统一的语言规范、库接口，以及最佳实践，从而保障代码的正确性、可移植性和跨平台互操作性。</p>
+
+<p>然而，在实际的软件开发实践中，现实往往比这一理想图景更加复杂和微妙。</p>
+
+<p>在本章中，我们将深入探讨开发者在日常工作中面临的诸多挑战：由于各种现实限制，无法始终遵循官方标准。这些限制可能来自多个方面，例如：使用老旧的编译器、维护遗留系统，或项目本身强制要求使用非标准扩展等。在这种情况下，开发者不得不在“理想中的标准”与“现实中的需求”之间做出权衡与取舍。</p>
+
+<p>更复杂的情况出现在我们不得不依赖某些基于 C++ 并对其进行了扩展的框架时。这些框架通常构建在标准 C++ 的基础之上，引入了高度定制化的功能以满足特定领域的需要，但它们所提供的语法、语义或接口往往与官方标准毫无关联。这引发了一个值得深思的问题：我们是否应该使用这些框架？正如我们将看到的那样，这个问题并没有一个简单的“是”或“否”的答案。</p>
+
+<p>在本章中，我们将围绕以下几个核心主题展开讨论：</p>
+
+<ul>
+    <li>各大编译器、框架和开发环境对 C++ 标准的支持程度及其差异
+  
+  </li>  <li>为何并非所有开发者都能学习、使用或编写完全符合标准的 C++ 代码
+  
+  </li>  <li>编译器扩展如何逐渐偏离标准，以及这种偏离所带来的影响与风险
+</ul>
+
+<p>通过这些问题的分析，我们将更全面地理解 C++ 生态中标准与现实之间的张力，并思考在面对约束时，如何做出合理的技术决策。</li></p>
+          </section>
+          
+  <div class="navigation">
+    <a href="18--chapter1-8.html" class="prev-link">« 上一章：1.8. 总结</a>
+    <a href="21--chapter2-1.html" class="next-link">下一章：2.1. 环境要求 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

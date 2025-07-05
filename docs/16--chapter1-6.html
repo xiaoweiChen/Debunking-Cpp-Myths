@@ -1,0 +1,340 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1.6. 测试驱动学习法 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="15-kate-gregory-----c-chapter1-5.html" class="prev-link">« 上一章：1.5. Kate Gregory --- 不要教授C语言</a>
+    <a href="17--chapter1-7.html" class="next-link">下一章：1.7. 能力越大，责任越大 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="16--chapter1-6" class="section">
+            <h2 class="section-title">1.6. 测试驱动学习法</h2>
+            <p>从书本或结构化课程中学习只是获取知识的一种方式；另一种则是通过个人探索来掌握技能。想象一下你在学习 C++ 时，并不是先去浏览一堆代码示例，而是按照对程序应该如何运作的理解去编写代码，然后逐步发现设想与实际语言行为之间的差异。事实上，即使在参加结构化课程的过程中，人们也往往会自然地将这两种方法结合起来使用。</p>
+
+<p>然而，通过探索进行学习的一个明显缺点是：很难清晰地衡量自己的学习进度，而且经常会遇到瓶颈，陷入困境。这时，一个有效的方法可以帮助你更好地推进学习：TDD(测试驱动开发)。</p>
+
+<p>TDD 是一种看似反直觉但却非常有效的增量式设计方法。其核心过程可以用三个简单的步骤来概括：</p>
+
+<ul>
+    <li>第 1 步，也称为红色：编写一个失败的测试，明确你接下来需要实现的功能。
+  
+  </li>  <li>第 2 步，也称为绿色：编写最简单可行的代码使测试通过，同时确保所有已有测试仍能正常运行。
+  
+  </li>  <li>第 3 步，也称为重构：在不改变功能的前提下，优化生产代码和测试代码的结构，提升其可读性和可维护性。
+</ul>
+
+<p>这个“红-绿-重构”的循环以非常短的周期不断重复（通常每个周期不超过 5 到 10 分钟），直到当前所需功能或用户需求对应的所有行为都完整实现。</p>
+
+</li><div class="tip-box tip"><strong>澄清对测试驱动开发(TDD)的常见误解</strong><p>我个人是测试驱动开发(TDD)的坚定支持者，并在过去十多年中持续成功地将其应用于实际开发中。事实上，本书中的所有示例代码，都是我在 TDD 实践过程中逐步构建完成的。
+
+<p>然而，我也清楚地意识到，TDD 在业界的接受程度并不一致，也存在不少争议。其中一部分原因在于人们对这一方法的理解存在误区。</p>
+
+<p>一个常见的疑问是：“我怎么能为一个尚未实现的方法编写测试？”其实，这与你编写尚未存在的功能代码并无区别 —— 设想这个方法已经存在，并专注于定义它的输入和期望输出。这种思维方式是 TDD 的核心之一。</p>
+
+<p>另一个常见的误解是：一些所谓的“TDD 失败”案例，往往一开始就试图处理边界条件或复杂场景，结果导致进展受阻。实际上，TDD 鼓励我们从最简单的正常路径出发，逐步递增式地构建系统行为。</p>
+
+<p>有人批评 TDD 会拖慢开发速度。诚然，在初期阶段它确实可能带来一定的效率下降，但从长远来看，它使我们在编码时更具条理性和全面性，从而有效避免了在项目后期才发现严重问题所带来的高昂修复成本和巨大压力。</p>
+
+<p>最后需要指出的是，TDD 并不是专门用于设计高性能算法的工具。但即便如此，它仍能帮助我们先实现一个正确、可运行的解决方案，随后借助已有测试套件的支持，安全地对其进行性能优化和重构。</p></div></p>
+
+<p>要理解如何在修改后的 TDD 周期中学习一门编程语言，我们首先需要澄清关于 TDD 的两个关键点。</p>
+
+<p>第一，TDD 是一种反直觉的方法，它要求我们长时间专注于问题域，而不是直接跳入解决方案的设计。这与大多数传统编程课程所教授的方式不同 —— 后者往往引导我们立即思考“怎么写代码”，而 TDD 则鼓励我们先思考“我们需要什么”。</p>
+
+<p>第二，TDD 是一种增量式设计方法。所以我们不是一次性构建完整的系统或结构，而是通过逐步实现小功能，逐渐演化出一个合理的代码结构。这种渐进的方式非常适合学习新的编程语言，它降低了认知负担，并提供了持续的正向反馈。</p>
+
+<p>想象一下，在开始编写完整程序之前，你并不是试图掌握整个 C++ 语言，而是先学会如何编写测试。这其实并不难，测试本身通常只需要使用语言的一小部分功能。</p>
+
+<p>更重要的是，运行测试能提供即时反馈：失败(红色)意味着哪里出了问题，成功(绿色)则表示一切正常。这种反馈机制为学习过程带来了极大的清晰度和动力。</p>
+
+<p>此外，可以在一个或多个测试的基础上进行探索，尝试写出能让编译器接受的代码 —— 而这正是在学习一门新语言时最需要的过程：从错误中学习，逐步理解语言的语法规则和语义逻辑。虽然初学阶段面对像 C++ 这样复杂的语言时，错误信息可能会让人感到困惑，但如果你有导师指导，或者未来借助 AI 工具的帮助，这个过程将变得轻松许多，同时也能学到更多实用的知识。每当修复一个问题并看到测试由红变绿时，都会有实实在在的学习成果收获。</p>
+
+<p>这种方法已经在小范围实践中取得良好效果。接下来，我们将以 C++ 学习为例，展示一个典型的学习会话是如何进行的。</p>
+
+<h4>1.6.1 配置</h4>
+
+<p>学习过程至少涉及两位参与者：我们称之为教练和学生。我之所以选择“教练”而不是“讲师”，是因为其核心目标不是直接传授知识，而是引导学生走上自主学习的道路，培养他们独立思考和解决问题的能力。</p>
+
+<p>在接下来的讨论中，我将围绕一名学生的场景展开描述。但需要说明的是，这一方法同样适用于多名学生的协作学习环境。</p>
+
+<p>在开始之前，双方需要共同明确一个学习目标。这个目标可以是掌握一门编程语言(如 C++)，也可以聚焦于某个具体主题，例如 std::vector 或 STL 算法等。</p>
+
+<p>从技术的角度来看，这种学习方式最适合两人共享一块屏幕，并肩协作、实时交流的方式进行。虽然面对面合作效果最佳，但借助远程协作工具(如共享编辑器、屏幕共享平台等)，远程操作也同样可行。</p>
+
+<p>第一步，教练需要搭建一个结构简单的项目环境，通常包括一个测试库、一个生产代码文件和一个对应的测试文件。此外，还需要提供一种便捷运行测试的方式，比如点击按钮、使用快捷键或执行一条简单的命令。</p>
+
+<p>对于 C++ 初学者，我推荐使用 doctest(<a href="https://github.com/doctest/doctest" target="_blank" rel="noopener noreferrer">https://github.com/doctest/doctest</a>）作为测试框架。它是一个仅包含头文件的轻量级测试库，使用简单却功能强大，足以满足教学和生产级需求。</p>
+
+<p>以下是该项目最基础的目录结构示例：</p>
+
+<ul>
+    <li>test.cpp
+  
+  </li>  <li>prod.h
+  
+  </li>  <li>doctest.h 
+  
+  </li>  <li>Makefile
+</ul>
+
+<p>根据具体的学习目标，项目中可能还需要一个 production.cpp 文件，用于存放实际的功能实现代码。</p>
+
+<p>接下来，教练需要为学生提供第一个失败的测试示例，并演示如何运行整个测试套件。这一步至关重要，它为学生建立了对开发流程和工具链的基本认知。</p>
+
+<p>随后，学生将接管键盘，亲自运行测试，并开始他们的第一次实践体验。</p>
+
+<p>这个初始测试可以非常简单，如下所示：</p>
+
+</li><pre><code class="language-cpp">#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include &quot;doctest.h&quot;
+#include &quot;prod.h&quot;
+TEST_CASE(&quot;Test Example&quot;){
+  auto anAnswer = answer();
+  CHECK(anAnswer);
+}</code></pre>
+
+<p>prod.h的内容如下所示：</p>
+
+<pre><code class="language-cpp">bool answer(){
+  return true;
+}</code></pre>
+
+<p>一旦测试失败的状态被建立，下一步的首要任务是让测试通过。此时，教练应不断引导学生思考并提出问题，例如：“你觉得这段代码应该怎么写？写下你认为最直观的方式。”如果学生找到了正确的答案，那自然是最好的结果；如果没有，教练则应展示正确做法并解释背后的原理。</p>
+
+<p>这个过程非常有价值，不仅引入了编程语言的一些基本元素 —— 如函数声明、变量、测试和返回值，还展示了它们是如何协同工作的。更重要的是，为学生提供了一个清晰的学习反馈机制：测试通过意味着理解正确，而失败则提示还有需要学习的地方。</p>
+
+<p>在完成这些基础步骤之后，就可以进入更具探索性的学习阶段了</p>
+
+<h4>1.6.2 探索语言</h4>
+
+<p>以这种方式探索一门编程语言有两种主要途径：一种是通过逐步引入概念的小型练习，通常称为 koans(禅语)式练习；另一种则是通过解决更复杂的问题来推动学习。</p>
+
+<p>无论采用哪种方式，其核心方法保持一致：</p>
+
+<ul>
+    <li>教练首先编写一个简单的测试，或协助学生编写一个初始失败的测试；
+  
+  </li>  <li>让学生尝试写出他们认为“直觉上”正确的解决方案；
+  
+  </li>  <li>运行测试，若未通过，教练需解释哪里出错了；
+  
+  </li>  <li>教练或学生进行修改，直到测试通过，从而完成一次明确的进步迭代。
+</ul>
+
+<p>在整个过程中，聚焦于学生的下一个自然学习步骤至关重要。如果学生提出了具体的问题或表现出对某个主题的好奇心，那么当前的测试完全可以围绕这些问题设计，而不是机械地遵循预设脚本。这种灵活的适应性教学方式，有助于增强学生的掌控感，让他们在学习中体验到自主决策的“错觉”，而最终这种感觉会真正转化为自主学习的能力。</p>
+
+<h4>1.6.3 内存问题呢?</h4>
+
+<p>在本章中，我们已经强调了一个重要事实：与使用其他主流语言的开发者相比，C++ 开发者必须对内存管理有更深入的理解。那么，在这种基于 TDD 和探索式学习的方法中，如何帮助学生掌握这一关键技能呢？</p>
+
+<p>毕竟，普通的单元测试并不能检测出内存泄漏或非法访问等问题，对吧？</p>
+
+<p>确实如此，但我们也希望学生从一开始就能建立起对内存使用的关注。因此，我们需要将内存检查机制集成到测试流程中。</p>
+
+<p>实现这一目标主要有两种方式：</p>
+
+<ul>
+  </li>  <li>使用专门的内存检测工具(如 Valgrind)
+  
+  </li>  <li>或选择支持内存检查功能的测试框架或库
+</ul>
+
+<p>像 Valgrind 这样的工具可以轻松集成到我们的开发流程中。下面是一个示例 Makefile 片段，展示了如何自动化运行带有内存检查的测试：</p>
+
+</li><pre><code class="language-shell">check-leaks: test
+  valgrind -q --leak-check=full ./out/tests
+
+<p>test: test.cpp
+  ./out/tests</p>
+
+<p>test.cpp: .FORCE
+  mkdir -p out/
+  g++ -std=c++20 -I"src/" "test.cpp" -o out/tests</p>
+
+<p>.FORCE:</code></pre></p>
+
+<p>test.cpp 的作用是编译测试代码。test 这个 Makefile 目标依赖于 test.cpp，并负责运行测试。而第一个目标 check-leaks 会自动运行 Valgrind 进行内存分析，并可以选择仅在出现错误时显示相关输出，这样可以避免学生被大量冗余信息吓坏。</p>
+
+<p>当不带任何参数运行 make 命令时，Makefile 默认会选择第一个目标，也就是 check-leaks，所以内存分析将成为默认行为，帮助学生从一开始就关注内存使用问题。</p>
+
+<p>假设正在运行一个存在内存泄漏的测试，例如以下示例所示的情况：</p>
+
+<pre><code class="language-cpp">bool answer(){
+  int* a = new int(4);
+  return true;
+}</code></pre>
+
+<p>得到了以下输出：</p>
+
+<pre><code class="language-shell">==========================================================[doctest]
+test cases: 1 | 1 passed | 0 failed | 0 skipped
+[doctest] assertions: 1 | 1 passed | 0 failed |
+[doctest] Status: SUCCESS!
+valgrind -q --leak-check=full ./out/tests
+[doctest] doctest version is "2.4.11"
+[doctest] run with "--help" for options
+==========================================================[doctest]
+test cases: 1 | 1 passed | 0 failed | 0 skipped
+[doctest] assertions: 1 | 1 passed | 0 failed |
+[doctest] Status: SUCCESS!
+==48400== 4 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==48400== at 0x4849013: operator new(unsigned long) ==48400== by 0x124DC9: answer()</code></pre>
+
+<p>这样的输出为教练与学生的讨论提供了充分的信息基础，有助于引导他们理解问题的本质并进行深入思考。</p>
+
+<p>另一个可选方案是使用已经内置内存泄漏检测功能的测试框架，例如 CppUTest (<a href="http://cpputest.github.io/" target="_blank" rel="noopener noreferrer">http://cpputest.github.io/</a>) 。它不仅支持内存问题的检测，还特别适用于 C 语言以及嵌入式系统的开发，具备良好的跨平台兼容性和扩展性。</p>
+
+<p>借助这些工具，我们可以清楚地看到：这种以探索为核心的学习方法，完全有能力帮助任何希望入门或深入特定领域的人掌握 C++ 的关键概念和实践技巧。</p>
+
+<p>至此，我们已经介绍了两种学习 C++ 的有效方式。接下来，让我们回过头来思考一个更根本的问题：C++ 的定位是什么？它为何在设计上比许多其他语言更为复杂？这些问题将帮助我们更好地理解这门语言的适用场景及其独特价值。</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="15-kate-gregory-----c-chapter1-5.html" class="prev-link">« 上一章：1.5. Kate Gregory --- 不要教授C语言</a>
+    <a href="17--chapter1-7.html" class="next-link">下一章：1.7. 能力越大，责任越大 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

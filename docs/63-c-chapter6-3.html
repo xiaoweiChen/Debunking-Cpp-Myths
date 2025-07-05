@@ -1,0 +1,251 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6.3. 旧C++的内存安全问题 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="62--chapter6-2.html" class="prev-link">« 上一章：6.2. 内存安全很重要</a>
+    <a href="64-c-chapter6-4.html" class="next-link">下一章：6.4. 现代C++的救赎 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="63-c-chapter6-3" class="section">
+            <h2 class="section-title">6.3. 旧C++的内存安全问题</h2>
+            <p>在深入探讨传统 C++ 与现代 C++ 的内存安全问题之前，让我们先明确其定义。援引白宫报告所述：“内存安全漏洞是指一类由于内存访问、写入、分配或释放操作违反预期方式而产生的漏洞……主要分为两大类：空间安全和时间安全。空间安全问题源于对变量和对象内存‘正确’边界之外的访问；时间安全问题则发生在内存访问违反时序或状态时，例如访问已释放对象，或出现意外交叉的内存访问。”完整定义参见报告第 7 页：<a href="https://www.whitehouse.gov/wp-content/uploads/2024/02/Final-ONCD-TechnicalReport.pdf" target="_blank" rel="noopener noreferrer">https://www.whitehouse.gov/wp-content/uploads/2024/02/Final-ONCD-TechnicalReport.pdf</a>。</p>
+
+<p>所有 C++ 开发者都应对这两类问题耳熟能详。空间安全问题在使用原生数组时最为常见。例如，下面这个程序创建了一个数组，在赋值后尝试越界读写元素：</p>
+
+<pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+  int array[3];
+  array[0] = value1;
+  array[1] = value2;
+  array[3] = value3;
+  array[4] = value4;
+  return array[0] + array[1] + array[3] + array[4];
+}</code></pre>
+
+<p>这段代码最令人意外的是它属于未定义行为（undefined behavior）—— 编译器可能以各种方式处理数组越界访问，从静默允许到主动报错都有可能。更复杂的是，根据操作系统和运行环境的不同，该代码甚至可能“正常”运行，并覆盖未知的内存区域。</p>
+
+<div class="tip-box note"><strong>Note</strong>对攻击者而言，这类代码简直就是宝藏。为什么？因为尽管概率极低，但某个时刻，这个进程有可能恰好与关键系统进程在内存中相邻存放。如果攻击者能向该函数传入特定值，并在恰当时机触发越界写入，就可能实现以下恶意行为：覆盖银行应用程序的身份验证检查代码/安装键盘记录器/向系统植入恶意软件。虽然这种攻击无法保证一定成功，但由于整个过程可以自动化进行，攻击者拥有大量尝试的机会 —— 只需要成功一次即可达成目的。</div>
+
+<p>我在 Ubuntu Linux 系统上使用 clang 和 g++ 编译器测试了这段代码。g++ 即使启用了所有警告选项也未给出任何提示，而 clang 则在编译时给出了数组越界的警告。实际运行程序时，系统提示：“检测到堆栈破坏：程序已终止”。这表明运行时确实存在一定的保护机制，但并不能完全阻止潜在副作用的发生。</p>
+
+<p>需要注意的是，这只是一个简单的示例。如果我们在代码中创建数组后将其传递给多个函数，并通过复杂的公式计算索引，恐怕没有任何编译器能够准确识别出所有的越界访问行为。最终我们只能依赖运行时测试和操作系统的防护机制。</p>
+
+<p>这是编程语言本身的缺陷吗？鲜为人知的是，那些被归类为“内存安全”的语言也可能写出类似的问题代码。例如 C# 允许通过 unsafe 代码块使用指针和指针运算（尽管有诸多限制）。两者的关键区别在于：</p>
+
+<ul>
+    <li>需要显式声明unsafe代码块
+  
+  </li>  <li>实现相同功能需要更多工作
+  
+  </li>  <li>不会像 C++ 那样带来严重的后果
+  
+  </li>  <li>危险代码因unsafe标记而显眼可见
+</ul>
+
+<p>C++ 的问题并不在于它允许这些操作，而在于在默认情况下，开发者太容易犯下此类错误。既然我们已经谈到了指针，请看下面这段通过 void* 指针和指针运算，来越界访问 int 类型内存的代码：</p>
+
+</li><pre><code class="language-cpp">int pointerBounds() {
+  int *aPointerToInt;
+  void *aPointerToVoid;
+  aPointerToVoid = new int();
+  aPointerToInt = (int*)aPointerToVoid;
+  *aPointerToInt = 234;
+  aPointerToInt = (int*)((char*)aPointerToVoid + sizeof(int));
+  *aPointerToInt = 2423;
+  int value = *aPointerToInt;
+  delete aPointerToVoid;
+  return value;
+}
+TEST_CASE(&quot;try pointer bounds&quot;){
+  int result = pointerBounds();
+  CHECK_EQ(2423, result);
+}</code></pre>
+
+<p>我们再次遭遇未定义行为：通过指针算术运算得到的指针赋值操作，其具体行为由编译器决定。这次，g++ 和 clang 都给出了警告 —— 但仅针对删除 void* 指针这一操作。两个编译器对我尝试读写越界内存区域的行为都毫无反应。更有趣的是，测试运行完全“正常”，函数返回了预期结果，皆大欢喜！甚至连操作系统都没对这荒谬操作提出抗议 ——但愿只是因为没有超出进程的内存分配范围。</p>
+
+<p>但愿如此。</p>
+
+<p>至此我们看到的都是空间内存安全问题，情况已经不容乐观。那么时间安全问题呢？任何使用过原始指针的人都深有体会：必须在指针不再需要时完成两件事 —— 释放分配的内存，并将其置为 nullptr。这两者都至关重要，因为忽略任一项都会引发时间安全问题：要么产生悬垂指针(仍能访问已释放内存区域)，要么导致内存泄漏(指针未释放且可能已被重置，致使内存区域永久不可访问)。</p>
+
+<p>请看下面这个示例函数：它初始化一个 int 指针并赋值，释放内存后，又返回该内存存储的值：</p>
+
+<pre><code class="language-cpp">int danglingPointer() {
+  int *aPointerToInt = new int(234);
+  delete aPointerToInt;
+  return *aPointerToInt;
+}
+TEST_CASE(&quot;Try dangling pointer&quot;){
+  int result = danglingPointer();
+  CHECK_EQ(234, result);
+}</code></pre>
+
+<p>这段代码再次顺利通过了编译 —— 无论是g++还是clang都没有发出任何警告。程序也能运行，但测试最终失败：因为此时该内存地址存储的值已非预期结果。</p>
+
+<pre><code class="language-shell">test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, 721392248 )</code></pre>
+
+<p>每次调用该函数时，该内存地址存储的值都会发生变化，可能产生如下不同的结果：</p>
+
+<pre><code class="language-shell">test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, 1757279720 )
+test.cpp:8: ERROR: CHECK_EQ( 234, result ) is NOT correct!
+  values: CHECK_EQ( 234, -1936531037 )</code></pre>
+
+<p>在后续代码中使用这个值进行计算并返回异常结果，简直出乎意料地简单。如果对程序执行的运算稍有了解，并能够反复输入特定的值，这种行为甚至可能被用作探查内存内容的手段。</p>
+
+<p>时间安全问题则更加棘手 —— 在庞大的代码迷宫中追踪指针的生命周期，远比确保不越界访问要困难得多。很不幸，内存问题确实是 C++ 中的重大隐患。</p>
+
+<p>前述所有示例都采用了传统 C++ 的编程风格：使用原生数组、裸指针和指针运算。正因为如此，在现代 C++ 中应当极其谨慎地使用这些特性。虽然不能说应该完全禁用它们（毕竟在某些特定场景，如内存优化或底层系统编程中仍不可或缺），但通常可以划定清晰的边界，将这些危险操作隔离在现代 C++ 所倡导的安全区域之外。</p>
+
+<p>那么，现代 C++ 是否已经解决了这些问题？</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="62--chapter6-2.html" class="prev-link">« 上一章：6.2. 内存安全很重要</a>
+    <a href="64-c-chapter6-4.html" class="next-link">下一章：6.4. 现代C++的救赎 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

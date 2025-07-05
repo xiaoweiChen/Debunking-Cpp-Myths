@@ -1,0 +1,445 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3.3. 函数式编程 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="32--chapter3-2.html" class="prev-link">« 上一章：3.2. 多面性</a>
+    <a href="34--chapter3-4.html" class="next-link">下一章：3.4. 元编程 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="33--chapter3-3" class="section">
+            <h2 class="section-title">3.3. 函数式编程</h2>
+            <p>我还记得大学时期对编程充满热情，已经相当熟练地掌握了 BASIC、Pascal 和 Logo，并初步接触了 C++。大二时，我选修了一门关于函数式编程的课程。授课老师非常热情，试图向我们展示这一编程范式的魅力，讲解了许多当时对我来说难以理解的概念。</p>
+
+<p>但遗憾的是，这门课并没有真正“讲通”。我唯一学会的，就是在 Lisp 中写出命令式的代码，并把我熟悉的编程习惯强行翻译成一种“奇怪”的语言 —— 一种把括号放在表达式外面的语言。</p>
+
+<p>成为软件工程师后，我尝试重新接触函数式编程。网上资源丰富，但很多解释方式仍然让我感到困惑。有人说：“它本质上就是范畴论。”一切皆为函数，甚至数字也不例外（比如 Church 编码）。还有人告诉我：“单子（Monad）其实就是一个自函子范畴上的幺半群。”这种用更复杂概念来解释实际问题的方式，反而让人更加迷茫。</p>
+
+<p>正因如此，我花了好几年时间才真正理解函数式编程的本质，以及它如何帮助我们更好地进行软件开发。如今，我成了它的忠实支持者，但不是狂热信徒。像所有工程师一样，我喜欢解决问题，而对我而言，最常见的方式就是编写代码。如果能让代码变得更简单，那当然是极好的 —— 尽管“简单”并不总是意味着“熟悉”。</p>
+
+<p>如果今天我要解释什么是函数式编程，我会聚焦于三个核心理念：</p>
+
+<ul>
+    <li>不可变性：不可变性指的是数据一旦创建就不能被修改。这种特性有助于减少状态变化带来的副作用，使程序更容易理解和维护。在 C++ 中，我们可以使用 const 关键字来实现一定程度的不可变性。
+  
+  </li>  <li>纯函数：纯函数是指其输出仅由输入决定，且没有副作用的函数。这意味着它不会修改外部状态，也不会执行 I/O 操作。
+  
+  </li>  <li>函数操作：函数式编程强调将函数作为一等公民对待，允许将函数作为参数传递、返回值，或者通过组合多个函数来构造新的行为。。C++ 支持诸如 std::function 和 lambda 表达式等功能，使得这类操作变得可能。 
+</ul>
+
+<p>采用这些函数式编程的核心原则，可以帮助我们构建出更加模块化、易于测试、可维护性更强、并发友好的系统。</p>
+
+<h4>3.3.1 不变性</h4>
+
+<p>不可变性（Immutability）从根本上意味着：一个变量一旦被初始化，就不能再被修改。在 C++ 中，我们可以通过 const 或 constexpr 来实现这一特性，具体取决于我们希望该值是在运行时还是编译时保持不变。对于基本类型而言，不可变性非常直观且易于理解。然而，在处理集合或复杂对象时，它会带来一些挑战。</p>
+
+<p>一个不可变集合指的是：每次对其进行“修改”操作时，实际上并不会改变原集合，而是返回一个新的集合对象。例如，下面是一个使用标准库中可变 vector 的示例：</p>
+
+</li><pre><code class="language-cpp">vector&lt;int&gt; numbers {1, 2, 3};
+numbers.push_back(4);
+assert(numbers == vector&lt;int&gt; {1, 2, 3, 4});</code></pre>
+
+<p>如果使用一种假设的不可变向量 immutable&#95;vector，则添加元素的操作将返回一个新的实例，而不是修改原始集合：</p>
+
+<pre><code class="language-cpp">immutable_vector&lt;int&gt; numbers {1, 2, 3};
+immutable_vector&lt;int&gt; moreNumbers = numbers.push_back(4);
+assert(numbers == immutable_vector&lt;int&gt; {1, 2, 3});
+assert(moreNumbers == immutable_vector&lt;int&gt; {1, 2, 3, 4});</code></pre>
+
+<p>这一特性确保你始终使用的是数据结构的正确版本，不会因为意外修改而引入不一致的状态。然而，作为一名 C++ 开发者，你脑海中可能已经敲响了警钟：对于不可变集合来说，这样的“修改”方式是否意味着大量的内存分配？这会不会造成资源浪费？</p>
+
+<p>确实，在对不可变集合进行操作时，可能会暂时占用比预期更多的内存。但函数式编程语言早已发展出高效的策略来应对这一挑战，而 C++ 同样有能力借鉴这些机制 —— 只要实现得当。</p>
+
+<p>要优化不可变集合的内存使用，关键在于共享结构与智能指针的结合使用。其核心思想是：</p>
+
+<p>一旦值创建，就不能再修改。因此，当集合首次初始化时，系统会为每个元素分配独立的内存区域，每块区域都对应一个特定的值。当你向集合中添加新元素时，所有指向现有元素的指针都会被共享或复制，而新增元素则会分配一块全新的内存区域。类似地，当你删除某个元素时，除了指向该元素的指针外，其余所有指针都会被保留并复用。这样，未被修改的部分得以重用，避免了不必要的完整复制。更重要的是，当某块内存不再被任何指针引用时，它将被自动释放，从而防止内存泄漏。这种基于共享和引用计数的机制，使得不可变集合在保持语义不变的同时，也能具备良好的性能表现。</p>
+
+<p>虽然 STL 并没有直接提供不可变集合的实现，但像 immer (<a href="https://github.com/arximboldi/immer" target="_blank" rel="noopener noreferrer">https://github.com/arximboldi/immer</a>)样的库可以让你轻松地使用这种模式，而无需过多关注其底层实现细节。</p>
+
+<p>那么，关于不可变对象呢？毕竟，面向对象编程（OOP）的目的不正是将行为与数据结合在一起吗？对此，我有三点想说明：</p>
+
+<p>第一，这是一个非常好的问题！</p>
+
+<p>第二，人们常常误解了 OOP 的本质，以为它主要关乎封装、继承和多态；实际上，OOP 的核心在于消息传递。不幸的是，C++ 成为了我称之为“类导向编程”的先驱 —— 这是一种更关注类及其关系，而非对象及其交互的编程风格。</p>
+
+<p>第三，函数式编程其实并不排斥对象。实现不可变对象非常简单：要么我们使用 const 来定义不可变的数据结构，要么让每一个用于修改数据的方法都返回一个包含新数据的新对象。</p>
+
+<p>值得一提的是，你并不需要在整个程序中极致地追求不可变性，也能从函数式编程中获益。我自己写的很多代码也尽量最大化地使用 const，但仍会使用标准 STL 中的集合以及那些会修改自身内部状态的对象。</p>
+
+<p>然而，你需要意识到，前文所描述的那种程度的不可变性，确实能让并行编程变得更加容易。如果值是不可变的，就无需担心临界区的问题。每个线程操作自己的副本，任何修改也只是针对当前线程内的值生效。事实上，这是不可变性带来的一个额外优势。之所以称其为“额外”，是因为不可变性本身结合纯函数和良好的命名，已经能显著提升程序的可理解性 —— 尤其在熟悉这些构建模块之后。</p>
+
+<p>接下来，让我们来看看什么是纯函数。</p>
+
+<h4>3.3.2 纯函数</h4>
+
+<p>纯函数是指对于相同的输入始终返回相同的输出，并且不会修改其上下文中的任何状态。根据定义，纯函数不能执行任何输入/输出（I/O）操作，但几乎所有非简单的程序都可以拆解为纯函数与处理 I/O 的函数的组合。</p>
+
+<p>纯函数是你能想到的最简单、最可预测的函数形式。它们没有副作用，因此易于理解、便于测试，并且非常适合缓存。可以将某个输入对应的结果在首次计算后保存下来，之后再次使用相同输入时直接复用结果，从而带来潜在的性能优化。</p>
+
+<p>纯函数是函数式编程的核心。在 C++ 中，借助对不可变性的支持，实现纯函数非常直观和自然。</p>
+
+<p>在纯函数式语言中，函数通常最初是以 lambda 表达式的形式编写的。自 C++11 起，lambda 表达式也成为标准的一部分。然而，C++ 的 lambda 表达式本质上是可变的，它们可以修改所捕获的外部变量。因此，在使用 lambda 编写纯函数时，需要特别注意变量的 const 正确性，以确保不引入副作用。</p>
+
+<p>在函数式编程范式中，一切要么是函数，要么是数据结构。而在纯函数式语言中，这两者甚至是可以相互转换的。那么如何从简单的函数构建出复杂的行为呢？答案当然是通过各种组合方式将函数组合在一起，从而形成更强大的抽象和逻辑结构。</p>
+
+<h4>3.3.3 函数操作</h4>
+
+<p>既然函数是函数式编程中的核心抽象单元，那么自然而然地，会去思考如何通过对函数进行各种变换来构建更灵活、更具表达力的程序结构。其中，最常见的函数式操作包括部分应用和组合。</p>
+
+<p>所谓部分应用，是指通过将一个函数的一个或多个参数绑定到具体的值上，从而生成一个接受更少参数的新函数。例如，一个函数 add(const int first, const int second)，可以通过将第二个参数固定为 1，来创建一个新的函数 increment(const int)。</p>
+
+<p>稍作停顿，思考一下这种做法背后的含义：无论一个函数接收多少个参数，都可以通过连续地进行部分应用，逐步将其转化为一个不再需要任何参数的函数。这种方式提供了一种统一而通用的视角，来表达代码中的各种逻辑结构。</p>
+
+<p>在 C++ 中，可以使用 <functional> 头文件中提供的 std::bind 来实现部分应用。下面就来看看，如何通过将 add 函数的第二个参数绑定为 1，来构造出 increment 函数：</p>
+
+<pre><code class="language-cpp">#include &lt;functional&gt;
+auto add = [](const int first, const int second){ return first +
+second; };
+auto increment = std::bind(add, std::placeholders::_1, 1);
+TEST_CASE(&quot;add&quot;){
+  CHECK_EQ(10, add(4, 6));
+}
+TEST_CASE(&quot;increment&quot;){
+  CHECK_EQ(10, increment(9));
+}</code></pre>
+
+<p>从函数式编程的角度来看，这种做法是一种简洁而有效的解决方案。然而，它的返回值类型相对复杂，并不是一个真正的函数类型，而是一个行为类似于函数的对象（即函数对象）。这常常成为 C++ 开发者在尝试使用函数式编程时的心理障碍。我自己已经离开 C++ 一段时间了，这段时间足够让我跳脱出对底层实现细节的纠缠，转而从更高层次的抽象去思考问题。因此，当我使用 std::bind 进行部分应用时，我会直接将结果视为一个函数，并相信编译器和库的实现者已经为我们完成了必要的优化和行为正确性的保障工作。</p>
+
+<p>函数的另一个基本操作是函数组合。可能在数学中接触过类似的概念：给定两个函数 g 和 h，我们可以通过组合它们构造出一个新的函数 f，使得对于任意输入 x，都有 f(x) = g(h(x))。在数学中，这种组合通常写作 f = g ∘ h。</p>
+
+<p>遗憾的是，C++ 标准库并未直接提供用于函数组合的操作或函数。借助模板编程，可以非常方便地自行实现这一功能。需要指出的是，尽管组合操作的结果类型在 C++ 中可能较为复杂，但我建议将其简单地视为一个函数对象，关注其行为本身，而不必过多纠结于其底层的数据结构形式。</p>
+
+<p>下面是一个可能的 C++ 实现方式：我们定义一个 compose 函数模板，它接受两个类型参数 F 和 G，分别代表要组合的两个函数类型 f 和 g。compose 返回一个 lambda 表达式，该表达式接收一个参数 value，并返回 f(g(value)) 的结果：</p>
+
+<pre><code class="language-cpp">template &lt;class F, class G&gt;
+auto compose(F f, G g){
+return [=](auto value){return f(g(value));};
+}</code></pre>
+
+<div class="tip-box tip"><strong></strong>前面的示例借用自 Alex 与 Packt Publishing 合作的另一本关于该主题的书 《Hands-On Functional Programming in C++》。</div>
+
+<p>让我们通过一个简单的例子来展示这个函数的实际用法。我们将实现一个价格计算器，它接收原始价格、折扣金额、服务费以及税率作为参数，并返回最终的总价。</p>
+
+<p>首先，我们来看一种命令式的实现方式：在一个函数中直接按步骤完成所有计算。computePriceImperative 函数接收价格作为输入，依次执行减去折扣、加上服务费的操作，最后在基础上加上相应的税款，从而得到最终价格。</p>
+
+<pre><code class="language-cpp">double computePriceImperative(const int taxPercentage, const int
+serviceFee, const double price, const int discount){
+  return (price - discount + serviceFee) * (1 + (static_cast&lt;double&gt;(taxPercentage) / 100));
+}
+TEST_CASE(&quot;compute price imperative&quot;){
+  int taxPercentage = 18;
+  int serviceFee = 10;
+  double price = 100;
+  int discount = 10;
+  double result =
+  computePriceImperative(taxPercentage, serviceFee, price, discount);
+  CHECK_EQ(118, result);
+}</code></pre>
+
+<p>这是一个简单直接的实现，足以正确完成计算任务。然而，这种写法在开始面对更复杂需求时往往会变得难以维护 —— 例如，当需要支持多种类型的折扣、根据商品种类动态调整税率，或是改变折扣的应用顺序时，命令式的代码结构很容易变得臃肿和难以扩展。虽然在这种情况下，可以通过面向对象或命令式设计模式，将每个操作提取为独立的函数或类，并按需组合使用，但这已经超出了当前讨论的范围。</p>
+
+<p>现在，尝试以一种函数式风格来实现相同的功能。第一步是，为每一个操作定义一个 lambda 表达式，然后通过另一个 lambda 将它们组合起来，完成最终的计算流程。具体来说，将创建几个简单的 lambda 函数：一个用于减去折扣，一个用于加上服务费，还有一个用于加上税费；最后再定义一个组合函数，依次调用上述所有操作，从而得到最终的价格。</p>
+
+<p>由此，得到了如下更具表达性和灵活性的函数式实现：</p>
+
+<pre><code class="language-cpp">auto discountPrice = [](const double price, const int discount){return
+price - discount;};
+auto addServiceFee = [](const double price, const int serviceFee){
+return price + serviceFee; };
+auto applyTax = [](const double price, const int taxPercentage){
+return price * (1 + static_cast&lt;double&gt;(taxPercentage)/100); };
+auto computePriceLambda = [](const int taxPercentage, const int
+serviceFee, const double price, const int discount){
+  return applyTax(addServiceFee(discountPrice(price, discount),serviceFee), taxPercentage);
+};
+TEST_CASE(&quot;compute price with lambda&quot;){
+  int taxPercentage = 18;
+  int serviceFee = 10;
+  double price = 100;
+  int discount = 10;
+  double result = computePriceLambda(taxPercentage, serviceFee, price,
+  discount);
+  CHECK_EQ(118, result);
+}</code></pre>
+
+<p>这段代码更好吗？答案取决于具体情境。其中一个重要因素是你对函数式编程范式的熟悉程度。但请不要让“不熟悉”成为阻碍：正如我之前提到的，人们常常将“熟悉感”误认为是“简单性”，而实际上它们并不等同。</p>
+
+<p>另一个关键点在于：你需要学会把 lambda 表达式看作函数，而不是复杂的数据结构。一旦你跨越了这两个心理障碍，就会发现这些 lambda 函数其实非常小巧、易于理解，并且都是纯函数 —— 从技术上讲，这正是函数最简单的形式。它们不仅便于测试和复用，还支持灵活的组合方式。例如，你可以轻松地调整调用顺序，将折扣应用于含税价格之后，从而满足不同的业务需求。</p>
+
+<p>目前来看，这些特性在命令式编程中虽然也能实现，但往往需要更多的样板代码和更复杂的控制流。现在再进一步，真正迈入函数式编程的核心思想：将行为抽象为函数，并通过部分应用与组合来构建逻辑流程。</p>
+
+<p>将继续使用前面定义的那些 lambda 表达式，但这次不再直接返回一个值，而是返回一个能够根据输入计算出最终结果的函数。为了实现这一点，需要做一些准备工作。</p>
+
+<p>由于这些 lambda 都接受两个参数，无法直接将它们用于函数组合（因为大多数组合操作都要求函数只接收一个参数）。因此，在组合之前，需要使用部分应用，将其中一个参数固定下来：</p>
+
+<ul>
+    <li>对于 discountPrice，将 discount 参数绑定为传入 computePriceFunctional 的值，得到一个新的单参数函数，它只接收初始价格并返回打折后的结果；
+  
+  </li>  <li>对于 addServiceFee，将 serviceFee 固定为传入的值，得到一个只接收当前价格的函数；
+  
+  </li>  <li>对于 applyTax，将 taxPercentage 绑定为传入值，得到一个只接收不含税价格的函数。
+</ul>
+
+<p>当我们获得这三个只接受一个参数的函数后，就可以使用之前定义的 compose 函数，将它们依次组合起来，最终得到一个统一的函数：它只接受一个参数 price，并在被调用时按顺序执行所有步骤，返回最终的价格结果。</p>
+
+<p>下面就是我们最终的函数式实现：</p>
+
+</li><pre><code class="language-cpp">auto computePriceFunctional(const int taxPercentage, const int
+serviceFee, const double price, const int discount){
+  using std::bind;
+  using std::placeholders::_1;
+  auto discountLambda = bind(discountPrice, _1, discount);
+  auto serviceFeeLambda = bind(addServiceFee, _1, serviceFee);
+  auto applyTaxLambda = bind(applyTax, _1, taxPercentage);
+  return compose( applyTaxLambda, compose(serviceFeeLambda,
+  discountLambda));
+}
+TEST_CASE(&quot;compute price functional&quot;){
+  int taxPercentage = 18;
+  int serviceFee = 10;
+  double price = 100;
+  int discount = 10;
+  auto computePriceLambda = computePriceFunctional(taxPercentage,
+  serviceFee, price, discount);
+  double result = computePriceLambda(price);
+  CHECK_EQ(118, result);
+}</code></pre>
+
+<p>这种编程风格乍看之下，似乎与我们熟悉的面向对象编程（OOP）或结构化编程大相径庭。但稍作思考，就会发现：一个对象本质上不过是一组内聚的、已经部分应用了参数的函数集合。如果将这些方法从对象中“提取”出来，就需要显式地传入那些原本封装在对象内部的数据成员 —— 这种编程方式对于曾用 C 语言编写程序的开发者来说，无疑是非常熟悉的。</p>
+
+<p>换句话说，将一个函数作为对象的方法来调用，本质上等价于将某些参数绑定到了由构造函数初始化的对象状态上。可以看出，OOP 与函数式编程并非彼此对立，而是表达相同行为的两种不同方式。它们各有优劣，适用于不同的设计目标和场景，本质上是相通的两种抽象机制。</p>
+
+<p>作为对后续“元编程”章节的铺垫，我们不妨进一步思考：如何让上述这些函数在编译时就可用？这就需要用到一点模板编程的技巧，即将原本的值参数转换为模板参数，并辅以大量的 constexpr 关键字来标记常量表达式。虽然实现上略显复杂，但其效果非常直观 —— 可以在编译阶段完成许多原本运行时才进行的计算。</p>
+
+<p>尽管如此，下面这段代码依然能够很好地工作，并为我们接下来探讨更高级的主题打下基础：</p>
+
+<pre><code class="language-cpp">template &lt;class F, class G&gt;
+constexpr auto compose(F f, G g){
+  return [=](auto value){return f(g(value));};
+}
+constexpr auto discountPriceCompile =
+[](const double price, const
+int discount){return price - discount;
+};
+constexpr auto addServiceFeeCompile =
+[](const double price, const
+int serviceFee){
+  return price + serviceFee;
+};
+constexpr auto applyTaxCompile =
+[](const double price,
+cons t int taxPercentage){
+  return price * (1 + static_cast&lt;double &gt;(taxPercentage)/100);
+};
+template&lt;int taxPercentage, int serviceFee, double price, in t
+discount&gt;
+constexpr auto computePriceFunctionalCompile() {
+  using std::bind;
+  using std::placeholders::_1;
+  constexpr auto discountLambda = bind(discountPrice, _1, discount);
+  constexpr auto serviceFeeLambda = bind(addServiceFee , _1, serviceFee);
+  constexpr auto applyTaxLambda = bind(applyTax, _1, taxPercentage);
+  return compose( applyTaxLambda, compose(serviceFeeLambda, discountLambda));
+}
+TEST_CASE(&quot;compute price functional compile&quot;){
+  constexpr int taxPercentage = 18;
+  constexpr int serviceFee = 10;
+  constexpr double price = 100;
+  constexpr int discount = 10;
+  constexpr auto computePriceLambda =
+  computePriceFunctionalCompile&lt;taxPercentage, serviceFee, price,
+  discount&gt;();
+  double result = computePriceLambda(price);
+  CHECK_EQ(118, result);
+}</code></pre>
+
+<p>至此，我们已经了解了 C++ 中函数式编程的基本构建块。接下来，让我们探讨这些特性在实际开发中的应用场景及其优势。</p>
+
+<h4>3.3.4 函数式风格的架构模式</h4>
+
+<p>现在我们来看看如何将一个应用程序完全以函数式风格进行设计与实现。虽然我们无法涵盖所有可能的设计模式，但可以通过一些典型示例来展示其核心思想。</p>
+
+<p>首先，函数式编程对我们的设计施加了一些重要的约束，这些约束也带来了显著的优势：</p>
+
+<ul>
+    <li>倾向于使用不可变性与纯函数：确保函数的行为不受外部状态影响，提高代码的确定性和可测试性；
+  
+  </li>  <li>使用不可变的数据结构：每次修改数据结构都会生成一个新的副本，从而避免副作用和并发问题；
+  
+  </li>  <li>元编程的支持：通过模板和 constexpr 等机制，在编译期完成部分计算或逻辑处理；
+  
+  </li>  <li>I/O 操作的隔离：由于 I/O 通常涉及状态变化，因此应将其独立出来，并尽量保持简洁
+</ul>
+
+<p>基于这些约束，一种简单而有效的设计模式是 管道（Pipe）模式。</p>
+
+<p>假设我们需要从一个 XML 文件中提取数据，并调用某个 Web 服务进行处理。我们可以将整个流程划分为三个层次：输入层负责读取 XML 文件，输出层负责向 Web 服务发送请求，而中间的处理逻辑则完全采用函数式风格实现。具体来说，我们可以逐步对输入数据应用一系列转换操作，最终得到所需的输出结果。每一步转换都由一个作用于不可变数据结构上的纯函数完成。</p>
+
+<p>由于整个处理流程不依赖于任何共享状态，这种结构天然具备高度的并行化潜力。事实上，C++17 引入了 <execution> 头文件，允许我们以并行方式运行常见的 STL 算法，进一步挖掘函数式编程的性能优势。</p>
+
+<p>类似的架构模式广泛应用于各种数据处理系统中，例如：</p>
+
+<ul>
+  </li>  <li>ETL 架构（抽取、转换、加载）
+  
+  </li>  <li>MapReduce 架构，由 Hadoop 推广开来
+</ul>
+
+<p>不仅如此，这种“函数式处理 + 命令式接口”的设计还可以扩展为一种更通用的架构风格，称为 “函数式核心 + 命令式外壳”，这一概念由 Gary Bernhardt 提出，形象地描述了程序内部逻辑与外部交互之间的分离关系。</p>
+
+<p>如果希望深入了解这类架构，可以进一步研究结合函数式核心的 六边形架构。</p>
+
+<p>这表明，我们不仅可以在 C++ 中成功地应用函数式编程范式，而且在某些特定场景下，它甚至是最优的设计选择。更重要的是，不必全盘采用函数式风格，也可以选择性地将其应用于项目中的关键模块，以提升系统的可维护性、可测试性和可扩展性。</p>
+
+</li>
+          </section>
+          
+  <div class="navigation">
+    <a href="32--chapter3-2.html" class="prev-link">« 上一章：3.2. 多面性</a>
+    <a href="34--chapter3-4.html" class="next-link">下一章：3.4. 元编程 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  

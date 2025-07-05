@@ -1,0 +1,295 @@
+
+  <!DOCTYPE html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.2. 数字宇宙之和 - 走出C++谜云</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script>
+      window.MathJax = {"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"processEscapes":true,"tags":"ams"},"svg":{"fontCache":"global"}};
+    </script>
+    
+  </head>
+  <body>
+    <div class="container">
+      
+        <div class="chapter-container">
+          
+  <div class="navigation">
+    <a href="81--chapter8-1.html" class="prev-link">« 上一章：8.1. 点亮像素</a>
+    <a href="83--chapter8-3.html" class="next-link">下一章：8.3. 单指令霸权 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+          <section id="82--chapter8-2" class="section">
+            <h2 class="section-title">8.2. 数字宇宙之和</h2>
+            <p>所有开发者在职业生涯中都不可避免地要经历技术面试这一关。面试的难度因公司而异、因岗位而异：有些面试仅停留在“请做个自我介绍”的层面（这些题目往往最难应对），有些则更为深入，可能要求你在黑板上甚至电脑上现场编写代码。</p>
+
+<p>在各类编程面试题中，频繁出现的一类经典问题是：编写一个程序，计算具有特定特征的数列之和，例如:所有偶数的和、能被五整除的数字之和，或是特定区间内奇数的总和。</p>
+
+<p>为简化起见，我们以一道常见题目为例：计算 100 以内所有奇数的和。</p>
+
+<p>以下这段简洁的程序完美实现了这个功能：</p>
+
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+int main() {
+  int sum = 0;
+  for (int i = 1; i &lt;= 100; ++i) {
+    if (i
+      sum += i; // Add the odd number to the sum
+    }
+  }
+  printf(&quot;The sum is:
+  return 0;
+}</code></pre>
+
+<p>这个程序并不复杂：只需遍历数字，检查是否为奇数；若是，则将其值累加到总和中；最后输出结果(感兴趣的读者请注意，1到100之间所有奇数的和正好是2,500)。</p>
+
+<p>然而，我们的清晰思路被一个众所周知的事实（至少对 C++ 开发者而言）所干扰：最快的 C++ 代码往往是嵌入了汇编的代码。于是，在“速度至上”的信念驱使下，我们决定牺牲程序的可移植性和可读性，将核心逻辑用汇编语言重写 —— 毕竟，这才是理论上最快的实现方式。以下是我们采用AT&amp;T汇编语法进行的尝试，仅用于展示我们可以在不符合标准规范的C++程序中嵌入的各种常见汇编方言：</p>
+
+<pre><code class="language-cpp">#include &lt;cstdio&gt;
+int main() {
+  int sum = 0;
+  int i = 1; // Start with the first odd number
+  __asm__ (
+    // 1.将 i 设为 1。尽管 i 已在 C++ 代码中初始化为 1，但这里显式地在汇编中再次设置，以确保清晰。
+    &quot;movl $1,
+    // 2.将 sum 设为 0，确保在汇编代码中总和从 0 开始计算。必须承认，这两步初始化并非必要，希望它们能温和地引导你进入汇编的世界。
+    &quot;movl $0,
+    // 3.仅是一个标签，无需额外解释。
+    &quot;loop_start:&quot;
+    // 4.比较 i 和 100，用于检查 i 是否达到或超过 100。
+    &quot;cmpl $100,
+    // 5.若 i 大于 100，则跳转至 loop\_end，退出循环。
+    &quot;jg loop_end\n&quot; // If i &gt; 100, exit the
+    // 6.将当前 i 的值累加到 sum 中，逐步计算 1 至 99 的奇数和。
+    &quot;addl
+    // 7.将 i 增加 2，跳转到下一个奇数(如 1 -&gt; 3 -&gt; 5，依此类推)。
+    &quot;addl $2,
+    // 8.跳回循环起始处，重复执行。
+    &quot;jmp loop_start&quot; // Repeat the loop
+    // 9.当 i 超过 100 时，程序跳转至此标签，循环结束。
+    &quot;loop_end:&quot;
+    : [sum] &quot;+r&quot; (sum), [i] &quot;+r&quot; (i)
+  );
+  printf(&quot;The sum is:
+  return 0;
+}</code></pre>
+
+<p>关于 <code>"+r" (sum)</code> 和 <code>"+r" (i)</code>：这些是约束标记，告知编译器将 sum 和 i 视为可读写变量，即在汇编操作中既可读取也可修改其值。</p>
+
+<p>第一个缺点：代码可读性与可理解性急剧下降。我们故意使用 AT&amp;T 汇编语法，因为它更繁琐、更难懂，目的是亲身体会其痛苦，并铭记 —— 清楚自己在做什么(即便如此也需谨慎)，否则永远别在代码中嵌入汇编。</p>
+
+<p>第二个缺点：代码不再具备可移植性。</p>
+
+<p>因为 <code>__asm__</code> 在 Visual C++ 中并不存在(早年使用 <code>__asm</code>，或更近期的 Turbo C 演示了 asm 关键字的引入)。此外，C++ 标准并未统一内联汇编的语法，因为汇编语言依赖于编译器和平台，内联汇编属于扩展功能而非语言核心。</p>
+
+<p>希望上述说明能彻底打消你在 C++ 函数中直接编写汇编代码的念头 —— 无论是否存在非标准关键字允许这样做。</p>
+
+<p>但既然我们已经借助 gcc.godbolt.org 来到了这里，我们便让各大主流编译器在不同优化级别下处理最初那个简单的 C++ 程序(完全不涉及汇编)，因为我们想证明 —— 在此阶段完全跳过汇编语言，才是最明智的选择。</p>
+
+<p>第一个要展示编译器强大代码生成能力的是 Microsoft Visual C++。微软自家的 C++ 编译器虽然以小巧灵活著称，但也提供了丰富的代码生成与优化选项<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/build/reference/o-options-optimize-code?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/build/reference/o-options-optimize-code?view=msvc-170</a></span>，但我们始终信奉一条简单而有效的准则：代码越短，运行得越快。因此，我们明确要求编译器以生成最短代码为目标进行优化（即使用 <code>/O1</code> 选项）。其输出结果如下：</p>
+
+<pre><code class="language-shell">&lsquo;string&rsquo; DB 'The sum is: 
+_main PROC
+  xor ecx, ecx  ; Clear the ECX register (set ECX to 0)
+  xor edx, edx  ; Clear the EDX register (set EDX to 0)
+  inc ecx       ; Increment ECX, setting it to 1
+  $LL4@main:
+  test cl, 1    ; Test the least significant bit of CL
+                ; (ECX) to check if ECX is odd or even
+  lea eax, DWORD PTR [ecx+edx] ; Load the effective
+                ; address of ECX + EDX into EAX
+  cmove eax, edx; If the zero flag is set
+                ; (ECX was even), move EDX into EAX
+  inc ecx       ; Increment ECX by 1
+  mov edx, eax  ; Move the value in EAX to EDX
+                ; (update EDX for the next iteration)
+  cmp ecx, 100  ; Compare ECX with 100
+  jle SHORT $LL4@main ; Jump to the start of the loop
+                ; (loop until ECX &gt; 100)
+  push edx      ; Push the final value of EDX (the sum)
+                ; after the loop onto the stack
+  push OFFSET &lsquo;string&rsquo; ; Push the offset of the string
+  call _printf  ; Call the printf function
+  pop ecx       ; Clean up the stack (remove string)
+  pop ecx       ; Clean up the stack (remove EDX)
+  ret 0         ; Return from the _main function
+_main ENDP</code></pre>
+
+<p>有趣的是，MSVC 生成的汇编输出与我们手工编写的版本高度吻合 —— 同样采用了循环结构，只是根据当前处理数字的奇偶性对寄存器的操作略有差异。除此之外，其逻辑与我们编写的代码几乎一致。</p>
+
+<p>即便尝试了 MSVC 的其他优化选项组合（如 /Ox、/O2 和 /Ot），生成的代码也并无显著差异 —— 仅仅是寄存器分配略有不同，完全达不到让人惊叹“哇！”的程度。而当我们切换到 GCC（14.1）来编译这段简单代码时，发现 -O1 和 -O2 优化级别下生成的代码与 MSVC 极为相似：通过变量遍历数字，进行奇偶判断并累加。</p>
+
+<p>毫无黑魔法痕迹……直到我们启用了 -O3 优化。这个标志位让编译器祭出了单指令多数据流（SIMD）指令集来加速运算：GCC 竟然将初始值为 &#123;1, 2, 3, 4&#125; 的 4 元素数组通过 25 次迭代（每次元素值递增 4）进行 SIMD 并行求和，最终将 SIMD 寄存器中的累加结果规约为单个整数输出。尽管这段长达三页多的汇编代码因其实用性过低未被收录，但它作为趣味知识仍然值得提及。</p>
+
+<p>接下来测试的 Clang 编译器给了我们一个惊喜。在见识过 GCC -O3 冗长的 SIMD 指令后，我们原本并未抱太大期待，但即便在 -O1 级别，Clang 生成的代码简洁得令人意外：</p>
+
+<pre><code class="language-shell">main:
+  push rax
+  lea rdi, [rip + .L.str]
+  mov esi, 2500
+  xor eax, eax
+  call printf@PLT
+  xor eax, eax
+  pop rcx
+  ret
+.L.str:
+  .asciz "The sum is:</code></pre>
+
+<p>令人惊叹！Clang 似乎在编译阶段就完成了所有计算，并将结果直接硬编码进生成的二进制文件中 —— 这已经是优化的极致体现。我们不禁由衷感慨：现代编译器已经进化成如此精妙而强大的“猛兽”。这也激发了我们的好奇心：其他主流编译器是否也具备这般智慧？</p>
+
+<p>事实证明，GCC 在 -O3 优化级别下同样展现了这一能力，但有一个令人啼笑皆非的小插曲：它仅在计算 71 以内 的奇数和时会进行预计算并直接输出结果。当我们将上限改为 72，其内部机制仿佛“崩溃”了一般，立即切换回冗长的 SIMD 指令版本，开始执行循环与向量化求和。</p>
+
+<p>至于 MSVC，则始终无动于衷 —— 无论我们如何调整数值、尝试不同的参数组合，都拒绝像 Clang 那样进行预计算。最终我们只能遗憾地判定：当前版本的 MSVC 确实不具备这种能力。</p>
+
+<p>亲爱的微软 Visual C++ 开发团队，也许下一个版本就能实现这个功能？</p>
+
+<h4>8.2.1 预见未来</h4>
+
+<p>在 C++ 开发者圈子里流传着这样一句话：“如今的编译器优化是我们迄今为止拼凑出的最佳成果 —— 同时也是对它们还能变得多强大的无情提醒。”</p>
+
+<p>考虑到本书撰写于 2024 年（如果一切顺利将在 2025 年出版，而根据计划，到 2027 年这本书就会显得过时，届时我们可能又得着手编写新版），我们对当下技术的发展水平有着清醒的认知。</p>
+
+<p>不过，当你真正读到这本书的时候，也许人类已经在火星上种植土豆，而你所在建筑的墙面上爬满了机械猴涂鸦的代码 —— 那时你或许已经见证了编译器在过去十年间的长足进步。</p>
+
+<p>说不定，微软那个（没错，就是我们说的那个“小巧软萌”的）C++ 编译器，现在已经聪明到能在编译前就计算简单的数列之和；而 GCC 对数字 72 也不会再“莫名发脾气”。即使，是对我们演示的这种极简小程序也是如此。</p>
+
+<p>欢迎来到未来。</p>
+          </section>
+          
+  <div class="navigation">
+    <a href="81--chapter8-1.html" class="prev-link">« 上一章：8.1. 点亮像素</a>
+    <a href="83--chapter8-3.html" class="next-link">下一章：8.3. 单指令霸权 »</a>
+  </div>
+  <div class="back-to-toc"><a href="index.html">返回目录</a></div>
+  
+        </div>
+        
+    </div>
+    
+    <!-- 先加载核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- 加载MathJax -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+    
+    <!-- 主题切换脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 创建主题切换按钮
+      const themeToggle = document.createElement('button');
+      themeToggle.className = 'theme-toggle';
+      themeToggle.setAttribute('aria-label', '切换主题');
+      themeToggle.innerHTML = '🌓';
+      document.body.appendChild(themeToggle);
+      
+      // 添加深色和浅色主题的样式
+      const darkThemeStyle = document.createElement('style');
+      const lightThemeStyle = document.createElement('style');
+      
+      darkThemeStyle.textContent = `
+        body.dark-theme {
+          --background-color: #1a1a1a;
+          --text-color: #e6e6e6;
+          --code-bg-color: #2d2d2d;
+          --link-color: #58a6ff;
+          --highlight-color: #58a6ff;
+          --border-color: #333;
+          --table-border-color: #444;
+          --table-header-bg: #2d2d2d;
+          --blockquote-color: #aaa;
+          --blockquote-border: #444;
+          --part-header-bg: #222;
+          --footer-text-color: #aaa;
+          --filename-bg: #2d2d2d;
+          --nav-bg: #2d2d2d;
+          --nav-hover-bg: #444;
+          --toc-bg: #222;
+          --highlight-section-bg: #2d2d2d;
+          --highlight-section-border: #58a6ff;
+        }
+      `;
+      
+      lightThemeStyle.textContent = `
+        body.light-theme {
+          --background-color: #ffffff;
+          --text-color: #333333;
+          --code-bg-color: #f5f5f5;
+          --link-color: #0366d6;
+          --highlight-color: #0366d6;
+          --border-color: #eee;
+          --table-border-color: #ddd;
+          --table-header-bg: #f2f2f2;
+          --blockquote-color: #666;
+          --blockquote-border: #ddd;
+          --part-header-bg: #f8f8f8;
+          --footer-text-color: #666;
+          --filename-bg: #f5f5f5;
+          --nav-bg: #f5f5f5;
+          --nav-hover-bg: #e6e6e6;
+          --toc-bg: #f8f8f8;
+          --highlight-section-bg: #f8f8f8;
+          --highlight-section-border: #0366d6;
+        }
+      `;
+      
+      document.head.appendChild(darkThemeStyle);
+      document.head.appendChild(lightThemeStyle);
+      
+      // 检查本地存储中的设置
+      const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+      const currentTheme = localStorage.getItem('theme');
+      
+      if (currentTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else if (currentTheme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        // 如果没有保存的偏好，跟随系统
+        if (prefersDarkScheme.matches) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.add('light-theme');
+        }
+      }
+      
+      // 添加点击事件监听器
+      themeToggle.addEventListener('click', function() {
+        console.log('Theme toggle clicked');
+        if (document.body.classList.contains('dark-theme')) {
+          document.body.classList.remove('dark-theme');
+          document.body.classList.add('light-theme');
+          localStorage.setItem('theme', 'light');
+        } else {
+          document.body.classList.remove('light-theme');
+          document.body.classList.add('dark-theme');
+          localStorage.setItem('theme', 'dark');
+        }
+      });
+      
+      // 确保代码块有正确的类名
+      document.querySelectorAll('pre code').forEach(function(block) {
+        if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+          block.className = 'language-cpp';
+        } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+          block.className = 'language-rust';
+        } else if (!block.className) {
+          block.className = 'language-plaintext';
+        }
+      });
+      
+      // 延迟加载Prism高亮
+      setTimeout(function() {
+        if (window.Prism) {
+          window.Prism.highlightAll();
+        }
+      }, 500);
+    });
+    </script>
+  </body>
+  </html>
+  
