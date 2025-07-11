@@ -355,15 +355,26 @@ def process_my_notic(html):
   html = re.sub(r'\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}', replacer, html)
   return html
 
-def convert_my_graphic(html, image_root_dir):
+def convert_my_graphic(html, image_root_dir, output_dir):
   def replacer(match):
+    import shutil
     scale = match.group(1)
-    path = str((image_root_dir / match.group(2)).as_posix())
+    image_path = match.group(2)
+
+    ori_image_path = image_root_dir / image_path
+    if os.path.exists(ori_image_path):
+      image_dist_dir = output_dir / Path(image_path).parent
+      os.makedirs(image_dist_dir, exist_ok=True)
+      shutil.copy2(ori_image_path, image_dist_dir)
+    else:
+      print(f"Warning: 图片文件 {image_path} 不存在，无法复制到输出目录。")
+      exit(-10)
+
     caption = match.group(3)
     percentage = float(scale) * 100
     return f'''
     <div class="image-block" style="text-align: center;">
-      <div><img src="{path}" style="width: {percentage}%;" alt="{caption}"></div>
+      <div><img src="{image_path}" style="width: {percentage}%;" alt="{caption}"></div>
       <div class="caption">{caption}</div>
     </div>'''
   return re.sub(r'\\myGraphic\{([\d.]+)\}\{(.*?)\}\{(.*?)\}', replacer, html)
@@ -402,11 +413,11 @@ def process_latex_env(paragraph_content):
 
   return paragraph_content
 
-def process_special_paragraph(paragraph_content, image_root_dir):
+def process_special_paragraph(paragraph_content, image_root_dir, output_dir):
   paragraph_content = process_latex_env(paragraph_content)
 
   # 替换特殊字符
-  paragraph_content = convert_my_graphic(paragraph_content, image_root_dir)
+  paragraph_content = convert_my_graphic(paragraph_content, image_root_dir, output_dir)
   paragraph_content = paragraph_content.replace('---', '——')
   paragraph_content = re.sub(r'\\hspace\*{\\fill}', '<br>', paragraph_content)
   paragraph_content = re.sub(r'\\mySubsubsection\{(.*?)\}\{(.*?)\}', r'<h4 class="filename">\1 \2</h4>', paragraph_content)
@@ -431,21 +442,21 @@ def process_special_paragraph(paragraph_content, image_root_dir):
 
   return paragraph_content
 
-def generate_content(latex_content, relative_path, output_dir):
+def generate_content(latex_content, input_dir, output_dir):
   content_info = latex_content['content_info']
   book_info = latex_content['book_info']
   catalogue_info = latex_content['catalogue_info']
 
   index_tex_path = latex_content['index_tex_path']
   book_dir_name = Path(index_tex_path).parent.name
-  image_root_dir = Path(relative_path) / book_dir_name
+  image_root_dir = Path(input_dir) / book_dir_name
 
   for section_index, section_info in enumerate(content_info):
     output_path = output_dir / f"{section_info['section_name']}.html"
 
     content_lines = []
     for paragraph_line in section_info['section_content']:
-      processed_line = process_special_paragraph(paragraph_line, image_root_dir)
+      processed_line = process_special_paragraph(paragraph_line, image_root_dir, output_dir)
       if len(processed_line) > 0:
         content_lines.append(f"<p>{processed_line}</p>")
 
@@ -482,7 +493,6 @@ def generate_content(latex_content, relative_path, output_dir):
         f.write(final_html)
 
 def latex_to_html(latex_content, input_dir, output_dir):
-  relative_path = os.path.relpath(input_dir, output_dir)
   generate_index(latex_content, output_dir)
-  generate_content(latex_content, relative_path, output_dir)
+  generate_content(latex_content, input_dir, output_dir)
 

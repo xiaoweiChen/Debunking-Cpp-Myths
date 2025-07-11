@@ -19,15 +19,13 @@ def read_file_sync(path):
   with open(path, mode='r', encoding='utf-8-sig') as f:
     return f.read()
   
-def parse_book_info(center_text: str, relative_path:Path) -> dict:
+def parse_book_info(center_text: str) -> dict:
   result = {}
 
   # 提取图片路径
   img_match = re.search(r'\\includegraphics\[.*?\]\{(.+?)\}', center_text)
   if img_match:
-    # 保证 relative_path 是 Path 类型，且拼接后转为 POSIX
-    rel_path = Path(relative_path) if not isinstance(relative_path, Path) else relative_path
-    result['cover_image'] = str(rel_path.joinpath(img_match.group(1).strip()).as_posix())
+    result['cover_image'] = Path(img_match.group(1).strip())
 
   # 提取标题（\textbf{} + 下一行）
   title_match = re.search(r'\\textbf\{(.+?)\}\s*\\\\\[\d+pt\]\s*\\normalsize\s*(.+?)\s*\\\\', center_text, re.DOTALL)
@@ -51,8 +49,6 @@ def parse_book_info(center_text: str, relative_path:Path) -> dict:
   return result
 
 def parse_book_index(processed_content, input_dir, output_dir):
-
-  relative_path = os.path.relpath(input_dir, output_dir)
 
   # 处理 \subfile 命令
   subfile_regex = re.compile(r'\\subfile\{([^{}]+)\}')
@@ -89,7 +85,10 @@ def parse_book_index(processed_content, input_dir, output_dir):
 
   center_block = extract_center_block(processed_content)
   if center_block:
-    info = parse_book_info(center_block, relative_path)
+    info = parse_book_info(center_block)
+    if info["cover_image"].exists():
+      import shutil
+      shutil.copy(info["cover_image"], output_dir)
     latex_reader_result['book_info'] = info
 
   if 'index.tex' in subfile_path:
