@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第5章 - 走出C++谜云</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <script>
+    window.MathJax = {'tex': {'inlineMath': [['$', '$'], ['\\(', '\\)']], 'displayMath': [['$$', '$$'], ['\\[', '\\]']], 'processEscapes': 'true', 'tags': 'ams'}, 'svg': {'fontCache': 'global'}};
+  </script>
+  
+</head>
+
+<body>
+  <div class="container">
+    
+<div class="chapter-container">
+  
+<div class="navigation">
+  <a href="4.4..html" class="prev-link">« 上一章：4.4. 总结</a>
+  <a href="5.1..html" class="next-link">下一章：5.1. 大小很重要 »</a>
+</div>
+<div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+  <section class="chapter"><h1 class="chapter-title">第5章</h1></section>
+  <p><div style="text-align:right">
+<em>—— 法峻思枯</em>
+</div></p>
+<p>排序在各种领域中都扮演着至关重要的角色，它能够提升组织性、效率以及清晰度。无论是在图书馆或通讯录中按字母顺序排列信息，客服队列或数据分析中依据数字进行排序，还是时间线或日程安排按照时间先后顺序整理，任务管理或应急响应根据优先级处理，库存管理或数字文件的分类，竞赛排名，服装尺码的整理，旅行路线或邮件投递的地理路径规划，制造业或软件开发中的流程步骤，乃至组织架构或生物分类学中的层级结构 —— 排序都能优化流程、增强可访问性，并加强决策能力。</p>
+<p>通过采用字母序、数值序、时间序、优先级、类别、排名、尺寸大小、地理位置、操作步骤或层次结构等多种不同的标准，排序有助于在多种场景下实现高效的管理和运作。</p>
+<p>本章将深入探讨：为何C++类成员需要遵循特定的声明顺序？正确与错误地声明类成员分别会带来怎样的利弊？同时，也会简要回顾一下C++中的运算符执行顺序 —— 这一主题即便是对于经验丰富的开发者来说也可能充满挑战。</p>
+<p>完成本章后，你将对以下内容有更深入的理解：</p>
+<p><ul>
+    <li>以特定顺序准确声明类成员的重要性</li>  <li>按照所需顺序初始化类成员的意义</li>  <li>运算符执行顺序的相关规范
+</ul></li></p>
+  <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+<div class="navigation">
+  <a href="4.4..html" class="prev-link">« 上一章：4.4. 总结</a>
+  <a href="5.1..html" class="next-link">下一章：5.1. 大小很重要 »</a>
+</div>
+
+</div>
+
+  </div>
+  <!-- 先加载核心库 -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  
+  <!-- 加载MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  
+  <!-- 主题切换脚本 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 创建主题切换按钮
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换主题');
+    themeToggle.innerHTML = '🌓';
+    document.body.appendChild(themeToggle);
+    
+    // 添加深色和浅色主题的样式
+    const darkThemeStyle = document.createElement('style');
+    const lightThemeStyle = document.createElement('style');
+    
+    darkThemeStyle.textContent = `
+      body.dark-theme {
+        --background-color: #1a1a1a;
+        --text-color: #e6e6e6;
+        --code-bg-color: #2d2d2d;
+        --link-color: #58a6ff;
+        --highlight-color: #58a6ff;
+        --border-color: #333;
+        --table-border-color: #444;
+        --table-header-bg: #2d2d2d;
+        --blockquote-color: #aaa;
+        --blockquote-border: #444;
+        --part-header-bg: #222;
+        --footer-text-color: #aaa;
+        --filename-bg: #2d2d2d;
+        --nav-bg: #2d2d2d;
+        --nav-hover-bg: #444;
+        --toc-bg: #222;
+        --highlight-section-bg: #2d2d2d;
+        --highlight-section-border: #58a6ff;
+      }
+    `;
+    
+    lightThemeStyle.textContent = `
+      body.light-theme {
+        --background-color: #ffffff;
+        --text-color: #333333;
+        --code-bg-color: #f5f5f5;
+        --link-color: #0366d6;
+        --highlight-color: #0366d6;
+        --border-color: #eee;
+        --table-border-color: #ddd;
+        --table-header-bg: #f2f2f2;
+        --blockquote-color: #666;
+        --blockquote-border: #ddd;
+        --part-header-bg: #f8f8f8;
+        --footer-text-color: #666;
+        --filename-bg: #f5f5f5;
+        --nav-bg: #f5f5f5;
+        --nav-hover-bg: #e6e6e6;
+        --toc-bg: #f8f8f8;
+        --highlight-section-bg: #f8f8f8;
+        --highlight-section-border: #0366d6;
+      }
+    `;
+    
+    document.head.appendChild(darkThemeStyle);
+    document.head.appendChild(lightThemeStyle);
+    
+    // 检查本地存储中的设置
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (currentTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      // 如果没有保存的偏好，跟随系统
+      if (prefersDarkScheme.matches) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    // 添加点击事件监听器
+    themeToggle.addEventListener('click', function() {
+      console.log('Theme toggle clicked');
+      if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // 确保代码块有正确的类名
+    document.querySelectorAll('pre code').forEach(function(block) {
+      if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+        block.className = 'language-cpp';
+      } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+        block.className = 'language-rust';
+      } else if (!block.className) {
+        block.className = 'language-plaintext';
+      }
+    });
+    
+    // 延迟加载Prism高亮
+    setTimeout(function() {
+      if (window.Prism) {
+        window.Prism.highlightAll();
+      }
+    }, 500);
+  });
+  </script>
+</body>
+</html>

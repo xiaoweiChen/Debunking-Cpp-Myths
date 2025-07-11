@@ -1,5 +1,6 @@
 ﻿import os, re
 import json
+import html
 from pathlib import Path
 
 # 生成HTML页面框架
@@ -8,7 +9,7 @@ def create_html_template(title, content, headExtra = ''):
     "tex": {
       "inlineMath": [["$", "$"], ["\\(", "\\)"]],
       "displayMath": [["$$", "$$"], ["\\[", "\\]"]],
-      "processEscapes": True,
+      "processEscapes": "true",
       "tags": "ams"
     },
     "svg": {
@@ -259,7 +260,6 @@ def convert_longtable_to_html(html):
 
 def process_cpp_env(html_text):
   def replacer(match):
-    import html
     code = match.group(1)
     # 去掉每行结尾空格
     lines = [line.rstrip() for line in code.splitlines()]
@@ -355,10 +355,24 @@ def process_my_notic(html):
   html = re.sub(r'\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}', replacer, html)
   return html
 
+def convert_my_graphic(html, image_root_dir):
+  def replacer(match):
+    scale = match.group(1)
+    path = str((image_root_dir / match.group(2)).as_posix())
+    caption = match.group(3)
+    percentage = float(scale) * 100
+    return f'''
+    <div class="image-block" style="text-align: center;">
+      <div><img src="{path}" style="width: {percentage}%;" alt="{caption}"></div>
+      <div class="caption">{caption}</div>
+    </div>'''
+  return re.sub(r'\\myGraphic\{([\d.]+)\}\{(.*?)\}\{(.*?)\}', replacer, html)
+
 def process_latex_env(paragraph_content):
   begin_match = re.search(r'\\begin\{([^\}]+)\}', paragraph_content)
 
   if not begin_match:
+    paragraph_content = html.escape(paragraph_content)
     return paragraph_content
   
   env_name = begin_match.group(1)
@@ -388,10 +402,11 @@ def process_latex_env(paragraph_content):
 
   return paragraph_content
 
-def process_special_paragraph(paragraph_content):
+def process_special_paragraph(paragraph_content, image_root_dir):
   paragraph_content = process_latex_env(paragraph_content)
 
   # 替换特殊字符
+  paragraph_content = convert_my_graphic(paragraph_content, image_root_dir)
   paragraph_content = paragraph_content.replace('---', '——')
   paragraph_content = re.sub(r'\\hspace\*{\\fill}', '<br>', paragraph_content)
   paragraph_content = re.sub(r'\\mySubsubsection\{(.*?)\}\{(.*?)\}', r'<h4 class="filename">\1 \2</h4>', paragraph_content)
@@ -405,8 +420,14 @@ def process_special_paragraph(paragraph_content):
   paragraph_content = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', paragraph_content)
   paragraph_content = re.sub(r'\\footnote\{(.*?)\}', r'<span class="footnote">\1</span>', paragraph_content)
   paragraph_content = paragraph_content.replace(r'\#', '#')
+  paragraph_content = paragraph_content.replace(r'\%', '%')
   paragraph_content = paragraph_content.replace(r'\_', '_')
   paragraph_content = paragraph_content.replace(r'\&', '&')
+  paragraph_content = re.sub(r'\\filename\{(.*?)\}', r'<div class="filename">\1</div>', paragraph_content)
+  paragraph_content = re.sub(r'\\begin\{center\}([\s\S]*?)\\end\{center\}', r'<div style="text-align:center">\1</div>', paragraph_content)
+  paragraph_content = paragraph_content.replace('{}', '')
+  paragraph_content = paragraph_content.replace('\}', '}')
+  paragraph_content = paragraph_content.replace('\{', '{')
 
   return paragraph_content
 
@@ -417,13 +438,14 @@ def generate_content(latex_content, relative_path, output_dir):
 
   index_tex_path = latex_content['index_tex_path']
   book_dir_name = Path(index_tex_path).parent.name
+  image_root_dir = Path(relative_path) / book_dir_name
 
   for section_index, section_info in enumerate(content_info):
     output_path = output_dir / f"{section_info['section_name']}.html"
 
     content_lines = []
     for paragraph_line in section_info['section_content']:
-      processed_line = process_special_paragraph(paragraph_line)
+      processed_line = process_special_paragraph(paragraph_line, image_root_dir)
       if len(processed_line) > 0:
         content_lines.append(f"<p>{processed_line}</p>")
 

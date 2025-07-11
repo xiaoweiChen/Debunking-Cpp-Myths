@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5.5. 去序从简 - 走出C++谜云</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <script>
+    window.MathJax = {'tex': {'inlineMath': [['$', '$'], ['\\(', '\\)']], 'displayMath': [['$$', '$$'], ['\\[', '\\]']], 'processEscapes': 'true', 'tags': 'ams'}, 'svg': {'fontCache': 'global'}};
+  </script>
+  
+</head>
+
+<body>
+  <div class="container">
+    
+<div class="chapter-container">
+  
+<div class="navigation">
+  <a href="5.4..html" class="prev-link">« 上一章：5.4. 黑暗法则</a>
+  <a href="5.6..html" class="next-link">下一章：5.6. 总结 »</a>
+</div>
+<div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+  <section class="section"><h1 class="section-title">5.5. 去序从简</h1></section>
+  <p>在结束本章前，还有两个重要细节需要说明。</p>
+<p>第一，C++ 中函数参数的求值顺序是未指定的（unspecified），在调用一个具有多个参数的函数时，编译器可以自由选择以何种顺序对这些参数进行求值。这种不确定性在大多数情况下不会造成影响，但如果参数表达式中包含有副作用（例如修改了某个变量的值），就可能导致行为不一致，甚至引发难以察觉的错误。</p>
+<p>请看以下示例程序：</p>
+<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int f (int a, int b, int c) {
+  std::cout &lt;&lt; &quot;a=&quot;&lt;&lt;a&lt;&lt;&quot; b=&quot;&lt;&lt;b&lt;&lt;&quot; c=&quot;&lt;&lt;c&lt;&lt;std::endl;
+  return a+b+c;
+}
+
+int main() {
+  int i = 1;
+  std::cout&lt;&lt;&quot;f=&quot;&lt;&lt;f(i++, i++, i++)&lt;&lt;std::endl&lt;&lt;&quot;i=&quot;&lt;&lt;i&lt;&lt;std::endl;
+}</code></pre></p>
+<p>无论你认为这个程序的输出是什么，你的答案都很可能是错的。</p>
+<p>原因正如前文所述：函数参数的求值顺序是未指定的（unspecified）。你或许会问：为什么C++要这样设计？这背后确实有着复杂的历史原因。不过在深入探讨这些之前，让我们先来看看不同编译器在如 gcc.godbolt.org 等平台上给出的实际输出结果：</p>
+<p><table border="1">
+  <thead>
+    <tr>
+      <th><strong>编译器</strong></th>
+      <th><strong>输出</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Microsoft Visual C++ (after 2005)</td>
+      <td>a=1 b=1 c=1 <br> <br> f=3 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>Microsoft VS.NET 2003</td>
+      <td>a=3 b=2 c=1 <br> <br> f=6 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>Microsoft Visual C++ 6</td>
+      <td>a=1 b=1 c=1 <br> <br> f=3 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>ICC and Clang agree on this…</td>
+      <td>f=a=1 b=2 c=3 <br> <br> 6 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>GCC, after 6.5</td>
+      <td>f=a=3 b=2 c=1 <br> <br> 6 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>GCC, before 6.5</td>
+      <td>a=3 b=2 c=1 f=<br> <br> 6 <br> <br> i=4</td>
+    </tr>
+    <tr>
+      <td>Turbo C Lite and Borland C++55</td>
+      <td>a=3 b=2 c=1 <br> <br> f=6 <br> <br> i=1</td>
+    </tr>
+  </tbody>
+</table>
+</p>
+<p>因此，我们面临着多种可能的选择 —— 有些较为直观，有些则相当特殊。所有这些看似奇怪的结果都宣称自己是“正统答案”，即便同一厂商的不同编译器版本也可能给出不同的结果。而它们的确都是正确的。</p>
+<p>简而言之，允许编译器自由选择求值顺序，是为了使其能够进行我们开发者可能注意不到的性能优化：</p>
+<p><ul>
+    <li>编译器可以重排指令以利用 CPU 流水线</li>  <li>最小化寄存器使用</li>  <li>提升缓存效率，严格指定的求值顺序会限制这些优化机会
+</ul></li></p>
+<p>不同的硬件架构可能需要不同的最优求值策略。不指定求值顺序，使 C++ 代码更容易适配多种架构，而无需修改代码本身。</p>
+<p>此外，不指定求值顺序也保持了 C++ 语言规范的简洁性。如果为所有表达式指定严格的求值顺序，将大大增加语言定义的复杂性，并加重编译器开发者的负担。考虑到现行标准已接近 2000 页，或许没有必要再增加数百页来详细规定参数求值的复杂性。</p>
+<p>不过，本节开头承诺要提到的第二个重点是：虽然运算符优先级和结合性决定了表达式的分组和解析方式，但它们并不控制求值顺序。这意味着，即使你知道表达式将如何分组，其各部分的实际求值顺序仍可能发生变化。</p>
+<p>请看以下简短示例程序：</p>
+<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+  int i = 4;
+  i = ++i + i++;
+  std::cout &lt;&lt; i &lt;&lt; std::endl;
+  return 0;
+}</code></pre></p>
+<p>这段代码极其简短，但却包含了一些极具争议的表达式，尤其是 ++i + i++。这个表达式之复杂，以至于不同编译器对其求值顺序无法达成一致。</p>
+<p>一些编译器选择先执行 ++i（使 i 变为 5，并将该值作为加法的左操作数），然后执行 i++（此时使用的是已递增后的 i 值 5，再将其递增到 6；但由于后缀递增的语义，加法的右操作数仍为 5）。最终结果是 5 + 5 = 10。</p>
+<p>而另一些编译器则决定先执行 i++，于是加法的右操作数为 4，同时将 i 递增到 5。接着执行 ++i，此时看到 i 的值为 5，将其递增到 6，并将 6 作为加法的左操作数。因此得到 6 + 4 = 10。</p>
+<p>从这些差异可以看出，不指定求值顺序的设计虽然在表面上增加了不确定性，但促使熟悉这一特性的开发者编写出不依赖特定求值顺序的代码。开发者必须避免对求值顺序产生隐含依赖，这有助于提升代码的健壮性和可移植性。</p>
+<p>针对上述情况，正确的做法应是显式地将副作用分离，例如改写为如下形式：</p>
+<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+  int i = 4;
+  int preIncrement = ++i; // i is now 5
+  int postIncrement = i++; //postIncrement is 5, i is now 6
+  i = preIncrement + postIncrement;
+  std::cout &lt;&lt; i &lt;&lt; std::endl; // Output will be 10
+  return 0;
+}</code></pre></p>
+<p>虽然这种情况可能比较罕见(上述代码有点人为设计的痕迹)，但它确实是个问题 —— 特别是遇到类似以下场景时：</p>
+<p><pre><code class="language-cpp">int f() { std::cout &lt;&lt; &quot;f&quot;; return 1; }
+int g() { std::cout &lt;&lt; &quot;g&quot;; return 2; }
+int result = f() + g();</code></pre></p>
+<p>无论编译器如何决定两个函数的调用顺序，result 的值最终都会是 3，但程序的输出可能是 “fg” 或 “gf”。</p>
+<p>在考虑了所有这些因素之后，我们或许会觉得自己已经完全掌握了 C++ 中的求值顺序规则。尽管本章努力涵盖了所有可能引发问题的隐含情况，但我们无法保证实践中不会遇到“不按常理出牌”的情形。C++ 作为一门涵盖范围极广、语法高度灵活的语言，如果有人有意挑战边界，可能就会触碰到某些编译器的“痛点”或出现实现差异。</p>
+  <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+<div class="navigation">
+  <a href="5.4..html" class="prev-link">« 上一章：5.4. 黑暗法则</a>
+  <a href="5.6..html" class="next-link">下一章：5.6. 总结 »</a>
+</div>
+
+</div>
+
+  </div>
+  <!-- 先加载核心库 -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  
+  <!-- 加载MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  
+  <!-- 主题切换脚本 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 创建主题切换按钮
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换主题');
+    themeToggle.innerHTML = '🌓';
+    document.body.appendChild(themeToggle);
+    
+    // 添加深色和浅色主题的样式
+    const darkThemeStyle = document.createElement('style');
+    const lightThemeStyle = document.createElement('style');
+    
+    darkThemeStyle.textContent = `
+      body.dark-theme {
+        --background-color: #1a1a1a;
+        --text-color: #e6e6e6;
+        --code-bg-color: #2d2d2d;
+        --link-color: #58a6ff;
+        --highlight-color: #58a6ff;
+        --border-color: #333;
+        --table-border-color: #444;
+        --table-header-bg: #2d2d2d;
+        --blockquote-color: #aaa;
+        --blockquote-border: #444;
+        --part-header-bg: #222;
+        --footer-text-color: #aaa;
+        --filename-bg: #2d2d2d;
+        --nav-bg: #2d2d2d;
+        --nav-hover-bg: #444;
+        --toc-bg: #222;
+        --highlight-section-bg: #2d2d2d;
+        --highlight-section-border: #58a6ff;
+      }
+    `;
+    
+    lightThemeStyle.textContent = `
+      body.light-theme {
+        --background-color: #ffffff;
+        --text-color: #333333;
+        --code-bg-color: #f5f5f5;
+        --link-color: #0366d6;
+        --highlight-color: #0366d6;
+        --border-color: #eee;
+        --table-border-color: #ddd;
+        --table-header-bg: #f2f2f2;
+        --blockquote-color: #666;
+        --blockquote-border: #ddd;
+        --part-header-bg: #f8f8f8;
+        --footer-text-color: #666;
+        --filename-bg: #f5f5f5;
+        --nav-bg: #f5f5f5;
+        --nav-hover-bg: #e6e6e6;
+        --toc-bg: #f8f8f8;
+        --highlight-section-bg: #f8f8f8;
+        --highlight-section-border: #0366d6;
+      }
+    `;
+    
+    document.head.appendChild(darkThemeStyle);
+    document.head.appendChild(lightThemeStyle);
+    
+    // 检查本地存储中的设置
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (currentTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      // 如果没有保存的偏好，跟随系统
+      if (prefersDarkScheme.matches) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    // 添加点击事件监听器
+    themeToggle.addEventListener('click', function() {
+      console.log('Theme toggle clicked');
+      if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // 确保代码块有正确的类名
+    document.querySelectorAll('pre code').forEach(function(block) {
+      if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+        block.className = 'language-cpp';
+      } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+        block.className = 'language-rust';
+      } else if (!block.className) {
+        block.className = 'language-plaintext';
+      }
+    });
+    
+    // 延迟加载Prism高亮
+    setTimeout(function() {
+      if (window.Prism) {
+        window.Prism.highlightAll();
+      }
+    }, 500);
+  });
+  </script>
+</body>
+</html>

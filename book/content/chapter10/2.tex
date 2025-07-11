@@ -9,7 +9,7 @@
 
 此时项目通常已包含日志和单元测试库。Python标准库自带logging，Java社区偏好Log4J，.NET则采用Microsoft.Extensions.Logging或Log4Net。单元测试方面，Python虽提供标准库但开发者更爱pytest；Java需搭配JUnit/TestNG和Mockito/JMock；.NET虽有内置框架，但技术负责人往往选择NUnit/xUnit+Moq。
 
-那么C++生态如何？日志库早已随C++共同成熟，功能趋同但API略有差异，以致选择困难 --- 许多项目直接使用Boost.Log。GitHub上24k星的spdlog(仅支持C++11)便是例证。单元测试库更是百花齐放：Google的GTest/GMock、标准xUnit结构的CppTest、本书偏好的无依赖单头文件库doctest(\url{(https://github.com/doctest/doctest})，以及适合嵌入式开发的CppUTest(\url{http://cpputest.github.io})。Mocking框架推荐易集成的FakeIt(\url{https://github.com/eranpeer/FakeIt})。
+那么C++生态如何？日志库早已随C++共同成熟，功能趋同但API略有差异，以致选择困难 --- 许多项目直接使用Boost.Log。GitHub上24k星的spdlog(仅支持C++11)便是例证。单元测试库更是百花齐放：Google的GTest/GMock、标准xUnit结构的CppTest、本书偏好的无依赖单头文件库doctest(\url{https://github.com/doctest/doctest})，以及适合嵌入式开发的CppUTest(\url{http://cpputest.github.io})。Mocking框架推荐易集成的FakeIt(\url{https://github.com/eranpeer/FakeIt})。
 
 这些库通常通过包管理器进行管理，其依赖清单以文本、标记或脚本形式存入代码库中。在企业环境中，出于安全考虑，往往会对依赖添加设限：或限定内部源白名单，或需逐包审批，或设置权限门槛。
 

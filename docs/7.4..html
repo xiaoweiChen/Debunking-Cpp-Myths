@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7.4. 函数式编程的救援 - 走出C++谜云</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <script>
+    window.MathJax = {'tex': {'inlineMath': [['$', '$'], ['\\(', '\\)']], 'displayMath': [['$$', '$$'], ['\\[', '\\]']], 'processEscapes': 'true', 'tags': 'ams'}, 'svg': {'fontCache': 'global'}};
+  </script>
+  
+</head>
+
+<body>
+  <div class="container">
+    
+<div class="chapter-container">
+  
+<div class="navigation">
+  <a href="7.3..html" class="prev-link">« 上一章：7.3. 并行和并发的常见问题</a>
+  <a href="7.5..html" class="next-link">下一章：7.5. Actor模型 »</a>
+</div>
+<div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+  <section class="section"><h1 class="section-title">7.4. 函数式编程的救援</h1></section>
+  <p>如我们所见，并行与并发任务的核心挑战之一，就在于多个线程对共享资源的访问与修改所带来的复杂性。</p>
+<p>纯函数式编程通过不可变性（immutability）天然地解决了这一问题 —— 在默认情况下，所有数据都不可变，任何值的改变都是通过对原值的转换并返回新值来实现的，而非就地修改。因此，线程永远无需担心其他线程正在使用的数据被意外修改。我们在讨论 C++ 多范式编程时已经阐释过这一机制的优势。</p>
+<p>但函数式编程的价值不仅限于此：它还天然支持可并行化的算法结构。C++ 标准委员会在引入函数式风格算法的同时，也加入了执行策略（execution policy）机制，使得开发者可以轻松地将集合操作并行化。</p>
+<p>以下是一个简单的示例：计算一个集合中所有数值的平方和。</p>
+<p>这类问题非常适合用函数式的方式建模：它本质上是一个典型的 map-reduce 过程：首先，使用 map 操作将原始集合中的每个元素映射为其平方；然后，通过 reduce 操作将所有平方值累加，得到最终结果。在 C++ 的 STL 中，这些操作分别由 std::transform 和 std::reduce 实现。虽然 std::transform_reduce 提供了一个更高效的组合版本，但为了使示例更具教学意义，将使用基本形式进行演示。</p>
+<p>函数如下所示：</p>
+<p><pre><code class="language-cpp">long long sumOfSquares(const vector&lt;int&gt; numbers){
+  vector&lt;long long&gt; squaredNumbers(numbers.size());
+  auto squareNumber = [](const long it ){ return it * it; };
+
+  transform(numbers.begin(), numbers.end(), squaredNumbers.begin(), squareNumber);
+
+  return reduce(squaredNumbers.begin(), squaredNumbers.end(), 0);
+}
+
+TEST_CASE(&quot;sum of squares in parallel&quot;) {
+  vector&lt;int&gt; numbers{234, 423, 345, 212, 112, 2412};
+
+  CHECK_EQ(6227942, sumOfSquares(numbers));
+}</code></pre></p>
+<p>要让这些操作并行运行，唯一需要做的就是向两个函数式算法添加一个指定执行策略的参数。这里使用的执行策略是 std::execution::par，这是标准库提供的 std::execution::parallel_policy 实例，用于指定算法需要并行运行：</p>
+<p><pre><code class="language-cpp">long long sumOfSquares(const vector&lt;int&gt; numbers){
+  vector&lt;long long&gt; squaredNumbers(numbers.size());
+  auto squareNumber = [](const long it ){ return it * it; };
+
+  transform(std::execution::par, numbers.begin(), numbers.end(), squaredNumbers.begin(), squareNumber);
+
+  return reduce(std::execution::par, squaredNumbers.begin(), squaredNumbers.end(), 0);
+}</code></pre></p>
+<p>从这个例子中，我们可以注意到几点关键之处。</p>
+<p>首先，在使用函数式编程风格时，切换不同的执行策略非常容易。 这使得我们能够更灵活地应对并行化相关的问题，并根据实际需求优化性能。只需更改一行代码，就可以在顺序执行和并行执行之间切换，而无需重构整个算法逻辑。</p>
+<p>然而，并非所有情况下并行执行都优于顺序执行。对于小规模数据集或短集合来说，创建和管理线程所带来的开销可能会超过并行化带来的性能收益。因此，选择是否启用并行策略应基于对输入数据量、计算复杂度以及硬件资源的综合评估。</p>
+<p>其次，执行策略可以作为参数传入，也可以通过配置进行控制。 可以在开发和测试阶段使用顺序执行来验证逻辑正确性（无需考虑线程同步问题），然后在部署环境中根据实际数据特性动态选择最合适的执行策略。这种灵活性极大地提升了代码的可维护性和适应性。</p>
+<p>第三，每种执行策略都会对代码施加特定的限制。 例如，使用并行策略（如 std::execution::par）时，要求迭代器在整个操作过程中保持有效，因此不能在变换过程中修改容器结构（如插入或删除元素）。此外，像 std::back_inserter 这样依赖动态扩展的写入操作也是不允许的。</p>
+<p>除了 std::execution::parallel_policy，STL 还提供了其他策略：</p>
+<p><ul>
+    <li>std::execution::sequenced_policy</li>  <li>std::execution::parallel_unsequenced_policy</li>  <li>std::execution::unsequenced_policy
+</ul></li></p>
+<p>值得注意的是，标准化委员会未来可能会为 std::parallel::cuda 和 std::parallel::opencl 添加内置策略，以支持更多样化的并行计算环境。由于每种执行策略都有其特定的限制和适用场景，因此最具可移植性和健壮性的代码通常追求最大程度的不可变性和函数式算法的应用。</p>
+<p>第四点，这些算法虽然按顺序调用，但内部可以并行化。如果需要进一步榨取计算资源，可以使用组合算法如 std::transform_reduce 或者自行编写合并逻辑来优化性能。然而，并行化是一种权衡：部分计算资源会消耗在线程启动和同步上，某些情况下这可能导致效率反而下降。</p>
+<p>最后第五点，Map-Reduce 模式非常强大。任何一元函数都可以用于 map 阶段，而任何二元函数都可以用于 reduce 阶段。通过绑定参数，甚至可以将多元函数转换为一元或二元形式，从而适应不同的需求。map 和 reduce 可以以多种方式链式组合，形成复杂的处理流程。如果把程序视为“数据输入 -&gt; 处理 -&gt; 输出”的过程，就会发现大多数程序实际上都可以表示为“数据输入 -&gt; 函数式转换 -&gt; 数据输出”，其中许多转换正是基于 map/reduce 操作。这种认知催生了强大的编程模型 —— 可以自由控制整个算法或其部分的并行化开关。虽然有时需要为关键代码编写定制化的并行算法，但大部分优化可以直接利用现有的函数式工具实现。</p>
+<p>唯一的前提是：必须使用不可变数据和函数式算法。</p>
+<p>至此，我们讨论了以数据为中心的设计风格，它聚焦于数据结构及其转换。但在软件架构中，还存在另一种关注行为的设计范式。这种范式将程序分解为多个独立的行为单元，并支持并发与并行编程。这就是Actor 模型，一种旨在简化并发编程复杂度的设计风格。</p>
+  <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+<div class="navigation">
+  <a href="7.3..html" class="prev-link">« 上一章：7.3. 并行和并发的常见问题</a>
+  <a href="7.5..html" class="next-link">下一章：7.5. Actor模型 »</a>
+</div>
+
+</div>
+
+  </div>
+  <!-- 先加载核心库 -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  
+  <!-- 加载MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  
+  <!-- 主题切换脚本 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 创建主题切换按钮
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换主题');
+    themeToggle.innerHTML = '🌓';
+    document.body.appendChild(themeToggle);
+    
+    // 添加深色和浅色主题的样式
+    const darkThemeStyle = document.createElement('style');
+    const lightThemeStyle = document.createElement('style');
+    
+    darkThemeStyle.textContent = `
+      body.dark-theme {
+        --background-color: #1a1a1a;
+        --text-color: #e6e6e6;
+        --code-bg-color: #2d2d2d;
+        --link-color: #58a6ff;
+        --highlight-color: #58a6ff;
+        --border-color: #333;
+        --table-border-color: #444;
+        --table-header-bg: #2d2d2d;
+        --blockquote-color: #aaa;
+        --blockquote-border: #444;
+        --part-header-bg: #222;
+        --footer-text-color: #aaa;
+        --filename-bg: #2d2d2d;
+        --nav-bg: #2d2d2d;
+        --nav-hover-bg: #444;
+        --toc-bg: #222;
+        --highlight-section-bg: #2d2d2d;
+        --highlight-section-border: #58a6ff;
+      }
+    `;
+    
+    lightThemeStyle.textContent = `
+      body.light-theme {
+        --background-color: #ffffff;
+        --text-color: #333333;
+        --code-bg-color: #f5f5f5;
+        --link-color: #0366d6;
+        --highlight-color: #0366d6;
+        --border-color: #eee;
+        --table-border-color: #ddd;
+        --table-header-bg: #f2f2f2;
+        --blockquote-color: #666;
+        --blockquote-border: #ddd;
+        --part-header-bg: #f8f8f8;
+        --footer-text-color: #666;
+        --filename-bg: #f5f5f5;
+        --nav-bg: #f5f5f5;
+        --nav-hover-bg: #e6e6e6;
+        --toc-bg: #f8f8f8;
+        --highlight-section-bg: #f8f8f8;
+        --highlight-section-border: #0366d6;
+      }
+    `;
+    
+    document.head.appendChild(darkThemeStyle);
+    document.head.appendChild(lightThemeStyle);
+    
+    // 检查本地存储中的设置
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (currentTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      // 如果没有保存的偏好，跟随系统
+      if (prefersDarkScheme.matches) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    // 添加点击事件监听器
+    themeToggle.addEventListener('click', function() {
+      console.log('Theme toggle clicked');
+      if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // 确保代码块有正确的类名
+    document.querySelectorAll('pre code').forEach(function(block) {
+      if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+        block.className = 'language-cpp';
+      } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+        block.className = 'language-rust';
+      } else if (!block.className) {
+        block.className = 'language-plaintext';
+      }
+    });
+    
+    // 延迟加载Prism高亮
+    setTimeout(function() {
+      if (window.Prism) {
+        window.Prism.highlightAll();
+      }
+    }, 500);
+  });
+  </script>
+</body>
+</html>

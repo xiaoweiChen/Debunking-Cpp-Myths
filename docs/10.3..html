@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10.3. 共同的需要 - 走出C++谜云</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <script>
+    window.MathJax = {'tex': {'inlineMath': [['$', '$'], ['\\(', '\\)']], 'displayMath': [['$$', '$$'], ['\\[', '\\]']], 'processEscapes': 'true', 'tags': 'ams'}, 'svg': {'fontCache': 'global'}};
+  </script>
+  
+</head>
+
+<body>
+  <div class="container">
+    
+<div class="chapter-container">
+  
+<div class="navigation">
+  <a href="10.2..html" class="prev-link">« 上一章：10.2. 现代开发者的真知</a>
+  <a href="10.4..html" class="next-link">下一章：10.4. 兼容性 »</a>
+</div>
+<div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+  <section class="section"><h1 class="section-title">10.3. 共同的需要</h1></section>
+  <p>以下是开发者常见需求(排名不分先后)：</p>
+<p><ul>
+    <li>数据库连接与读写</li>  <li>CSV文件处理</li>  <li>压缩(如gzip)</li>  <li>日期时间增强功能</li>  <li>各类计算(矩阵/虚数/方程求解等)</li>  <li>桌面与移动端UI开发</li>  <li>HTTP客户端</li>  <li>HTTP服务端</li>  <li>异步编程</li>  <li>图像处理</li>  <li>PDF处理</li>  <li>后台任务</li>  <li>加密算法</li>  <li>网络通信</li>  <li>序列化</li>  <li>邮件发送</li>  <li>JSON处理</li>  <li>配置文件读写(ini/yaml等)
+</ul></li></p>
+<p>可以确定的是，C++拥有覆盖所有这些需求的库。我们随机列举几个：</p>
+<p><ul>
+    <li>压缩：zlib(支持zip/gzip)</li>  <li>CSV处理：Rapidcsv(<a href="https://github.com/d99kris/rapidcsv" target="_blank" rel="noopener noreferrer">https://github.com/d99kris/rapidcsv</a>)</li>  <li>数据库访问：类型安全的TinyORM(<a href="https://www.tinyorm.org/" target="_blank" rel="noopener noreferrer">https://www.tinyorm.org/</a>)或SQLPP11(<a href="https://github.com/rbock/sqlpp11" target="_blank" rel="noopener noreferrer">https://github.com/rbock/sqlpp11</a>)</li>  <li>多功能工具集：Poco库(<a href="https://pocoproject.org/" target="_blank" rel="noopener noreferrer">https://pocoproject.org/</a>)涵盖网络、邮件、数据库、JSON等</li>  <li>UI框架：Qt、GTK、wxWidgets、Dear ImGui</li>  <li>HTTP客户端：Boost.Beast、Curl++、cpp-netlib</li>  <li>Web开发：Flask风格的Crow(<a href="https://crowcpp.org/master/" target="_blank" rel="noopener noreferrer">https://crowcpp.org/master/</a>)，高性能的Oat++(<a href="https://oatpp.io/" target="_blank" rel="noopener noreferrer">https://oatpp.io/</a>)和Drogon(<a href="https://drogon.org/" target="_blank" rel="noopener noreferrer">https://drogon.org/</a>)
+</ul></li></p>
+<p>这样的例子不胜枚举，但已足以证明：C++不仅库资源丰富，其中一些库甚至启发了其他语言的实现，也有些汲取了其他技术的精华。C++实现的速度和内存效率优势显而易见 —— 有些库仅需几百KB就能实现丰富功能，头文件库(header-only)的设计更极大提升了可移植性。</p>
+<p>C++的框架生态同样繁荣：除前述的GTK/QT/Boost等，还有Unreal Engine等重量级框架。最全面的资源列表当属awesome-cpp(<a href="https://github.com/fffaraz/awesome-cpp" target="_blank" rel="noopener noreferrer">https://github.com/fffaraz/awesome-cpp</a>)。</p>
+<p>即便是小众编程范式也有对应支持：</p>
+<p><ul>
+    <li>不可变集合？Immer(<a href="https://github.com/arximboldi/immer" target="_blank" rel="noopener noreferrer">https://github.com/arximboldi/immer</a>)</li>  <li>响应式编程？RxCpp(<a href="https://github.com/ReactiveX/RxCpp" target="_blank" rel="noopener noreferrer">https://github.com/ReactiveX/RxCpp</a>)</li>  <li>微服务？CppMicroServices(<a href="https://github.com/CppMicroServices/CppMicroServices" target="_blank" rel="noopener noreferrer">https://github.com/CppMicroServices/CppMicroServices</a>)</li>  <li>WebAssembly？推荐Emscripten(<a href="https://github.com/emscripten-core/emscripten" target="_blank" rel="noopener noreferrer">https://github.com/emscripten-core/emscripten</a>)</li>  <li>无服务器？aws-lambda-cpp(<a href="https://github.com/awslabs/aws-lambda-cpp" target="_blank" rel="noopener noreferrer">https://github.com/awslabs/aws-lambda-cpp</a>)
+</ul></li></p>
+<p>至此，结论已不言而喻：很难找到C++缺乏库或框架的领域。但关键在于 —— 这些资源真的可用吗？</p>
+  <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
+<div class="navigation">
+  <a href="10.2..html" class="prev-link">« 上一章：10.2. 现代开发者的真知</a>
+  <a href="10.4..html" class="next-link">下一章：10.4. 兼容性 »</a>
+</div>
+
+</div>
+
+  </div>
+  <!-- 先加载核心库 -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  
+  <!-- 加载MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+  
+  <!-- 主题切换脚本 -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 创建主题切换按钮
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.setAttribute('aria-label', '切换主题');
+    themeToggle.innerHTML = '🌓';
+    document.body.appendChild(themeToggle);
+    
+    // 添加深色和浅色主题的样式
+    const darkThemeStyle = document.createElement('style');
+    const lightThemeStyle = document.createElement('style');
+    
+    darkThemeStyle.textContent = `
+      body.dark-theme {
+        --background-color: #1a1a1a;
+        --text-color: #e6e6e6;
+        --code-bg-color: #2d2d2d;
+        --link-color: #58a6ff;
+        --highlight-color: #58a6ff;
+        --border-color: #333;
+        --table-border-color: #444;
+        --table-header-bg: #2d2d2d;
+        --blockquote-color: #aaa;
+        --blockquote-border: #444;
+        --part-header-bg: #222;
+        --footer-text-color: #aaa;
+        --filename-bg: #2d2d2d;
+        --nav-bg: #2d2d2d;
+        --nav-hover-bg: #444;
+        --toc-bg: #222;
+        --highlight-section-bg: #2d2d2d;
+        --highlight-section-border: #58a6ff;
+      }
+    `;
+    
+    lightThemeStyle.textContent = `
+      body.light-theme {
+        --background-color: #ffffff;
+        --text-color: #333333;
+        --code-bg-color: #f5f5f5;
+        --link-color: #0366d6;
+        --highlight-color: #0366d6;
+        --border-color: #eee;
+        --table-border-color: #ddd;
+        --table-header-bg: #f2f2f2;
+        --blockquote-color: #666;
+        --blockquote-border: #ddd;
+        --part-header-bg: #f8f8f8;
+        --footer-text-color: #666;
+        --filename-bg: #f5f5f5;
+        --nav-bg: #f5f5f5;
+        --nav-hover-bg: #e6e6e6;
+        --toc-bg: #f8f8f8;
+        --highlight-section-bg: #f8f8f8;
+        --highlight-section-border: #0366d6;
+      }
+    `;
+    
+    document.head.appendChild(darkThemeStyle);
+    document.head.appendChild(lightThemeStyle);
+    
+    // 检查本地存储中的设置
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+    } else if (currentTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      // 如果没有保存的偏好，跟随系统
+      if (prefersDarkScheme.matches) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.add('light-theme');
+      }
+    }
+    
+    // 添加点击事件监听器
+    themeToggle.addEventListener('click', function() {
+      console.log('Theme toggle clicked');
+      if (document.body.classList.contains('dark-theme')) {
+        document.body.classList.remove('dark-theme');
+        document.body.classList.add('light-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.body.classList.remove('light-theme');
+        document.body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+    
+    // 确保代码块有正确的类名
+    document.querySelectorAll('pre code').forEach(function(block) {
+      if (!block.className && block.parentNode.innerHTML.includes('cpp')) {
+        block.className = 'language-cpp';
+      } else if (!block.className && block.parentNode.innerHTML.includes('rust')) {
+        block.className = 'language-rust';
+      } else if (!block.className) {
+        block.className = 'language-plaintext';
+      }
+    });
+    
+    // 延迟加载Prism高亮
+    setTimeout(function() {
+      if (window.Prism) {
+        window.Prism.highlightAll();
+      }
+    }, 500);
+  });
+  </script>
+</body>
+</html>
