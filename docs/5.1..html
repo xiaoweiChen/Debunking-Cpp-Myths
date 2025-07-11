@@ -67,13 +67,13 @@
 <p>为满足对齐约束，编译器会在成员间插入填充字节，并在类末尾填充使其大小为最大对齐要求的整数倍。以团队原有类为例(假设该架构下double类型占8字节)，其内存布局原本可能是这样的：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter5/images/1.png" style="width: 100.0%;" alt="图 5.1 —— 初始类布局"></div>
+      <div><img src="content/chapter5/images/1.png" style="width: 100.0%;" alt="图 5.1 —— 初始类布局"></div>
       <div class="caption">图 5.1 —— 初始类布局</div>
     </div></p>
 <p>按照这种内存对齐方式，原始类的总大小为 32 字节。然而，如今 Joe 新增了三个 bool 类型的成员变量（每个占 1 字节），编译器在进行内存布局时，可能会按照如下方式安排这些成员：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter5/images/2.png" style="width: 100.0%;" alt="图 5.2 —— 成员顺序错误时的类内存布局"></div>
+      <div><img src="content/chapter5/images/2.png" style="width: 100.0%;" alt="图 5.2 —— 成员顺序错误时的类内存布局"></div>
       <div class="caption">图 5.2 —— 成员顺序错误时的类内存布局</div>
     </div></p>
 <p>每个1字节的bool值都必须填充至8字节，以确保后续的double类型成员能正确对齐到内存地址。这使得类的总大小膨胀至56字节 —— 3个填充至8字节的bool值加上3个8字节的double值，总共占据了56字节空间。Clang编译器提供了一个查看类内存布局的编译选项：-fdump-record-layouts。为验证此案例，我们创建了包含该点类定义的简单源文件，并通过编译器进行分析：</p>
@@ -104,7 +104,7 @@ double z;
 <p>过这样的成员顺序重组后，新的内存布局如下所示（实际布局可能因架构差异而略有不同）：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter5/images/3.png" style="width: 100.0%;" alt="图 5.3 —— 成员顺序正确时的类内存布局"></div>
+      <div><img src="content/chapter5/images/3.png" style="width: 100.0%;" alt="图 5.3 —— 成员顺序正确时的类内存布局"></div>
       <div class="caption">图 5.3 —— 成员顺序正确时的类内存布局</div>
     </div></p>
 <p>再次使用 Clang 编译器进行验证后，类的内存占用情况与之前的版本相比有了显著的不同（注：我们也相应地修改了 main.cpp 文件中的结构体定义）：</p>
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
 <p>这种未对齐的内存访问错误在操作系统层面往往会造成严重后果 —— 轻则导致应用程序崩溃，重则在一些老旧系统上甚至可能引发整个系统的宕机。</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter5/images/4.png" style="width: 90.0%;" alt="图 5.2 – 旧版系统在遇到未对齐数据时可能会“发脾气”"></div>
+      <div><img src="content/chapter5/images/4.png" style="width: 90.0%;" alt="图 5.2 – 旧版系统在遇到未对齐数据时可能会“发脾气”"></div>
       <div class="caption">图 5.2 – 旧版系统在遇到未对齐数据时可能会“发脾气”</div>
     </div></p>
 <p>你也许会好奇：这里的“错误类型 7”究竟代表什么？其实答案很简单 —— 7 是 SIGBUS 信号对应的错误编号。它通常表示发生了非法的内存访问，比如访问了未对齐的数据地址。作者的Linux机器上，这个定义可以在/usr/include/x86_64-linux-gnu/bits/signum-arch.h文件的第34行找到：</p>

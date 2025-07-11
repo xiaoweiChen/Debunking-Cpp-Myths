@@ -91,7 +91,7 @@ unsigned long e_entry,unsigned long phdr_addr) { ... }</code></pre></p>
 <p>那么，来看看这个初始化代码到底长什么样。我们将借助一个强大的逆向分析工具 Ghidra，它可以用来剖析 Linux 可执行文件并研究其内部结构。对于这个看似“空”的应用程序，Ghidra 提供了如下视图：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/1.png" style="width: 90.0%;" alt="图 4.1 —— 应用程序的结构"></div>
+      <div><img src="content/chapter4/images/1.png" style="width: 90.0%;" alt="图 4.1 —— 应用程序的结构"></div>
       <div class="caption">图 4.1 —— 应用程序的结构</div>
     </div></p>
 <p>当我们查看 ELF 文件中的源码信息时，可以看到我们最初编写的 main.cpp 文件。然而，除了它之外，还有一些我们并不熟悉的文件，例如 crtstuff.c。该文件属于 libgcc，可以在 libgcc 的代码仓库<span class="footnote"><a href="https://github.com/gcc-mirror/gcc/blob/master/libgcc/crtstuff.c" target="_blank" rel="noopener noreferrer">https://github.com/gcc-mirror/gcc/blob/master/libgcc/crtstuff.c</a></span>中找到，在文件顶部写着如下注释：</p>
@@ -123,13 +123,13 @@ unsigned long e_entry,unsigned long phdr_addr) { ... }</code></pre></p>
 <p>对于我们这个合成示例程序，当 Ghidra 分析 .init_array 节区时，会呈现出如下内容：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/2.png" style="width: 100.0%;" alt="图 4.2 —— 用于全局变量的 .init_array 节区"></div>
+      <div><img src="content/chapter4/images/2.png" style="width: 100.0%;" alt="图 4.2 —— 用于全局变量的 .init_array 节区"></div>
       <div class="caption">图 4.2 —— 用于全局变量的 .init_array 节区</div>
     </div></p>
 <p>这里有两个函数 —— 一个空函数(dummy)和一个名为 <code>_GLOBAL__sub_I_my_string</code> 的函数。这是一个颇有趣的名字选择。接下来，利用工具将汇编代码转换为类 C 代码的功能，来看看它具体做了什么：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/3.png" style="width: 60.0%;" alt="图4.3 —— 如何根据Ghidra创建全局对象"></div>
+      <div><img src="content/chapter4/images/3.png" style="width: 60.0%;" alt="图4.3 —— 如何根据Ghidra创建全局对象"></div>
       <div class="caption">图4.3 —— 如何根据Ghidra创建全局对象</div>
     </div></p>
 <p>很有趣，不是吗？这正是在全局命名空间中期望发生的行为。</p>
@@ -141,13 +141,13 @@ unsigned long e_entry,unsigned long phdr_addr) { ... }</code></pre></p>
 <p>据 Ghidra 的反汇编分析，该函数确实存在于我们的 ELF 可执行文件中。按照 ELF 文件格式规范，它的入口地址被记录在 ELF 头部的 e_entry 字段中，也就是程序开始执行时 CPU 指令指针（如 x86 上的 RIP）所指向的位置。</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/4.png" style="width: 70.0%;" alt="图4.4 —— 根据Ghidra的ELF头"></div>
+      <div><img src="content/chapter4/images/4.png" style="width: 70.0%;" alt="图4.4 —— 根据Ghidra的ELF头"></div>
       <div class="caption">图4.4 —— 根据Ghidra的ELF头</div>
     </div></p>
 <p>现在，在借助 Ghidra 进行了一番反汇编“魔法”操作之后，_start() 函数的真面目浮出水面，如下图所示：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/5.png" style="width: 80.0%;" alt="图4.5 —— _start例程函数，反汇编并转换为C伪代码"></div>
+      <div><img src="content/chapter4/images/5.png" style="width: 80.0%;" alt="图4.5 —— _start例程函数，反汇编并转换为C伪代码"></div>
       <div class="caption">图4.5 —— _start例程函数，反汇编并转换为C伪代码</div>
     </div></p>
 <p>这个看起来吓人的 <code>__libc_start_main</code> 函数其实并没有它表面看起来那么可怕。它负责加载我们的 main() 函数，并处理操作系统所提供的参数。这个函数是 glibc 的一部分，和其他开源软件一样，也可以免费获取<span class="footnote">git clone git://sourceware.org/git/glibc.git</span>，方便我们研究其内部机制。</p>
@@ -172,7 +172,7 @@ A::~A : Hello string</code></pre></p>
 <p>构造函数会在全局对象初始化代码之前执行。 如果我们打开我们钟爱的“黑桃九”可执行文件，并查看 .init_array 节区，将会看到如下内容：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/6.png" style="width: 100.0%;" alt="图 4.6 —— 包含构造函数的 .init_array 节区"></div>
+      <div><img src="content/chapter4/images/6.png" style="width: 100.0%;" alt="图 4.6 —— 包含构造函数的 .init_array 节区"></div>
       <div class="caption">图 4.6 —— 包含构造函数的 .init_array 节区</div>
     </div></p>
 <p>有了以上这些知识，我们现在掌握了两种在 main() 函数之前执行代码的方式：构造函数函数（constructor functions） 和 全局变量的构造初始化。</p>
@@ -289,14 +289,14 @@ A::~A : Go away string</code></pre></p>
 <p>为了更深入地理解这一现象背后的机制，并揭示其发生的原因，使用逆向分析工具对编译后的二进制文件进行了进一步分析。结果显示，我们的观察完全正确，如下图所示：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/7.png" style="width: 90.0%;" alt="图 4.7 —— 根据gcc的.init_array节指定初始化优先级"></div>
+      <div><img src="content/chapter4/images/7.png" style="width: 90.0%;" alt="图 4.7 —— 根据gcc的.init_array节指定初始化优先级"></div>
       <div class="caption">图 4.7 —— 根据gcc的.init_array节指定初始化优先级</div>
     </div></p>
 <p>正如所见，程序输出与预期一致。这是因为 .init_array 节中新增了一个条目 —— 一个在构造函数和标准全局对象初始化代码之前执行的函数。</p>
 <p>不难猜测，这个新函数的名称中包含了已设置的初始化优先级数值。然而，令人困惑的是，GCC 依然选择将变量名 my_string 作为该函数符号的一部分进行保留。这似乎是 GCC 特有的行为，因为在使用 Clang 编译相同代码时，生成的 .init_array 部分则呈现出另一种形式：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/7.png" style="width: 90.0%;" alt="图 4.8 —— Clang的不同.init_array节，用于相同的init优先级"></div>
+      <div><img src="content/chapter4/images/7.png" style="width: 90.0%;" alt="图 4.8 —— Clang的不同.init_array节，用于相同的init优先级"></div>
       <div class="caption">图 4.8 —— Clang的不同.init_array节，用于相同的init优先级</div>
     </div></p>
 <p>GCC 和 Clang 在处理这类关键初始化机制时竟然存在如此明显的差异，是一件非常有趣的事情。不过，在深入研究两者的源码实现之前，这种行为背后的确切原因仍将是一个未解之谜。</p>
@@ -368,7 +368,7 @@ C::~C : A</code></pre></p>
 <p>通过快速浏览可以发现，程序运行时构造函数的调用顺序，与 .init_array 节区中函数指针的排列顺序完全一致：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/9.png" style="width: 90.0%;" alt="图 4.9 —— .init_array节用于不同文件中的不同初始化优先级"></div>
+      <div><img src="content/chapter4/images/9.png" style="width: 90.0%;" alt="图 4.9 —— .init_array节用于不同文件中的不同初始化优先级"></div>
       <div class="caption">图 4.9 —— .init_array节用于不同文件中的不同初始化优先级</div>
     </div></p>
 <p>在上图中，<code>_GLOBAL__sub_I_welcome_main</code> 是负责在 main.cpp 中创建全局对象的函数 —— 也就是那行 C main_c(&quot;main&quot;);。有趣的是！这一观察结果进一步验证了我们的判断：即便是静态库中的全局对象，其初始化顺序机制依然按照预期正常工作。</p>
@@ -381,14 +381,14 @@ C::~C : A</code></pre></p>
 <p>有了这些构建成果，我们可以借助 Ghidra 来观察应用程序结构发生的一些有趣变化：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/10.png" style="width: 90.0%;" alt="图 4.10 —— 作为依赖项的 synth 库，如 Ghidra 所示"></div>
+      <div><img src="content/chapter4/images/10.png" style="width: 90.0%;" alt="图 4.10 —— 作为依赖项的 synth 库，如 Ghidra 所示"></div>
       <div class="caption">图 4.10 —— 作为依赖项的 synth 库，如 Ghidra 所示</div>
     </div></p>
 <p>如上图所示，Ghidra 清晰地展示了我们刚刚创建的 libsynth.so 共享库已被应用程序正确链接为一个动态依赖项。</p>
 <p>接下来，让我们聚焦于ELF的.init_array节区：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/11.png" style="width: 90.0%;" alt="图 4.11 —— .init_array部分没有提到 libsynth"></div>
+      <div><img src="content/chapter4/images/11.png" style="width: 90.0%;" alt="图 4.11 —— .init_array部分没有提到 libsynth"></div>
       <div class="caption">图 4.11 —— .init_array部分没有提到 libsynth</div>
     </div></p>
 <p>在 .init_array 节区中，并没有任何与 libsynth 相关的构造函数或全局对象初始化的引用。这并不令人意外 —— 毕竟是一个共享库。尽管如此，我们仍然可以通过 Ghidra 或运行时工具确认应用程序确实已正确链接到该库，并且能够在运行时调用其中的函数。</p>

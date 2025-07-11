@@ -78,7 +78,7 @@ int main() {
 <p>假设已经成功编译了这个合成的控制台应用程序，接下来可以使用 Ghidra 打开它进行分析。文件的开头部分与此前介绍的标准 PE 文件结构高度一致：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/12.png" style="width: 90.0%;" alt="图 4.12 —— PE 头的内容"></div>
+      <div><img src="content/chapter4/images/12.png" style="width: 90.0%;" alt="图 4.12 —— PE 头的内容"></div>
       <div class="caption">图 4.12 —— PE 头的内容</div>
     </div></p>
 <p>这一大段头部信息看似复杂，但实际上对我们最有意义的是其中的 AddressOfEntryPoint 字段。目前，它指向一个名为 entry 的函数地址 —— 这正是我们的应用程序开始执行的位置。</p>
@@ -98,7 +98,7 @@ int main() {
 <p>Microsoft的页面<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170</a></span>中详细描述了 <code>__security_init_cookie()</code> 函数。然而，另一个函数则属于一种完全不同的类型。它执行了大量的初始化工作，例如设置终端环境和处理初始化过程中的错误。在某个阶段，会执行以下代码片段：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/13.png" style="width: 90.0%;" alt="图 4.13 ——  main() 的调用"></div>
+      <div><img src="content/chapter4/images/13.png" style="width: 90.0%;" alt="图 4.13 ——  main() 的调用"></div>
       <div class="caption">图 4.13 ——  main() 的调用</div>
     </div></p>
 <p>invoke_main 负责调用 main()：</p>
@@ -120,7 +120,7 @@ int main() {
 <p>由于最感兴趣的是确定 main() 之前函数调用的顺序，并且知道 my_a 和 my_other_a 变量是以全局方式初始化的，因此需要在二进制文件中进行查找。在某个时刻，会发现以下有趣的数据：</p>
 <p>
     <div class="image-block" style="text-align: center;">
-      <div><img src="../book/content/chapter4/images/14.png" style="width: 90.0%;" alt="图 4.14 —— 根据 Ghidra 显示的 .CRT\$XCU 节区"></div>
+      <div><img src="content/chapter4/images/14.png" style="width: 90.0%;" alt="图 4.14 —— 根据 Ghidra 显示的 .CRT\$XCU 节区"></div>
       <div class="caption">图 4.14 —— 根据 Ghidra 显示的 .CRT\$XCU 节区</div>
     </div></p>
 <p>嗯，这看起来很有趣，尤其是那个神秘的 <code>.CRT$XCU</code> 文本。这让我们回想起之前讨论 PE 文件节区时的内容：可执行文件中的每个节区都是一个独立的区域，用于存放不同类型的数据或代码。</p>
