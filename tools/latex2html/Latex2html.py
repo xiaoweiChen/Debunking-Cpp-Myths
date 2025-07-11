@@ -253,7 +253,106 @@ def convert_longtable_to_html(html):
     html_table += '  </tbody>\n</table>\n'
     return html_table
 
+  html = re.sub(r'^\\begin\{longtable\}.*$', r'\\begin{longtable}', html, flags=re.MULTILINE)
   html = re.sub(r'\\begin\{longtable\}\s*([\s\S]*?)\\end\{longtable\}', table_replacer, html)
+  return html
+
+def process_cpp_env(html_text):
+  def replacer(match):
+    import html
+    code = match.group(1)
+    # 去掉每行结尾空格
+    lines = [line.rstrip() for line in code.splitlines()]
+
+    # 过滤掉前置空行
+    while lines and lines[0] == '':
+      lines = lines[1:]
+
+    cleaned_code = '\n'.join(lines)
+    escaped_code = html.escape(cleaned_code)
+    return f'<pre><code class="language-cpp">{escaped_code}</code></pre>'
+
+  html_text = re.sub(r'\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}', replacer, html_text)
+  return html_text
+
+def process_rust_env(html_text):
+  def replacer(match):
+    code = match.group(1)
+    # 去掉每行结尾空格
+    lines = [line.rstrip() for line in code.splitlines()]
+    
+    # 过滤掉前置空行
+    while lines and lines[0] == '':
+      lines = lines[1:]
+
+    cleaned_code = '\n'.join(lines)
+    return f'<pre><code class="language-rust">{cleaned_code}</code></pre>'
+
+  html_text = re.sub(r'\\begin\{rust\}([\s\S]*?)\\end\{rust\}', replacer, html_text)
+  return html_text
+
+def process_shell_env(html_text):
+  def shell_replacer(match):
+    content = match.group(1)
+    # HTML转义
+    clean_content = content.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').strip()
+    if not clean_content:
+      clean_content = '# (此处内容已省略)'
+    return f'<pre><code class="language-shell">{clean_content}</code></pre>'
+
+  html_text = re.sub(r'\\begin\{shell\}([\s\S]*?)\\end\{shell\}', shell_replacer, html_text)
+  return html_text
+
+def process_my_tip(html):
+  def replacer(match):
+    title = match.group(1)
+    content = match.group(2)
+
+    paragraphs = [p for p in re.split(r'\n{2,}', content) if p.strip()]
+    inner_html = ''.join(f'<p>{p}</p>' for p in paragraphs)
+
+    begin_match = re.search(r'\\begin\{([^\}]+)\}', inner_html)
+    env_name = ""
+    if begin_match:
+      env_name = begin_match.group(1)
+
+    match env_name:
+      case 'itemize':
+        inner_html = convert_itemize_to_html(inner_html)
+      case 'enumerate':
+        inner_html = convert_enumerate_to_html(inner_html)
+      case '_':
+        pass
+
+    return f'<div class="tip-box tip"><strong>{title}</strong>{inner_html}</div>'
+
+  html = re.sub(r'\\begin\{myTip\}\{(.*?)\}([\s\S]*?)\\end\{myTip\}', replacer, html)
+  return html
+
+def process_my_notic(html):
+  def replacer(match):
+    title = match.group(1)
+    content = match.group(2)
+
+    paragraphs = [p for p in re.split(r'\n{2,}', content) if p.strip()]
+    inner_html = ''.join(f'<p>{p}</p>' for p in paragraphs)
+
+    begin_match = re.search(r'\\begin\{([^\}]+)\}', inner_html)
+    env_name = ""
+    if begin_match:
+      env_name = begin_match.group(1)
+
+    match env_name:
+      case 'itemize':
+        inner_html = convert_itemize_to_html(inner_html)
+      case 'enumerate':
+        inner_html = convert_enumerate_to_html(inner_html)
+      case '_':
+        pass
+
+    return f'<div class="tip-box note"><strong>{title}</strong>{inner_html}</div>'
+
+  html = re.sub(r'\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}', replacer, html)
   return html
 
 def process_latex_env(paragraph_content):
@@ -273,6 +372,16 @@ def process_latex_env(paragraph_content):
       paragraph_content = convert_enumerate_to_html(paragraph_content)
     case 'longtable':
       paragraph_content = convert_longtable_to_html(paragraph_content)
+    case 'shell':
+      paragraph_content = process_shell_env(paragraph_content)
+    case 'cpp':
+      paragraph_content = process_cpp_env(paragraph_content)
+    case 'rust':
+      paragraph_content = process_rust_env(paragraph_content)
+    case 'myTip':
+      paragraph_content = process_my_tip(paragraph_content)
+    case 'myNotic':
+      paragraph_content = process_my_notic(paragraph_content)
     case '_':
       print("unkown environment:", env_name)
       exit(-10)
@@ -280,6 +389,8 @@ def process_latex_env(paragraph_content):
   return paragraph_content
 
 def process_special_paragraph(paragraph_content):
+  paragraph_content = process_latex_env(paragraph_content)
+
   # 替换特殊字符
   paragraph_content = paragraph_content.replace('---', '——')
   paragraph_content = re.sub(r'\\hspace\*{\\fill}', '<br>', paragraph_content)
@@ -290,17 +401,19 @@ def process_special_paragraph(paragraph_content):
   paragraph_content = re.sub(r'\\textit\{(.*?)\}', r'<em>\1</em>', paragraph_content)
   paragraph_content = re.sub(r'\\href\{(.*?)\}\{(.*?)\}', r'<a href="\1">\2</a>', paragraph_content)
   paragraph_content = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', paragraph_content)
-  paragraph_content = re.sub(r'^\\begin\{longtable\}.*$', r'\\begin{longtable}', paragraph_content, flags=re.MULTILINE)
   paragraph_content = re.sub(r'\$\s*\\sim\s*\$', '~', paragraph_content)
   paragraph_content = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', paragraph_content)
+  paragraph_content = re.sub(r'\\footnote\{(.*?)\}', r'<span class="footnote">\1</span>', paragraph_content)
   paragraph_content = paragraph_content.replace(r'\#', '#')
+  paragraph_content = paragraph_content.replace(r'\_', '_')
+  paragraph_content = paragraph_content.replace(r'\&', '&')
 
-  process_paragraph_content = process_latex_env(paragraph_content)
-  return process_paragraph_content
+  return paragraph_content
 
 def generate_content(latex_content, relative_path, output_dir):
   content_info = latex_content['content_info']
   book_info = latex_content['book_info']
+  catalogue_info = latex_content['catalogue_info']
 
   index_tex_path = latex_content['index_tex_path']
   book_dir_name = Path(index_tex_path).parent.name
@@ -315,12 +428,27 @@ def generate_content(latex_content, relative_path, output_dir):
         content_lines.append(f"<p>{processed_line}</p>")
 
     if len(content_lines) > 0:
+
+      section = ""
+
+      section_type = section_info['section_type']
+      match section_type:
+        case 'Part':
+          section = f'<div class="part-header"><h1>{catalogue_info[section_index]["title"]}</h1></div>'
+        case 'Chapter':
+          section = f'<section class="chapter"><h1 class="chapter-title">{catalogue_info[section_index]["title"]}</h1></section>'
+        case 'Subsection':
+          section = f'<section class="section"><h1 class="section-title">{catalogue_info[section_index]["title"]}</h1></section>'
+        case '_':
+          pass
+
       navigation, toc_link = create_navigation(content_info, section_index)
       title =  section_info['section_title'] + ' - ' + book_info['title']
       content = '\n'.join(content_lines)
       content_final = f'''
 <div class="chapter-container">
   {navigation}{toc_link}
+  {section}
   {content}
   {toc_link}{navigation}
 </div>

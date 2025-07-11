@@ -153,6 +153,7 @@ def parse_book_index(processed_content, input_dir, output_dir):
     
     toc = get_toc(processed_content)
     latex_reader_result['catalogue_info'] = toc
+    #print(f"Extracted TOC: {json.dumps(toc, indent=2, ensure_ascii=False)}")
 
   if 'catalogue_info' in latex_reader_result:
     latex_reader_result['content_info'] = []
@@ -161,13 +162,14 @@ def parse_book_index(processed_content, input_dir, output_dir):
         {
           "section_name" : items["index"],
           "section_title" : items["title"],
+          "section_type" : items["type"],
           "section_content" :process_tex(items['re_input_dir_path'], input_dir, output_dir)
         }
       )
 
-  processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
+  #processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
 
-  print(f"processed_content {processed_content}")
+  #print(f"processed_content {processed_content}")
 
   return latex_reader_result
 
@@ -178,7 +180,7 @@ def parse_book_content(processed_content):
 
   for line in processed_content.splitlines():
     #print(repr(line))
-    process_line = line.strip()
+    process_line = line#.strip()
 
     begin_match = re.search(r'\\begin\{([^\}]+)\}', line)
     if begin_match:

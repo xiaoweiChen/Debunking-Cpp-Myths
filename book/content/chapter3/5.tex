@@ -49,7 +49,7 @@ TEST_CASE("Invalid hour"){
 }
 \end{cpp}
 
-么，如果我们希望将这种检查提前到编译时又该怎么做呢？这时就轮到 constexpr 大显身手了。我们可以结合 static\_assert 来在编译期验证数值是否合法：
+那么，如果我们希望将这种检查提前到编译时又该怎么做呢？这时就轮到 constexpr 大显身手了。我们可以结合 static\_assert 来在编译期验证数值是否合法：
 
 \begin{cpp}
 template <int Min, int Max>
