@@ -16,7 +16,7 @@ def safe_extract_path(text: str) -> str | None:
   return cleaned
 
 def read_file_sync(path):
-  with open(path, mode='r', encoding='utf-8') as f:
+  with open(path, mode='r', encoding='utf-8-sig') as f:
     return f.read()
   
 def parse_book_info(center_text: str, relative_path:Path) -> dict:
@@ -50,8 +50,170 @@ def parse_book_info(center_text: str, relative_path:Path) -> dict:
 
   return result
 
-def process_tex(file_path, input_dir, output_dir, is_root: bool = False):
+def parse_book_index(processed_content, input_dir, output_dir):
+
   relative_path = os.path.relpath(input_dir, output_dir)
+
+  # 处理 \subfile 命令
+  subfile_regex = re.compile(r'\\subfile\{([^{}]+)\}')
+  for match in subfile_regex.finditer(processed_content):
+    subfile_path = safe_extract_path(match.group(1))
+    if not subfile_path:
+      continue
+
+    resolved_path = input_dir / subfile_path
+    if resolved_path.exists():
+      try:
+        print(f"Including subfile: {resolved_path.resolve()}")
+        processed_content = read_file_sync(resolved_path.resolve())
+      except Exception as err:
+        print(f"Error including subfile {resolved_path.resolve()}: {err}")
+    else:
+      print(f"Warning: Could not find file for {resolved_path.resolve()}")
+
+  book_dir_name = resolved_path.parent.name
+
+  # 提取 \begin{document} ... \end{document} 中的内容（若为根）
+  document_match = re.search(r'\\begin\{document\}([\s\S]*?)\\end\{document\}', processed_content)
+  if document_match:
+    processed_content = document_match.group(1)
+
+  def extract_center_block(latex_text: str) -> str | None:
+    match = re.search(r'\\begin\{center\}([\s\S]*?)\\end\{center\}', latex_text)
+    if match:
+      return match.group(1).strip()
+    return None
+  
+  latex_reader_result = {}
+
+  center_block = extract_center_block(processed_content)
+  if center_block:
+    info = parse_book_info(center_block, relative_path)
+    latex_reader_result['book_info'] = info
+
+  if 'index.tex' in subfile_path:
+    def get_toc(latex_text: str) -> List[Dict[str, str | int]]:
+      toc = []
+      chapter_counters = {}  # 如 {"chapter1": 0}
+
+      pattern = re.compile(
+        r'\\my(Chapter|ChapterNoContents|Subsection|Part|PartGray)\{(.*?)\}\{(.*?)\}\{(.*?)\}'
+      )
+
+      for match in pattern.finditer(latex_text):
+        command_type, arg1, arg2, file_path = match.groups()
+        file_path = str(Path(book_dir_name).joinpath(file_path).as_posix())
+
+          # 提取章节编号基准，例如 "chapter1"
+        chapter_match = re.search(r'chapter(\d+)/(\d+|0)\.tex$', file_path)
+        if chapter_match:
+          chapter_id = f"chapter{chapter_match.group(1)}"
+          sub_index = int(chapter_match.group(2))
+        else:
+          chapter_id = None
+          sub_index = None
+
+        # 构建标题和层级
+        if command_type in ('Part', 'PartGray'):
+          title = f"{arg1}: {arg2}".strip()
+          level = 0
+          parts = Path(file_path).parts
+          section_index = parts[-2]
+        elif command_type in ('Chapter', 'ChapterNoContents'):
+          title = arg1.strip()
+          level = 1
+          if chapter_id:
+            chapter_number = chapter_id.replace("chapter", "")
+            section_index = f"{chapter_number}.0."
+          else:
+            section_index = ""
+        elif 'Subsection' in command_type:
+          title = f"{arg1} {arg2}".strip()
+          level = 2
+          if chapter_id:
+            chapter_number = chapter_id.replace("chapter", "")
+            section_index = f"{chapter_number}.{sub_index}."
+          else:
+            section_index = ""
+        else:
+          continue  # skip unknown
+
+        rel_path = Path(relative_path) if not isinstance(relative_path, Path) else relative_path
+        final_file_path = str(rel_path.joinpath(file_path.strip()).as_posix())
+
+        if section_index == "":
+          section_index = Path(file_path).stem
+
+        toc.append({
+          "type": command_type,
+          "title": title,
+          "index": section_index,
+          "re_input_dir_path": file_path,
+          "re_output_dir_path": final_file_path,
+          "level": level
+        })
+
+      return toc
+    
+    toc = get_toc(processed_content)
+    latex_reader_result['catalogue_info'] = toc
+
+  if 'catalogue_info' in latex_reader_result:
+    for items in latex_reader_result['catalogue_info']:
+      print(items['re_input_dir_path'])
+      latex_reader_result[items["index"]] = \
+        process_tex(items['re_input_dir_path'], input_dir, output_dir)
+
+  processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
+
+  print(f"processed_content {processed_content}")
+
+  return latex_reader_result
+
+def parse_book_content(processed_content):
+  paragraph_map = {}
+
+  env_names = []
+
+  paragraph_index = 1
+  multiline_content = []
+
+  for line in processed_content.splitlines():
+    #print(repr(line))
+    process_line = line.strip()
+
+    begin_match = re.search(r'\\begin\{([^\}]+)\}', line)
+    if begin_match:
+      begin_env_name = begin_match.group(1)
+      env_names.append(begin_env_name)
+
+    end_match = re.search(r'\\end\{([^\}]+)\}', line)
+    if end_match:
+      end_env_name = end_match.group(1)
+      if env_names[-1] == end_env_name:
+        env_name = env_names.pop()
+      else:
+        print(f"Warning: Mismatched end tag {end_env_name} for {env_names[-1]}")
+        exit(-1)
+
+    if len(env_names) > 0:
+      multiline_content.append(process_line)
+
+    if len(process_line) > 0 and len(env_names) == 0:
+
+      if process_line[0] == '%':
+        # Skip comment lines
+        continue
+
+      multiline_content.append(process_line)
+      current_paragraph = "\n".join(multiline_content).strip()
+      paragraph_map[paragraph_index] = current_paragraph
+      paragraph_index += 1
+      multiline_content.clear()
+
+  return paragraph_map
+
+def process_tex(file_path, input_dir, output_dir, is_root: bool = False):
 
   try:
     print(f"Processing {file_path}...")
@@ -59,132 +221,14 @@ def process_tex(file_path, input_dir, output_dir, is_root: bool = False):
     processed_content = content
 
     if is_root:
-      # 处理 \subfile 命令
-      subfile_regex = re.compile(r'\\subfile\{([^{}]+)\}')
-      for match in subfile_regex.finditer(processed_content):
-        subfile_path = safe_extract_path(match.group(1))
-        if not subfile_path:
-          continue
-
-        resolved_path = input_dir / subfile_path
-        if resolved_path.exists():
-          try:
-            print(f"Including subfile: {resolved_path.resolve()}")
-            processed_content = read_file_sync(resolved_path.resolve())
-          except Exception as err:
-            print(f"Error including subfile {resolved_path.resolve()}: {err}")
-        else:
-          print(f"Warning: Could not find file for {resolved_path.resolve()}")
-
-      book_dir_name = resolved_path.parent.name
-
-      # 提取 \begin{document} ... \end{document} 中的内容（若为根）
-      document_match = re.search(r'\\begin\{document\}([\s\S]*?)\\end\{document\}', processed_content)
-      if document_match:
-        processed_content = document_match.group(1)
-
-      def extract_center_block(latex_text: str) -> str | None:
-        match = re.search(r'\\begin\{center\}([\s\S]*?)\\end\{center\}', latex_text)
-        if match:
-          return match.group(1).strip()
-        return None
-      
-      latex_reader_result = {}
-
-      center_block = extract_center_block(processed_content)
-      if center_block:
-        info = parse_book_info(center_block, relative_path)
-        latex_reader_result['book_info'] = info
-
-      if 'index.tex' in subfile_path:
-        def get_toc(latex_text: str) -> List[Dict[str, str | int]]:
-          toc = []
-          chapter_counters = {}  # 如 {"chapter1": 0}
-
-          pattern = re.compile(
-            r'\\my(Chapter|ChapterNoContents|Subsection|Part|PartGray)\{(.*?)\}\{(.*?)\}\{(.*?)\}'
-          )
-
-          for match in pattern.finditer(latex_text):
-            command_type, arg1, arg2, file_path = match.groups()
-            file_path = str(Path(book_dir_name).joinpath(file_path).as_posix())
-
-             # 提取章节编号基准，例如 "chapter1"
-            chapter_match = re.search(r'chapter(\d+)/(\d+|0)\.tex$', file_path)
-            if chapter_match:
-              chapter_id = f"chapter{chapter_match.group(1)}"
-              sub_index = int(chapter_match.group(2))
-            else:
-              chapter_id = None
-              sub_index = None
-
-            # 构建标题和层级
-            if command_type in ('Part', 'PartGray'):
-              title = f"{arg1}: {arg2}".strip()
-              level = 0
-              parts = Path(file_path).parts
-              section_number = parts[-2]
-            elif command_type in ('Chapter', 'ChapterNoContents'):
-              title = arg1.strip()
-              level = 1
-              if chapter_id:
-                chapter_number = chapter_id.replace("chapter", "")
-                section_number = f"{chapter_number}.0."
-              else:
-                section_number = ""
-            elif 'Subsection' in command_type:
-              title = f"{arg1} {arg2}".strip()
-              level = 2
-              if chapter_id:
-                chapter_number = chapter_id.replace("chapter", "")
-                section_number = f"{chapter_number}.{sub_index}."
-              else:
-                section_number = ""
-            else:
-              continue  # skip unknown
-
-            rel_path = Path(relative_path) if not isinstance(relative_path, Path) else relative_path
-            final_file_path = str(rel_path.joinpath(file_path.strip()).as_posix())
-
-            toc.append({
-              "type": command_type,
-              "title": title,
-              "index": section_number,
-              "re_input_dir_path": file_path,
-              "re_output_dir_path": final_file_path,
-              "level": level
-            })
-
-          return toc
-        
-        toc = get_toc(processed_content)
-        latex_reader_result['catalogue'] = toc
-
-      if 'catalogue' in latex_reader_result:
-        for items in latex_reader_result['catalogue']:
-          print(items['re_input_dir_path'])
-          latex_reader_result[items["index"]] = \
-            process_tex(items['re_input_dir_path'], input_dir, output_dir)
-
-      processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
-
-      print(f"processed_content {processed_content}")
+      return parse_book_index(
+        processed_content, 
+        input_dir, 
+        output_dir
+        )
     else:
-      pass
-
-    # 处理自定义命令
-    #result = await process_custom_commands(processed_content)
-    #final_content = result["processedContent"]
-    #chapter_contents = result["chapterContents"]
-
-    return {
-      "content": "",#final_content,
-      "chapters": []#chapter_contents
-    }
+      return parse_book_content(processed_content)
 
   except Exception as err:
     print(f"Error processing {file_path}: {err}")
-    return {
-      "content": '',
-      "chapters": []
-    }
+    return None

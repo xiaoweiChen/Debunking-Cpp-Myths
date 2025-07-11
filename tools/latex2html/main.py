@@ -4,28 +4,7 @@
 import argparse
 import os
 import sys
-import re
-import shutil
 from pathlib import Path
-
-def read_file(path):
-  try:
-    return Path(path).read_text(encoding='utf-8')
-  except Exception as e:
-    print(f"读取文件失败: {path} - {e}")
-    return ""
-
-def write_file(path, content):
-  try:
-    Path(path).write_text(content, encoding='utf-8')
-  except Exception as e:
-    print(f"写入文件失败: {path} - {e}")
-
-def copy_static_file(src, dst):
-  try:
-    shutil.copy2(src, dst)
-  except Exception as e:
-    print(f"复制静态文件失败: {src} -> {dst} - {e}")
 
 def main(args):
   
@@ -37,10 +16,17 @@ def main(args):
 
   main_tex_file = input_path / "book.tex"
   import LatexReader
-  result = LatexReader.process_tex(main_tex_file, input_path, output_dir, is_root=True)
-  print(f"处理 LaTeX 文件完成，内容长度: {len(result['content'])}, 章节数: {len(result['chapters'])}")
+  latex_reader_result = LatexReader.process_tex(
+    main_tex_file, 
+    input_path, 
+    output_dir, 
+    is_root=True
+  )
 
-  print(f"从 {input_path} 转换 LaTeX 项目为 HTML 到 {output_dir}")
+  import Latex2html
+
+  import HtmlWriter
+
 
 if __name__ == "__main__":
 
