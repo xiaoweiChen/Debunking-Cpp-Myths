@@ -155,10 +155,12 @@ def parse_book_index(processed_content, input_dir, output_dir):
     latex_reader_result['catalogue_info'] = toc
 
   if 'catalogue_info' in latex_reader_result:
+    latex_reader_result['content_info'] = []
     for items in latex_reader_result['catalogue_info']:
-      print(items['re_input_dir_path'])
-      latex_reader_result[items["index"]] = \
+      latex_reader_result['content_info'].append({
+        items["index"] :
         process_tex(items['re_input_dir_path'], input_dir, output_dir)
+      })
 
   processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
 

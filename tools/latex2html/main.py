@@ -21,7 +21,7 @@ def main(args):
       output_dir, 
       is_root=True
     )
-  exit(0)
+
   import Latex2html
   html_content = \
   Latex2html.latex_to_html(
