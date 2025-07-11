@@ -11,17 +11,14 @@ def main(args):
   input_path = Path(args.input)
   output_dir = Path(args.output)
 
-  relative_path = os.path.relpath(input_path, output_dir)
-  print(f"输出目录相对于输入目录的相对路径: {relative_path}")
-
-  main_tex_file = input_path / "book.tex"
   import LatexReader
-  latex_reader_result = LatexReader.process_tex(
-    main_tex_file, 
-    input_path, 
-    output_dir, 
-    is_root=True
-  )
+  latex_reader_result = \
+    LatexReader.process_tex(
+      input_path / "book.tex", 
+      input_path, 
+      output_dir, 
+      is_root=True
+    )
 
   import Latex2html
 
