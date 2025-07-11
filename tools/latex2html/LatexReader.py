@@ -85,6 +85,7 @@ def parse_book_index(processed_content, input_dir, output_dir):
     return None
   
   latex_reader_result = {}
+  latex_reader_result['index_tex_path'] = str(resolved_path.as_posix())
 
   center_block = extract_center_block(processed_content)
   if center_block:
@@ -94,7 +95,6 @@ def parse_book_index(processed_content, input_dir, output_dir):
   if 'index.tex' in subfile_path:
     def get_toc(latex_text: str) -> List[Dict[str, str | int]]:
       toc = []
-      chapter_counters = {}  # 如 {"chapter1": 0}
 
       pattern = re.compile(
         r'\\my(Chapter|ChapterNoContents|Subsection|Part|PartGray)\{(.*?)\}\{(.*?)\}\{(.*?)\}'
@@ -138,9 +138,6 @@ def parse_book_index(processed_content, input_dir, output_dir):
         else:
           continue  # skip unknown
 
-        rel_path = Path(relative_path) if not isinstance(relative_path, Path) else relative_path
-        final_file_path = str(rel_path.joinpath(file_path.strip()).as_posix())
-
         if section_index == "":
           section_index = Path(file_path).stem
 
@@ -149,7 +146,6 @@ def parse_book_index(processed_content, input_dir, output_dir):
           "title": title,
           "index": section_index,
           "re_input_dir_path": file_path,
-          "re_output_dir_path": final_file_path,
           "level": level
         })
 
@@ -171,11 +167,8 @@ def parse_book_index(processed_content, input_dir, output_dir):
   return latex_reader_result
 
 def parse_book_content(processed_content):
-  paragraph_map = {}
-
+  paragraph_list = []
   env_names = []
-
-  paragraph_index = 1
   multiline_content = []
 
   for line in processed_content.splitlines():
@@ -207,11 +200,10 @@ def parse_book_content(processed_content):
 
       multiline_content.append(process_line)
       current_paragraph = "\n".join(multiline_content).strip()
-      paragraph_map[paragraph_index] = current_paragraph
-      paragraph_index += 1
+      paragraph_list.append(current_paragraph)
       multiline_content.clear()
 
-  return paragraph_map
+  return paragraph_list
 
 def process_tex(file_path, input_dir, output_dir, is_root: bool = False):
 

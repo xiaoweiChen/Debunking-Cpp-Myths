@@ -3,27 +3,32 @@
 
 import argparse
 import os
-import sys
+import sys, re
 from pathlib import Path
 
 def main(args):
   
-  input_path = Path(args.input)
+  input_dir = Path(args.input)
   output_dir = Path(args.output)
 
+  book_file = input_dir / "book.tex"
+
   import LatexReader
-  latex_reader_result = \
+  latex_content = \
     LatexReader.process_tex(
-      input_path / "book.tex", 
-      input_path, 
+      book_file, 
+      input_dir, 
       output_dir, 
       is_root=True
     )
-
+  exit(0)
   import Latex2html
-
-  import HtmlWriter
-
+  html_content = \
+  Latex2html.latex_to_html(
+    latex_content, 
+    input_dir, 
+    output_dir
+  )
 
 if __name__ == "__main__":
 
