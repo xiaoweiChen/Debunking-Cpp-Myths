@@ -80,6 +80,6 @@
 >
 > 生成静态网页：
 >
-> 1. 先安装Node.js，安装完成后可以用命令行`node --version`确定安装是否完成。
-> 2. 生成静态Web页面的命令`node ./tools/latex2html.mjs -i . -o ./docs`
+> 1. 先安装Python 3.10+，安装完成后可以用命令行`python --version`确定安装是否完成。
+> 2. 生成静态Web页面的命令`python ./tools/latex2html/main.py -i . -o ./docs`
 > 3. 进入docs文件夹，在浏览器里载入`index.html`即可。
