@@ -157,10 +157,13 @@ def parse_book_index(processed_content, input_dir, output_dir):
   if 'catalogue_info' in latex_reader_result:
     latex_reader_result['content_info'] = []
     for items in latex_reader_result['catalogue_info']:
-      latex_reader_result['content_info'].append({
-        items["index"] :
-        process_tex(items['re_input_dir_path'], input_dir, output_dir)
-      })
+      latex_reader_result['content_info'].append(
+        {
+          "section_name" : items["index"],
+          "section_title" : items["title"],
+          "section_content" :process_tex(items['re_input_dir_path'], input_dir, output_dir)
+        }
+      )
 
   processed_content = json.dumps(latex_reader_result, indent=2, ensure_ascii=False)
 
