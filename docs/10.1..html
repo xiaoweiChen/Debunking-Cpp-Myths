@@ -24,10 +24,10 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">10.1. 何以见得？</h1></section>
-  <p>在思考本章标题所提出的问题时，我们首先面临选择困境。库的选择完全取决于项目具体需求 —— 虽然日志记录、单元测试等功能属于通用需求，但除此之外该如何取舍？毕竟，将 C++ 的 Web 开发与 Java 的 Web 开发对比，或将 C++ 系统编程与 Java 系统编程比较，都显失公允。事实上，C++ 很少用于 Web 开发，Java 也罕用于系统编程。</p>
-<p>C++长期占据着独特生态位：尽管受到Java、C#、Rust和Python的蚕食，它仍在游戏开发、固件、高频交易、工程应用、汽车电子、系统编程等领域坚守阵地。其他语言难以渗透这些领域，根源正在于C++无与伦比的灵活性、性能和控制力。</p>
-<p>另一重挑战在于库的数量级差异。作为一门悠久的语言，C++ 拥有像 Boost 这样在 Java/C# 世界（标准库除外）无可匹敌、在 Python 领域更无对手的巨型库。或许只有 JavaScript 的 React 及其生态可堪比拟。就库的数量而言，C++ 显然占据优势。</p>
-<p>这些观察引出一个关键特征：库的现代化程度。我们对现代编程语言及其生态有何期待？从这个角度看，C++ 处于什么位置？让我们深入探讨这些问题。</p>
+  <p class="zh">在思考本章标题所提出的问题时，我们首先面临选择困境。库的选择完全取决于项目具体需求 —— 虽然日志记录、单元测试等功能属于通用需求，但除此之外该如何取舍？毕竟，将 C++ 的 Web 开发与 Java 的 Web 开发对比，或将 C++ 系统编程与 Java 系统编程比较，都显失公允。事实上，C++ 很少用于 Web 开发，Java 也罕用于系统编程。</p>
+<p class="zh">C++长期占据着独特生态位：尽管受到Java、C#、Rust和Python的蚕食，它仍在游戏开发、固件、高频交易、工程应用、汽车电子、系统编程等领域坚守阵地。其他语言难以渗透这些领域，根源正在于C++无与伦比的灵活性、性能和控制力。</p>
+<p class="zh">另一重挑战在于库的数量级差异。作为一门悠久的语言，C++ 拥有像 Boost 这样在 Java/C# 世界（标准库除外）无可匹敌、在 Python 领域更无对手的巨型库。或许只有 JavaScript 的 React 及其生态可堪比拟。就库的数量而言，C++ 显然占据优势。</p>
+<p class="zh">这些观察引出一个关键特征：库的现代化程度。我们对现代编程语言及其生态有何期待？从这个角度看，C++ 处于什么位置？让我们深入探讨这些问题。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="10.0..html" class="prev-link">« 上一章：第10章</a>
@@ -40,6 +40,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

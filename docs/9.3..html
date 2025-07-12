@@ -24,8 +24,8 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">9.3. 关于括号</h1></section>
-  <p>这里，来聊聊本章已多次涉及圆括号的话题。现在，我们将展示本书中可能最重要的那对圆括号 —— 请看以下两个函数：</p>
-<p><pre><code class="language-cpp">static int y;
+  <p class="zh">这里，来聊聊本章已多次涉及圆括号的话题。现在，我们将展示本书中可能最重要的那对圆括号 —— 请看以下两个函数：</p>
+<pre class="line-numbers"><code class="language-cpp">static int y;
 
 decltype(auto) number(int x) {
   return y;
@@ -33,38 +33,38 @@ decltype(auto) number(int x) {
 
 decltype(auto) reference(int x) {
   return (y);
-}</code></pre></p>
-<p>这两个函数看似几乎相同，唯一的区别在于返回值周围那对微小的圆括号。但正是这对括号造成了天壤之别。C++14引入的decltype(auto)是一个结合了decltype和自动类型推导的类型说明符，它既能根据初始化表达式推导类型，又能保留表达式的值类别特性(如引用或非引用)。与auto基于值类别推导类型不同，decltype(auto)会忠实保留原始表达式的值类别。</p>
-<p>简而言之：number()函数返回int，而reference()函数返回int&amp;。</p>
-<p>为验证上述结论，以下代码片段可作有力佐证：</p>
-<p><pre><code class="language-cpp">using namespace std;
+}</code></pre>
+<p class="zh">这两个函数看似几乎相同，唯一的区别在于返回值周围那对微小的圆括号。但正是这对括号造成了天壤之别。C++14引入的decltype(auto)是一个结合了decltype和自动类型推导的类型说明符，它既能根据初始化表达式推导类型，又能保留表达式的值类别特性(如引用或非引用)。与auto基于值类别推导类型不同，decltype(auto)会忠实保留原始表达式的值类别。</p>
+<p class="zh">简而言之：number()函数返回int，而reference()函数返回int&amp;。</p>
+<p class="zh">为验证上述结论，以下代码片段可作有力佐证：</p>
+<pre class="line-numbers"><code class="language-cpp">using namespace std;
 if (is_reference&lt;decltype(number(42))&gt;::value) {
   cout &lt;&lt; &quot;Reference to &quot;;
   cout &lt;&lt; typeid(typename
   remove_reference&lt;decltype(number(42))&gt;::type).name() &lt;&lt; endl;
 } else {
   cout &lt;&lt; &quot;Not a reference: &quot; &lt;&lt; typeid(decltype(number(42))).name() &lt;&lt; endl;
-}</code></pre></p>
-<p>上述代码片段检测了number函数的返回类型。正如其名称直白暗示的那样，它返回的当然是...一个数字。当使用MSVC编译并执行时，输出如下：</p>
-<p><pre><code class="language-shell">Not a reference: int</code></pre></p>
-<p>其他编译器的行为基本一致,只不过它们不会打印完整类型名称 —— 比如gcc和clang对于int类型仅显示单个字母i,这就没那么直观了。</p>
-<p>检验以下代码:</p>
-<p><pre><code class="language-cpp">if (is_reference&lt;decltype(reference(42))&gt;::value) {
+}</code></pre>
+<p class="zh">上述代码片段检测了number函数的返回类型。正如其名称直白暗示的那样，它返回的当然是...一个数字。当使用MSVC编译并执行时，输出如下：</p>
+<pre><code class="language-shell">Not a reference: int</code></pre>
+<p class="zh">其他编译器的行为基本一致,只不过它们不会打印完整类型名称 —— 比如gcc和clang对于int类型仅显示单个字母i,这就没那么直观了。</p>
+<p class="zh">检验以下代码:</p>
+<pre class="line-numbers"><code class="language-cpp">if (is_reference&lt;decltype(reference(42))&gt;::value) {
   cout &lt;&lt; &quot;Reference to: &quot;;
   cout &lt;&lt; typeid(typename
   remove_reference&lt;decltype(reference(42))&gt;::type).name() &lt;&lt; endl;
 } else {
   cout &lt;&lt; &quot;Not a reference: &quot; &lt;&lt; typeid(decltype(number(42))).name() &lt;&lt; endl;
-}</code></pre></p>
-<p>这段代码与前例几乎完全相同，只是改用了reference方法。不出所料，执行结果(再次以MSVC为例)如下：</p>
-<p><pre><code class="language-shell">Reference to: int</code></pre></p>
-<p>至此我们已证明：一对括号与decltype(auto)结合能产生惊人的效果。但请注意，如果省略decltype，像下面这样：</p>
-<p><pre><code class="language-cpp">auto reference(int x) {
+}</code></pre>
+<p class="zh">这段代码与前例几乎完全相同，只是改用了reference方法。不出所料，执行结果(再次以MSVC为例)如下：</p>
+<pre><code class="language-shell">Reference to: int</code></pre>
+<p class="zh">至此我们已证明：一对括号与decltype(auto)结合能产生惊人的效果。但请注意，如果省略decltype，像下面这样：</p>
+<pre class="line-numbers"><code class="language-cpp">auto reference(int x) {
   return (y);
-}</code></pre></p>
-<p>此时编译器会忽略括号，直接返回普通数值。C++标准在[dcl.type.decltype]章节明确规定了这一行为，笔者强烈建议阅读该章节，以透彻理解背后的原理及其合理性。</p>
-<p>既然C++开发者始终追求高效、优质和清晰的代码，您可能会问：为何要通过重复代码来判断返回类型是否为引用？难道不能直接写成下面这样吗？</p>
-<p><pre><code class="language-cpp">template &lt;typename T&gt;
+}</code></pre>
+<p class="zh">此时编译器会忽略括号，直接返回普通数值。C++标准在[dcl.type.decltype]章节明确规定了这一行为，笔者强烈建议阅读该章节，以透彻理解背后的原理及其合理性。</p>
+<p class="zh">既然C++开发者始终追求高效、优质和清晰的代码，您可能会问：为何要通过重复代码来判断返回类型是否为引用？难道不能直接写成下面这样吗？</p>
+<pre class="line-numbers"><code class="language-cpp">template &lt;typename T&gt;
 void printType(T&amp;&amp; var) {
   if (std::is_reference&lt;T&gt;::value) {
     if (std::is_lvalue_reference&lt;T&gt;::value) {
@@ -77,16 +77,16 @@ void printType(T&amp;&amp; var) {
   } else {
     printf(&quot;%s\n&quot;, typeid(var).name());
   }
-}</code></pre></p>
-<p>这段代码与前前段(&quot;前前段&quot;即当前参照点往前数第二段)几乎相同，只是增加了验证引用类型的额外检查(同时将std::cout替换为printf以生成更简洁的汇编代码,并封装为函数体)。让我们将其置于以下上下文并调用:</p>
-<p><pre><code class="language-cpp">printType(number(42));
-printType(reference(42));</code></pre></p>
-<p>将得到符合预期的正确输出：</p>
-<p><pre><code class="language-shell">int
-lvalue ref int</code></pre></p>
-<p>值得一提的是，其他非&quot;小巧软萌&quot;的编译器也能得到相同结果。</p>
-<p>该函数模板通过转发引用(<code>T&amp;&amp; var</code>)同时处理左值和右值引用，从而能够推导并保留传入变量的引用类型。借助类型特征库，使用<code>is_reference&lt;T&gt;::value</code>检查T是否为引用类型，并通过<code>is_lvalue_reference&lt;T&gt;::value</code>进一步区分左值/右值引用。</p>
-<p><table border="1">
+}</code></pre>
+<p class="zh">这段代码与前前段(&quot;前前段&quot;即当前参照点往前数第二段)几乎相同，只是增加了验证引用类型的额外检查(同时将std::cout替换为printf以生成更简洁的汇编代码,并封装为函数体)。让我们将其置于以下上下文并调用:</p>
+<pre class="line-numbers"><code class="language-cpp">printType(number(42));
+printType(reference(42));</code></pre>
+<p class="zh">将得到符合预期的正确输出：</p>
+<pre><code class="language-shell">int
+lvalue ref int</code></pre>
+<p class="zh">值得一提的是，其他非&quot;小巧软萌&quot;的编译器也能得到相同结果。</p>
+<p class="zh">该函数模板通过转发引用(<code>T&amp;&amp; var</code>)同时处理左值和右值引用，从而能够推导并保留传入变量的引用类型。借助类型特征库，使用<code>is_reference&lt;T&gt;::value</code>检查T是否为引用类型，并通过<code>is_lvalue_reference&lt;T&gt;::value</code>进一步区分左值/右值引用。</p>
+<table border="1">
   <thead>
     <tr>
       <th><strong>void printType <int>(int&&)</strong></th>
@@ -100,12 +100,12 @@ lvalue ref int</code></pre></p>
     </tr>
   </tbody>
 </table>
-</p>
-<p><div style="text-align:center">
+
+<div style="text-align:center">
 表9.1：不同printType实例化的汇编代码对比
-</div></p>
-<p>我们可以清晰地看到，针对两个函数返回的不同类型，编译器分别生成了printType函数的两个实例化版本。所有类型特征(type traits)的调用都在源代码层面得到了完美实现，从而消除了不必要的条件分支。此外，编译器还优化移除了未使用的字符串(比如生成的汇编代码中完全找不到&quot;rvalue ref&quot;字样，因为编译器已识别出相关分支在最终代码中永远不会被执行)。</p>
-<p>这难道不是C++精妙之处的绝佳体现吗？</p>
+</div>
+<p class="zh">我们可以清晰地看到，针对两个函数返回的不同类型，编译器分别生成了printType函数的两个实例化版本。所有类型特征(type traits)的调用都在源代码层面得到了完美实现，从而消除了不必要的条件分支。此外，编译器还优化移除了未使用的字符串(比如生成的汇编代码中完全找不到&quot;rvalue ref&quot;字样，因为编译器已识别出相关分支在最终代码中永远不会被执行)。</p>
+<p class="zh">这难道不是C++精妙之处的绝佳体现吗？</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="9.2..html" class="prev-link">« 上一章：9.2. 零的定义</a>
@@ -118,6 +118,18 @@ lvalue ref int</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

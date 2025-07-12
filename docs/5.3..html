@@ -24,9 +24,9 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">5.3. 思考顺序</h1></section>
-  <p>我们这位老朋友 Joe 的冒险仍在继续。就在他刚刚领悟到类成员的正确声明顺序并非按字母排序之后不久，便接到了一项新任务：实现一段需要并行执行的代码。</p>
-<p>由于他对线程的理解仅来自于 TikTok 上的入门教程，Joe 却依然自信满满地提交了如下代码（请读者见谅，由于版权与知识产权诉讼的限制，我们无法展示那段让整个开发团队耗费两周时间调试的“经典”原始代码。以下示例仅尝试还原 Joe 所谓“成功”实现的核心逻辑）：</p>
-<p><pre><code class="language-cpp">#include &lt;cstdio&gt;
+  <p class="zh">我们这位老朋友 Joe 的冒险仍在继续。就在他刚刚领悟到类成员的正确声明顺序并非按字母排序之后不久，便接到了一项新任务：实现一段需要并行执行的代码。</p>
+<p class="zh">由于他对线程的理解仅来自于 TikTok 上的入门教程，Joe 却依然自信满满地提交了如下代码（请读者见谅，由于版权与知识产权诉讼的限制，我们无法展示那段让整个开发团队耗费两周时间调试的“经典”原始代码。以下示例仅尝试还原 Joe 所谓“成功”实现的核心逻辑）：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;cstdio&gt;
 #include &lt;thread&gt;
 #include &lt;chrono&gt;
 using namespace std::chrono_literals;
@@ -73,42 +73,42 @@ int main() {
   std::this_thread::sleep_for(2000ms);
   printf(&quot;main returns\n&quot;);
   return 0;
-}</code></pre></p>
-<p>这段C++代码试图还原Joe制造的简易多线程混乱场景。程序定义了两个结构体：</p>
-<p>bar结构体：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">这段C++代码试图还原Joe制造的简易多线程混乱场景。程序定义了两个结构体：</p>
+<p class="zh">bar结构体：</p>
+<ul>
     <li>管理动态分配的long long型变量i(作为计数器)</li>  <li>在serve()方法中持续递增计数器</li>  <li>当计数达到1024768次时(忽略这个数字恰巧是1024x768分辨率)：
   <ul></li>  <li>暂停200毫秒</li>  <li>重置计数器</li>  <li>输出一个点(实际应用中有其他操作)
   </ul></li>  <li>构造函数/析构函数包含调试信息输出
   注意：此处使用原始指针而非智能指针(原因成谜)
-</ul></li></p>
-<p>foo结构体：</p>
-<p><ul>
+</ul></li>
+<p class="zh">foo结构体：</p>
+<ul>
     <li>负责启动/停止执行bar::serve()的线程</li>  <li>使用std::jthread管理线程生命周期</li>  <li>通过stopRequest标志位控制线程退出</li>  <li>实际工程中经过两周调试才稳定(团队决定不再提及这段代码)
-</ul></li></p>
-<p>主函数流程：</p>
-<p><ul>
+</ul></li>
+<p class="zh">主函数流程：</p>
+<ul>
     <li>创建foo实例自动启动线程</li>  <li>主线程休眠2秒(原版无此休眠，实际有复杂操作)</li>  <li>注意：此示例代码仅为演示崩溃场景，非线程同步最佳实践
-</ul></li></p>
-<p>各位资深的 C++ 开发者请注意：请不要纠结于这段示例代码中简陋的线程同步方式，或是其内存分配与释放的具体实现细节 —— 因为这段代码存在的唯一目的就是演示潜在的崩溃场景。实际上，对于更现代和安全的线程管理，C++ 标准库提供了诸如 std::jthread 这样的工具，并且还配套有完善的管理机制（例如 std::stop_source 和 std::stop_token）。我们强烈建议通过阅读相关文档来学习这些特性的规范用法。不过现在，就让我们暂时让 Joe 继续使用他的“天真”线程方案，从中吸取一些宝贵的教训吧。</p>
-<p>在作者的 Linux 系统上，执行上述代码的结果通常如下所示：</p>
-<p><pre><code class="language-shell">&gt; $ ./a.out
+</ul></li>
+<p class="zh">各位资深的 C++ 开发者请注意：请不要纠结于这段示例代码中简陋的线程同步方式，或是其内存分配与释放的具体实现细节 —— 因为这段代码存在的唯一目的就是演示潜在的崩溃场景。实际上，对于更现代和安全的线程管理，C++ 标准库提供了诸如 std::jthread 这样的工具，并且还配套有完善的管理机制（例如 std::stop_source 和 std::stop_token）。我们强烈建议通过阅读相关文档来学习这些特性的规范用法。不过现在，就让我们暂时让 Joe 继续使用他的“天真”线程方案，从中吸取一些宝贵的教训吧。</p>
+<p class="zh">在作者的 Linux 系统上，执行上述代码的结果通常如下所示：</p>
+<pre><code class="language-shell">&gt; $ ./a.out
 bar::bar()
 foo::foo()
 .........main returns
 foo::~foo()
-bar::~bar()</code></pre></p>
-<p>然而在某些情况下，程序会输出如下结果：</p>
-<p><pre><code class="language-shell">&gt; $ ./a.out
+bar::~bar()</code></pre>
+<p class="zh">然而在某些情况下，程序会输出如下结果：</p>
+<pre><code class="language-shell">&gt; $ ./a.out
 bar::bar()
 foo::foo()
 .........main returns
 foo::~foo()
 bar::~bar()
-[1]    93622 segmentation fault (core dumped) ./a.out</code></pre></p>
-<p>Joe也遇到了同样的问题。程序偶尔会在退出时失控崩溃。起初这似乎无伤大雅 —— 毕竟程序在结束时崩溃，也算是一种&quot;结束&quot;。但当他将这段代码整合到更大的模块中后，真正的混乱开始了，最终演变成前文提及的、持续两周的调试噩梦。</p>
-<p>根本原因其实很简单。编程大师Jimmy在查阅他随身携带的C++标准文档(特别是[class.dtor]章节)后发现：</p>
-<p><pre><code class="language-shell">在析构函数执行完函数体并销毁函数体内定义的自动存储期对象后，类X的析构函数会依次调用：
+[1]    93622 segmentation fault (core dumped) ./a.out</code></pre>
+<p class="zh">Joe也遇到了同样的问题。程序偶尔会在退出时失控崩溃。起初这似乎无伤大雅 —— 毕竟程序在结束时崩溃，也算是一种&quot;结束&quot;。但当他将这段代码整合到更大的模块中后，真正的混乱开始了，最终演变成前文提及的、持续两周的调试噩梦。</p>
+<p class="zh">根本原因其实很简单。编程大师Jimmy在查阅他随身携带的C++标准文档(特别是[class.dtor]章节)后发现：</p>
+<pre><code class="language-shell">在析构函数执行完函数体并销毁函数体内定义的自动存储期对象后，类X的析构函数会依次调用：
 
 1.X的非静态数据成员(非变体成员)的析构函数
 
@@ -125,24 +125,24 @@ bar::~bar()
 · 数组元素的析构顺序与其构造顺序相反
 
 特别注意：
-析构函数中的return语句不会立即返回调用方，在控制权转移前，必须确保所有成员和基类的析构函数都已完成调用。</code></pre></p>
-<p>关键在于，对象的析构顺序与其构造顺序严格相反 —— 就像被构造时压入栈中，而在析构时又以优雅的逆序弹出。</p>
-<p>导致错误行为的罪魁祸首很快锁定为以下两点：</p>
-<p><pre><code class="language-cpp">std::jthread thread;</code></pre></p>
-<p><pre><code class="language-cpp">bar b;</code></pre></p>
-<p>问题出在对象的构造顺序上：当线程对象被创建后，会立即启动并执行 <code>threadFunc() { b.serve(); }</code>。然而，此时 bar 类型的对象 b 尚未完成构造。根据 C++ 的析构规则，在程序退出时，bar b 会优先销毁，而此时后台线程可能仍在执行耗时操作 —— 这就导致线程试图访问一个已经销毁的对象，从而引发未定义行为。</p>
-<p>虽然从线程创建、启动到 bar 对象构造完成之间的时间差极小（几乎不可能在常规测试中发现问题），可以通过重写 bar 的构造函数来人为放大这一时间窗口，从而暴露潜在的问题：</p>
-<p><pre><code class="language-cpp">bar() { std::this_thread::sleep_for(200ms);
-  i = new long long; *i = 0; printf(&quot;bar::bar()\n &quot;);}</code></pre></p>
-<p>通过这个案例，我们可以清楚地看到：当线程开始操作对象时，该对象的构造过程尚未完全结束。这个问题其实很容易解决 —— 只需调整类成员的声明顺序：</p>
-<p><pre><code class="language-cpp">bar b;
-std::jthread thread;</code></pre></p>
-<p>多线程是 C++ 中一项强大却充满风险的特性。它虽能显著提升程序性能，但也带来了复杂性和诸多陷阱。要写出既正确又高效的多线程代码，开发者必须格外谨慎地应对以下几个关键问题：</p>
-<p><ul>
+析构函数中的return语句不会立即返回调用方，在控制权转移前，必须确保所有成员和基类的析构函数都已完成调用。</code></pre>
+<p class="zh">关键在于，对象的析构顺序与其构造顺序严格相反 —— 就像被构造时压入栈中，而在析构时又以优雅的逆序弹出。</p>
+<p class="zh">导致错误行为的罪魁祸首很快锁定为以下两点：</p>
+<pre class="line-numbers"><code class="language-cpp">std::jthread thread;</code></pre>
+<pre class="line-numbers"><code class="language-cpp">bar b;</code></pre>
+<p class="zh">问题出在对象的构造顺序上：当线程对象被创建后，会立即启动并执行 <code>threadFunc() { b.serve(); }</code>。然而，此时 bar 类型的对象 b 尚未完成构造。根据 C++ 的析构规则，在程序退出时，bar b 会优先销毁，而此时后台线程可能仍在执行耗时操作 —— 这就导致线程试图访问一个已经销毁的对象，从而引发未定义行为。</p>
+<p class="zh">虽然从线程创建、启动到 bar 对象构造完成之间的时间差极小（几乎不可能在常规测试中发现问题），可以通过重写 bar 的构造函数来人为放大这一时间窗口，从而暴露潜在的问题：</p>
+<pre class="line-numbers"><code class="language-cpp">bar() { std::this_thread::sleep_for(200ms);
+  i = new long long; *i = 0; printf(&quot;bar::bar()\n &quot;);}</code></pre>
+<p class="zh">通过这个案例，我们可以清楚地看到：当线程开始操作对象时，该对象的构造过程尚未完全结束。这个问题其实很容易解决 —— 只需调整类成员的声明顺序：</p>
+<pre class="line-numbers"><code class="language-cpp">bar b;
+std::jthread thread;</code></pre>
+<p class="zh">多线程是 C++ 中一项强大却充满风险的特性。它虽能显著提升程序性能，但也带来了复杂性和诸多陷阱。要写出既正确又高效的多线程代码，开发者必须格外谨慎地应对以下几个关键问题：</p>
+<ul>
     <li>线程间的同步与协调</li>  <li>竞态条件(race conditions)</li>  <li>死锁(deadlocks)</li>  <li>非确定性行为</li>  <li>调试困境(线程被调试器暂停时无法复现问题)
-</ul></li></p>
-<p>有时，程序能否稳定运行，竟然取决于类成员变量的声明顺序这样看似无关的细节。</p>
-<p>不过，现在是时候暂别乔和他的开发伙伴们了 —— 希望他们那款备受期待的 4A 大作能够顺利发布。接下来，让我们将目光转向其他编程主题，继续探索 C++ 的更多奥秘。</p>
+</ul></li>
+<p class="zh">有时，程序能否稳定运行，竟然取决于类成员变量的声明顺序这样看似无关的细节。</p>
+<p class="zh">不过，现在是时候暂别乔和他的开发伙伴们了 —— 希望他们那款备受期待的 4A 大作能够顺利发布。接下来，让我们将目光转向其他编程主题，继续探索 C++ 的更多奥秘。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="5.2..html" class="prev-link">« 上一章：5.2. 尊重顺序</a>
@@ -155,6 +155,18 @@ std::jthread thread;</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,15 +24,15 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.5. 头文件不符合C++规范时</h1></section>
-  <p>前面所展示的那些非标准但仍然可用且非常实用的功能列表远未结束。如果我们把注意力完全集中在这些扩展上，甚至可以用它们写好几本书。可惜的是，我们目前只安排了一章来讨论这个话题。再将视线转向一些更为独特、更具“风味”的功能。</p>
-<p>Qt 长期以来一直是一个用于构建 GUI 应用程序（而不仅仅是 GUI）的跨平台编程框架。自 1994 年诞生以来，Qt 经历了多次所有权变更，但在其波澜起伏的发展历程中不断成长，每一个版本都为 C++（以及其它语言）开发者带来了新的工具和特性。</p>
-<p>然而，有一项核心功能几乎从未改变：信号/槽机制（Signals and Slots），以及支撑它的 Meta Object Compiler（MOC）。作为 Qt 的核心技术之一，MOC 能够将事件从一个组件（即“信号”）连接到另一个接收者（即“插槽”），从而实现模块之间的通信。</p>
-<p>但这一强大功能的背后，是以牺牲部分标准 C++ 结构为代价的。为了使这种对象间的动态连接成为可能，Qt 引入了一些非标准的语法元素。例如：</p>
-<p><ul>
+  <p class="zh">前面所展示的那些非标准但仍然可用且非常实用的功能列表远未结束。如果我们把注意力完全集中在这些扩展上，甚至可以用它们写好几本书。可惜的是，我们目前只安排了一章来讨论这个话题。再将视线转向一些更为独特、更具“风味”的功能。</p>
+<p class="zh">Qt 长期以来一直是一个用于构建 GUI 应用程序（而不仅仅是 GUI）的跨平台编程框架。自 1994 年诞生以来，Qt 经历了多次所有权变更，但在其波澜起伏的发展历程中不断成长，每一个版本都为 C++（以及其它语言）开发者带来了新的工具和特性。</p>
+<p class="zh">然而，有一项核心功能几乎从未改变：信号/槽机制（Signals and Slots），以及支撑它的 Meta Object Compiler（MOC）。作为 Qt 的核心技术之一，MOC 能够将事件从一个组件（即“信号”）连接到另一个接收者（即“插槽”），从而实现模块之间的通信。</p>
+<p class="zh">但这一强大功能的背后，是以牺牲部分标准 C++ 结构为代价的。为了使这种对象间的动态连接成为可能，Qt 引入了一些非标准的语法元素。例如：</p>
+<ul>
     <li>类声明中新增了如 signals: 和 private slots: 这样的访问修饰符</li>  <li>引入了一个新的关键字 emit，用于显式发出信号
-</ul></li></p>
-<p>下面是一段典型的 Qt 头文件示例，它使得后续代码能够成功编译并运行：</p>
-<p><pre><code class="language-cpp">#ifndef MYCONTROL_H
+</ul></li>
+<p class="zh">下面是一段典型的 Qt 头文件示例，它使得后续代码能够成功编译并运行：</p>
+<pre class="line-numbers"><code class="language-cpp">#ifndef MYCONTROL_H
 #define MYCONTROL_H
 #include &lt;QObject&gt;
 #include &lt;QPushButton&gt;
@@ -48,14 +48,14 @@ signals:
 private:
   QPushButton *myButton;
 };
-#endif</code></pre></p>
-<p>那么问题来了：我们是否应该接受 Qt 提供的便利性，使用这套非常强大的信号/槽机制，即使必须编写非标准的 C++ 代码？还是应该坚持传统方式，通过纯标准 C++ 实现每个按钮和事件绑定，就像在 GTK 中所做的那样？</p>
-<p>这个问题超出了本章所能回答的范围。最终的决定取决于项目的具体需求：包括目标环境的技术限制、项目利益相关者对平台的期望，以及开发团队自身的偏好和技术栈。</p>
-<p>不过，请不要因为这些代码看起来不像是标准 C++ 就感到不安。尽管确实偏离了规范，但它们解决的是真实世界中的实际问题。在背后，隐藏着一套经过验证、优化并在多个大小项目中广泛使用的成熟实现机制，其已经经受住了时间的考验。</p>
-<p>另一方面，Microsoft 对 C++ 的大规模扩展则采取了截然不同的路径。</p>
-<p>C++/CLI 并不像 Qt 的 MOC 那样是一个特定于框架的工具，而是对 C++ 语言本身的扩展，专门用于支持 .NET 平台。Visual Studio 中用于 C++/CLI 的编译器（基于公共语言基础结构，而非传统的命令行接口）能够解析这些扩展语法，并生成有效的中间语言（MSIL）和本地代码。</p>
-<p>下面是一段典型的 C++/CLI 示例代码。虽然内容简单 —— 只是拼接字符串数组并输出结果，但它展示了托管 C++ 的风格：</p>
-<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+#endif</code></pre>
+<p class="zh">那么问题来了：我们是否应该接受 Qt 提供的便利性，使用这套非常强大的信号/槽机制，即使必须编写非标准的 C++ 代码？还是应该坚持传统方式，通过纯标准 C++ 实现每个按钮和事件绑定，就像在 GTK 中所做的那样？</p>
+<p class="zh">这个问题超出了本章所能回答的范围。最终的决定取决于项目的具体需求：包括目标环境的技术限制、项目利益相关者对平台的期望，以及开发团队自身的偏好和技术栈。</p>
+<p class="zh">不过，请不要因为这些代码看起来不像是标准 C++ 就感到不安。尽管确实偏离了规范，但它们解决的是真实世界中的实际问题。在背后，隐藏着一套经过验证、优化并在多个大小项目中广泛使用的成熟实现机制，其已经经受住了时间的考验。</p>
+<p class="zh">另一方面，Microsoft 对 C++ 的大规模扩展则采取了截然不同的路径。</p>
+<p class="zh">C++/CLI 并不像 Qt 的 MOC 那样是一个特定于框架的工具，而是对 C++ 语言本身的扩展，专门用于支持 .NET 平台。Visual Studio 中用于 C++/CLI 的编译器（基于公共语言基础结构，而非传统的命令行接口）能够解析这些扩展语法，并生成有效的中间语言（MSIL）和本地代码。</p>
+<p class="zh">下面是一段典型的 C++/CLI 示例代码。虽然内容简单 —— 只是拼接字符串数组并输出结果，但它展示了托管 C++ 的风格：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;atlstr.h&gt;
 #include &lt;stdio.h&gt;
 using namespace System;
@@ -66,10 +66,10 @@ int main() {
   for each (String ^ a in args) s += &quot; &quot; + a ;
   CString cs(s);
   wprintf(cs);
-}</code></pre></p>
-<p>这段代码绝不是标准 C++。它看起来不像标准 C++，行为也不像，甚至语法也格格不入。它显然不属于 ISO C++ 的范畴。</p>
-<p>那么，如果要用标准 C++ 来实现同样的功能，代码应该是这样的：</p>
-<p><pre><code class="language-cpp">#include &lt;array&gt;
+}</code></pre>
+<p class="zh">这段代码绝不是标准 C++。它看起来不像标准 C++，行为也不像，甚至语法也格格不入。它显然不属于 ISO C++ 的范畴。</p>
+<p class="zh">那么，如果要用标准 C++ 来实现同样的功能，代码应该是这样的：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;array&gt;
 #include &lt;iostream&gt;
 #include &lt;string&gt;
 int main() {
@@ -79,11 +79,11 @@ int main() {
     s += &quot; &quot; + a ;
   }
   std::cout &lt;&lt; s;
-}</code></pre></p>
-<p>这不仅更简洁、更现代，而且完全符合 C++ 标准。它是不是比前一种写法更清晰、更易维护呢？</p>
-<p>未来，观察 C++ 托管扩展（如 C++/CLI）的发展将会是一件很有趣的事情。</p>
-<p>目前，它充当了原生代码与托管代码之间的一座桥梁，但这是一个相对小众的领域。从长远来看，它的命运将取决于开发者社区的接受程度、是否有足够的生态系统支持，以及是否有其他技术（如 P/Invoke 或 COM Interop）逐步取代它所承担的角色。</p>
-<p>毫无疑问，未来充满了变革。</p>
+}</code></pre>
+<p class="zh">这不仅更简洁、更现代，而且完全符合 C++ 标准。它是不是比前一种写法更清晰、更易维护呢？</p>
+<p class="zh">未来，观察 C++ 托管扩展（如 C++/CLI）的发展将会是一件很有趣的事情。</p>
+<p class="zh">目前，它充当了原生代码与托管代码之间的一座桥梁，但这是一个相对小众的领域。从长远来看，它的命运将取决于开发者社区的接受程度、是否有足够的生态系统支持，以及是否有其他技术（如 P/Invoke 或 COM Interop）逐步取代它所承担的角色。</p>
+<p class="zh">毫无疑问，未来充满了变革。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.4..html" class="prev-link">« 上一章：2.4. 自由的编译器</a>
@@ -96,6 +96,18 @@ int main() {
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

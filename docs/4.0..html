@@ -24,20 +24,20 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第4章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— main之前事存于main</em>
-</div></p>
-<p>对于在多种操作系统上使用 C++ 的开发者而言，理解应用程序的入口点，及其背后的底层架构至关重要。它不仅仅是一个简单的起点，而是通往理解程序如何从无到有、启动运行的钥匙。本章将深入剖析一个应用程序的启动过程，特别关注在进入熟悉的 main() 函数之前，那些默默完成初始化工作的底层代码。</p>
-<p>首先在 Linux 系统的土壤中探索这一过程，将揭开可执行与可链接格式(Executable and Linkable Format，ELF)的神秘面纱，详细解读 execve() 系统调用如何加载并执行 _start() 函数。这个 _start() 函数就像是舞台的幕后总导演，在将控制权交给 main() 之前，精心布置好整个运行时环境。此外，还会触及一些编译器提供的巧妙扩展，允许开发者对这一启动流程进行精细的操控。</p>
-<p>随后，将目光转向 Windows 平台，细致地分析其可移植可执行文件格式(Portable Executable，PE)中各个功能各异的节区(sections)。</p>
-<p>为了更直观、更深入地洞悉这两个平台上可执行文件的内部构造，我们将借助一款强大的工具 —— Ghidra。它是由美国国家安全局(NSA)开发的优秀开源软件逆向工程套件，不仅能反汇编、反编译和调试二进制文件，更能为我们揭示应用程序启动过程中的底层机制。</p>
-<p>完成本章后，你将对以下内容有更深入的理解：</p>
-<p><ul>
+</div>
+<p class="zh">对于在多种操作系统上使用 C++ 的开发者而言，理解应用程序的入口点，及其背后的底层架构至关重要。它不仅仅是一个简单的起点，而是通往理解程序如何从无到有、启动运行的钥匙。本章将深入剖析一个应用程序的启动过程，特别关注在进入熟悉的 main() 函数之前，那些默默完成初始化工作的底层代码。</p>
+<p class="zh">首先在 Linux 系统的土壤中探索这一过程，将揭开可执行与可链接格式(Executable and Linkable Format，ELF)的神秘面纱，详细解读 execve() 系统调用如何加载并执行 _start() 函数。这个 _start() 函数就像是舞台的幕后总导演，在将控制权交给 main() 之前，精心布置好整个运行时环境。此外，还会触及一些编译器提供的巧妙扩展，允许开发者对这一启动流程进行精细的操控。</p>
+<p class="zh">随后，将目光转向 Windows 平台，细致地分析其可移植可执行文件格式(Portable Executable，PE)中各个功能各异的节区(sections)。</p>
+<p class="zh">为了更直观、更深入地洞悉这两个平台上可执行文件的内部构造，我们将借助一款强大的工具 —— Ghidra。它是由美国国家安全局(NSA)开发的优秀开源软件逆向工程套件，不仅能反汇编、反编译和调试二进制文件，更能为我们揭示应用程序启动过程中的底层机制。</p>
+<p class="zh">完成本章后，你将对以下内容有更深入的理解：</p>
+<ul>
     <li>Linux 和 Windows 下可执行文件的格式与进程启动机制</li>  <li>如何修改和控制应用程序的启动过程
-</ul></li></p>
-<p><div class="tip-box tip"><strong>什么是 Ghidra？</strong><p>
+</ul></li>
+<div class="tip-box tip"><strong>什么是 Ghidra？</strong><p class="zh">
 Ghidra 是由美国国家安全局(NSA)开源的软件逆向工程套件。它功能强大，支持分析多种格式和平台的编译代码。通过提供反编译、反汇编和调试二进制文件的工具，Ghidra 让用户能够更轻松地理解和分析机器代码，是探索软件内部运作机制的得力助手。
-</p></div></p>
+</p></div>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="3.7..html" class="prev-link">« 上一章：3.7. 总结</a>
@@ -50,6 +50,18 @@ Ghidra 是由美国国家安全局(NSA)开源的软件逆向工程套件。它�
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

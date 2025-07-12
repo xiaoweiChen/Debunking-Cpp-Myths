@@ -24,15 +24,15 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">12.6. 为什么仍然需要C++</h1></section>
-  <p>通过本书的深入探讨，我们已经清晰地认识到 C++ 所面临的若干关键挑战。</p>
-<p>亟待改进的核心领域：</p>
-<p><ol>
+  <p class="zh">通过本书的深入探讨，我们已经清晰地认识到 C++ 所面临的若干关键挑战。</p>
+<p class="zh">亟待改进的核心领域：</p>
+<ol>
     <li>包管理系统:C++ 缺乏统一、标准化的包管理方案，严重制约了开发效率与生态建设。在这方面，可以借鉴 Java 和 C# 的成功经验，推动一个开源且被广泛接受的事实标准。</li>  <li>单元测试支持:尽管已有多个第三方测试框架流行于社区，但标准库中仍缺乏原生支持。一个官方认可的测试库将极大提升测试实践的普及度和一致性，尽管现有代码库的迁移过程可能漫长而复杂。</li>  <li>Unicode支持:虽然 C++11 引入了基本的 Unicode 支持，但在处理 UTF-8 字符串和文本编码方面仍有显著不足，难以满足现代应用的需求。</li>  <li>并发编程:C++11 标准引入了线程和异步编程的基本设施，但其并发模型仍处于初级阶段，功能有限，抽象层次较低，远不如其他现代语言提供的并发机制灵活高效。</li>  <li>安全机制:内存安全问题一直是 C++ 的软肋。缺乏内置的安全防护机制（如边界检查、空指针防护等），使得程序容易受到漏洞攻击。在当前强调软件安全的大环境下，这一短板亟需补足。
-</ol></li></p>
-<p>好消息是：C++ 标准委员会正在积极推进上述部分改进，特别是在模块系统、并发特性和标准库增强等方面已取得实质进展。</p>
-<p>不太乐观的是：从标准制定到编译器全面支持，再到大规模代码库的迁移，整个过程往往需要数年甚至更长时间。这是一个典型的“渐进式变革”过程。</p>
-<p>不过，或许未来我们可以借助 AI 技术来加速这一进程 —— 论是自动代码转换、语义分析还是保障迁移后的代码完整性，AI 都有望成为推动 C++ 演进的强大助力。</p>
-<p>C++ 并未停滞不前，它仍在努力进化。只是这场语言的自我革新，注定是一场持久战。</p>
+</ol></li>
+<p class="zh">好消息是：C++ 标准委员会正在积极推进上述部分改进，特别是在模块系统、并发特性和标准库增强等方面已取得实质进展。</p>
+<p class="zh">不太乐观的是：从标准制定到编译器全面支持，再到大规模代码库的迁移，整个过程往往需要数年甚至更长时间。这是一个典型的“渐进式变革”过程。</p>
+<p class="zh">不过，或许未来我们可以借助 AI 技术来加速这一进程 —— 论是自动代码转换、语义分析还是保障迁移后的代码完整性，AI 都有望成为推动 C++ 演进的强大助力。</p>
+<p class="zh">C++ 并未停滞不前，它仍在努力进化。只是这场语言的自我革新，注定是一场持久战。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="12.5..html" class="prev-link">« 上一章：12.5. C++哪些方面更优秀</a>
@@ -45,6 +45,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

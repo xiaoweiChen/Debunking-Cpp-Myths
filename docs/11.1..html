@@ -24,24 +24,24 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">11.1. C与C++的兼容方向</h1></section>
-  <p>本章将展开一番探索，深入剖析那些关于“C++ 是否真正向后兼容 C”的陈词滥调 —— 这些老生常谈的观点既无趣又令人厌烦。</p>
-<p>几十年来，我们的导师、教师和培训师不断向我们灌输这样一个信条：C++ 基本上是向后兼容 C 的。这意味着，大多数 C 代码只需稍作修改，便能在 C++ 编译器下顺利编译运行。毕竟，两者共享着相似的语法结构、关键字体系，甚至在标准库层面也有诸多重叠之处。</p>
-<p><pre><code class="language-shell">&lt;banalities reason="这些在别的地方讨论过"&gt;</code></pre></p>
-<p>C 与 C++ 的亲密关系，就像功能失调家庭里的两兄弟 —— 血脉相连却又矛盾重重，在兼容性问题上始终爱恨交织。但随着时间的推移，这两门语言已渐行渐远。</p>
-<p>根据核心规范，C 语言更为宽松：它的类型规则更灵活（尤其在指针处理上），允许隐式指针转换等特性，而这些在 C++ 中都是被明令禁止的。例如在 C 语言中，void* 可以不经强制转换直接赋值给其他指针类型，而 C++ 则会要求显式类型转换，以维护类型安全。</p>
-<p>这种差异同样体现在枚举类型上：C++（尤其是新版本）将枚举视为独立类型，而 C 语言则简单粗暴地将其当作 int 处理。分歧还蔓延到变量初始化、类型限定符等众多领域 —— 甚至连内存分配函数（*alloc()）在两者中的表现都大相径庭。</p>
-<p>以 malloc、calloc 等函数为例：在 C 语言中它们就像早餐咖啡般平凡无奇；可一旦出现在 C++ 代码里，瞬间就变成了打开地狱之门的咒语。代码评审时尤其如此：</p>
-<p>那些 C++ 原教旨主义者会惊恐地抓着键盘，声嘶力竭地告诫你：“既然有 new/delete，为什么还要用 C 函数？”甚至质问：“都 2024 年了，为什么还要手动分配内存？我们有智能指针！”</p>
-<p>就算你非要使用，他们也至少会哀求你别用 C 风格强制转换 —— 毕竟 C++ 标准早在十多年前就提供了完善的转型操作符。</p>
-<p>正如前文所述（当然远不止这些），年轻的 C++ 追求更严格的类型规则和更安全的编程实践，而 C 语言老祖宗则保持着实用主义的灵活性 —— 尽管要承担更大风险。</p>
-<p>最让 C++ 信徒毛骨悚然的是，这两门语言经常被迫同处一室：特别是当 C++ 项目需要调用 C 语言库时，开发者就不得不面对双语言兼容的噩梦。</p>
-<p>啊，这该死的软件开发炼狱。</p>
-<p>为了解决上述问题，开发者常常不得不借助 extern &quot;C&quot; 声明 —— 这个神奇的“咒语”既能阻止 C++ 的名称修饰（name mangling），又能让用不同方言编写的库函数顺畅链接。</p>
-<p>究其根源，尽管 C 与 C++ 血脉相连，但两者编译器生成的目标文件处理方式却大相径庭（没错，说的就是你，名称修饰！）。</p>
-<p>更有趣的是，C99标准中那些独具特色的关键字 —— 比如_Alignas、_Alignof、_Atomic、_Bool、_Complex、_Generic、_Imaginary、_Noreturn和_Static_assert —— 在标准C++中集体缺席(尽管部分功能可能有C++等效实现或编译器扩展)。而命运最讽刺的是，为了让 C 语言向 C++ 靠拢，这些关键字从 C23 标准开始竟被陆续淘汰。</p>
-<p><pre><code class="language-shell">&lt;/banalities&gt;</code></pre></p>
-<p>然而，C 语言诞生之时，根本不会想到未来会出现一门名为 C++ 的编程语言。正因如此，下面这段 C 代码完全合法，但却足以让所有遵纪守法的 C++ 编译器（以及洁癖型 C++ 开发者）当场窒息：</p>
-<p><pre><code class="language-cpp">int template(int this) {
+  <p class="zh">本章将展开一番探索，深入剖析那些关于“C++ 是否真正向后兼容 C”的陈词滥调 —— 这些老生常谈的观点既无趣又令人厌烦。</p>
+<p class="zh">几十年来，我们的导师、教师和培训师不断向我们灌输这样一个信条：C++ 基本上是向后兼容 C 的。这意味着，大多数 C 代码只需稍作修改，便能在 C++ 编译器下顺利编译运行。毕竟，两者共享着相似的语法结构、关键字体系，甚至在标准库层面也有诸多重叠之处。</p>
+<pre><code class="language-shell">&lt;banalities reason="这些在别的地方讨论过"&gt;</code></pre>
+<p class="zh">C 与 C++ 的亲密关系，就像功能失调家庭里的两兄弟 —— 血脉相连却又矛盾重重，在兼容性问题上始终爱恨交织。但随着时间的推移，这两门语言已渐行渐远。</p>
+<p class="zh">根据核心规范，C 语言更为宽松：它的类型规则更灵活（尤其在指针处理上），允许隐式指针转换等特性，而这些在 C++ 中都是被明令禁止的。例如在 C 语言中，void* 可以不经强制转换直接赋值给其他指针类型，而 C++ 则会要求显式类型转换，以维护类型安全。</p>
+<p class="zh">这种差异同样体现在枚举类型上：C++（尤其是新版本）将枚举视为独立类型，而 C 语言则简单粗暴地将其当作 int 处理。分歧还蔓延到变量初始化、类型限定符等众多领域 —— 甚至连内存分配函数（*alloc()）在两者中的表现都大相径庭。</p>
+<p class="zh">以 malloc、calloc 等函数为例：在 C 语言中它们就像早餐咖啡般平凡无奇；可一旦出现在 C++ 代码里，瞬间就变成了打开地狱之门的咒语。代码评审时尤其如此：</p>
+<p class="zh">那些 C++ 原教旨主义者会惊恐地抓着键盘，声嘶力竭地告诫你：“既然有 new/delete，为什么还要用 C 函数？”甚至质问：“都 2024 年了，为什么还要手动分配内存？我们有智能指针！”</p>
+<p class="zh">就算你非要使用，他们也至少会哀求你别用 C 风格强制转换 —— 毕竟 C++ 标准早在十多年前就提供了完善的转型操作符。</p>
+<p class="zh">正如前文所述（当然远不止这些），年轻的 C++ 追求更严格的类型规则和更安全的编程实践，而 C 语言老祖宗则保持着实用主义的灵活性 —— 尽管要承担更大风险。</p>
+<p class="zh">最让 C++ 信徒毛骨悚然的是，这两门语言经常被迫同处一室：特别是当 C++ 项目需要调用 C 语言库时，开发者就不得不面对双语言兼容的噩梦。</p>
+<p class="zh">啊，这该死的软件开发炼狱。</p>
+<p class="zh">为了解决上述问题，开发者常常不得不借助 extern &quot;C&quot; 声明 —— 这个神奇的“咒语”既能阻止 C++ 的名称修饰（name mangling），又能让用不同方言编写的库函数顺畅链接。</p>
+<p class="zh">究其根源，尽管 C 与 C++ 血脉相连，但两者编译器生成的目标文件处理方式却大相径庭（没错，说的就是你，名称修饰！）。</p>
+<p class="zh">更有趣的是，C99标准中那些独具特色的关键字 —— 比如_Alignas、_Alignof、_Atomic、_Bool、_Complex、_Generic、_Imaginary、_Noreturn和_Static_assert —— 在标准C++中集体缺席(尽管部分功能可能有C++等效实现或编译器扩展)。而命运最讽刺的是，为了让 C 语言向 C++ 靠拢，这些关键字从 C23 标准开始竟被陆续淘汰。</p>
+<pre><code class="language-shell">&lt;/banalities&gt;</code></pre>
+<p class="zh">然而，C 语言诞生之时，根本不会想到未来会出现一门名为 C++ 的编程语言。正因如此，下面这段 C 代码完全合法，但却足以让所有遵纪守法的 C++ 编译器（以及洁癖型 C++ 开发者）当场窒息：</p>
+<pre class="line-numbers"><code class="language-cpp">int template(int this) {
   int class = 0, using = 1, delete;
   if (this == 0) return class;
   if (this == 1) return using;
@@ -51,76 +51,76 @@
     using = delete;
   }
   return delete;
-}</code></pre></p>
-<p>这段看似从 C 语言深渊中爬出的噩梦级代码，实则完全合法 —— 更令人难以置信的是，它居然能计算斐波那契数列的一部分逻辑！（好吧，或许只是碰巧触发了某种行为……但你懂的。）</p>
-<p>亲爱的读者，我们不会对你太过残忍 —— 虽然考虑到你读到这里，已经承受了本书各种“传奇”代码片段的轮番洗礼，这段代码恐怕已难让你震惊。</p>
-<p>别担心，这是倒数第二章，苦难即将结束。</p>
-<p>不过，在此之前：还记得第9章中我们把 main 定义为 return、又把 return 定义为 main 的那段“艺术级”代码吗？是的，我们在那条路上已经走得够远。</p>
-<p>不，我们要讨论的并非变长数组（VLA） —— 光是<code>void funny_fun(int n, int array[][*])</code>这种诡异语法就值得单独写篇论文(该语法演示了如何在函数原型声明中传递二维变长数组)。过去十年间，早有权威专家对变长数组进行了深入探讨<span class="footnote"><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3810.pdf" target="_blank" rel="noopener noreferrer">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3810.pdf</a></span>，其专业程度<span class="footnote"><a href="https://nullprogram.com/blog/2019/10/27/" target="_blank" rel="noopener noreferrer">https://nullprogram.com/blog/2019/10/27/</a></span>远非笔者所能企及。</p>
-<p>即便经过这些热烈讨论，变长数组（VLAs）仍未能进入 C++ 标准 —— 这背后必然存在合理考量：不仅仅是潜在的栈空间问题，或是假设理论上的无限栈可能引发的类型混乱，更因为 C++ 本身已具备更优秀、更安全的机制来处理这类特定场景。</p>
-<p>在本章中，我们将重点探讨作者认为极其实用、却始终未能以原生形态进入 C++ 标准的某些 C 语言特性。</p>
-<p><h4 class="filename">11.1.1 参数列表的魔法</h4></p>
-<p>让我们从一个最简单的函数开始：int foo()。</p>
-<p>这个函数虽然简单，但确实能完成它的工作(无论那是什么)。</p>
-<p>当用 C 语言编译时，空参数列表意味着该函数可以接受任意数量的参数。这种设计在某些历史场景中非常灵活，但也带来了隐患：如果调用者意外传入了参数，可能会导致歧义甚至错误，因为编译器不会对参数进行强制检查。</p>
-<p>为了在 C 中明确表示一个函数不接受任何参数，我们必须在参数列表中显式使用 void，即：int foo(void)，这明确告诉编译器和开发者：“我什么都不收”。任何尝试传递参数的行为都会被编译器毫不留情地拒绝。</p>
-<p>相比之下，C++ 对这一设计进行了简化：将空参数列表直接视为等同于 void。也就是说，在 C++ 中：int foo()和int foo(void)是完全等价的，都表示该函数不接受任何参数。这种设计让 C++ 的语法更加简洁自然 —— 无参数的函数可以直接用空括号声明。</p>
-<p>虽然在 C 中仍需使用 void 来保证语义清晰与正确性，但在 C++ 中，两种写法都是合法的，而且通常习惯省略 void，采用更简洁的形式 int foo()。</p>
-<p>很巧妙，不是吗？</p>
-<p>不过，如果我们想给函数添加参数呢？让我们来修改一下函数原型：int foo(int array[static 10])。</p>
-<p>这个int foo(int array[static 10])看似普通的函数声明，其实使用了 C99 引入的一项非常有趣的特性：在数组参数中使用 static 关键字。</p>
-<p>具体来说，static 10 表示：调用该函数时，传入的数组必须至少包含 10 个有效元素。数字 10 明确指定了数组的最小尺寸，这使得编译器可以基于此做出某些优化假设，例如：避免边界检查或生成更高效的代码。</p>
-<p>更进一步的是，当在数组参数中使用 static 时，编译器还会假定该数组指针不可能为 NULL。因为空指针没有任何有效的元素存在，这违反了“至少有 10 个元素”的前提条件。</p>
-<p>这种设计不仅提升了程序的安全性和可读性，还减少了运行时不必要的空指针检查，从而降低了开销。</p>
-<p>令人欣喜的是，较新版本的 Clang（3.1.0 及以上） 会在你试图用臭名昭著的 NULL 指针调用此类函数时发出警告，提醒你潜在的危险行为：</p>
-<p><pre><code class="language-shell">warning: null passed to a callee which requires a non-null argument</code></pre></p>
-<p>遗憾的是，这个非常实用的语言特性并未被纳入任何 C++ 标准，甚至连现代的 C 编译器也并非全部支持它。例如，无论你指定哪个 C 标准版本，MSVC 都无法成功编译包含该语法的代码。尽管如此，对于那些不针对这些受限平台的开发者来说，这一特性在需要时确实可能派上大用场，尤其在提升代码安全性和优化潜力方面。</p>
-<p>另一个仅限于 C 语言开发者圈子的实用特性，是 C99 引入的 restrict 关键字。</p>
-<p>这是一种类型限定符，专为指针设计，用于向编译器提供关于内存访问的优化提示。具体而言，restrict 告诉编译器：被修饰的指针是当前作用域内访问其所指向对象（即某块内存）的唯一途径。</p>
-<p>有了这一保证，编译器便可以进行更加激进的优化操作，因为它可以安全地假设：不会有其他指针别名化（alias）这块内存。这意味着它可以放心地避免不必要的内存重加载或重复读取操作，从而生成更高效的机器码。</p>
-<p>当你在指针上使用 restrict 限定符时，实际上是在向编译器作出一个庄严承诺：在这段代码中，在这个指针的生命期内，它所指向的对象不会通过任何其他指针被访问。这种契约式的语义赋予了编译器极大的自由度，使其能够生成性能更优的代码。</p>
-<p>如果没有 restrict，编译器就必须保守地假设：任意两个指针都有可能指向同一块内存区域。这种潜在的“别名风险”会严重限制编译器的优化能力。</p>
-<p>举个简单的例子，来看看以下函数：</p>
-<p><pre><code class="language-cpp">void update1(int *a, int *b) {
+}</code></pre>
+<p class="zh">这段看似从 C 语言深渊中爬出的噩梦级代码，实则完全合法 —— 更令人难以置信的是，它居然能计算斐波那契数列的一部分逻辑！（好吧，或许只是碰巧触发了某种行为……但你懂的。）</p>
+<p class="zh">亲爱的读者，我们不会对你太过残忍 —— 虽然考虑到你读到这里，已经承受了本书各种“传奇”代码片段的轮番洗礼，这段代码恐怕已难让你震惊。</p>
+<p class="zh">别担心，这是倒数第二章，苦难即将结束。</p>
+<p class="zh">不过，在此之前：还记得第9章中我们把 main 定义为 return、又把 return 定义为 main 的那段“艺术级”代码吗？是的，我们在那条路上已经走得够远。</p>
+<p class="zh">不，我们要讨论的并非变长数组（VLA） —— 光是<code>void funny_fun(int n, int array[][*])</code>这种诡异语法就值得单独写篇论文(该语法演示了如何在函数原型声明中传递二维变长数组)。过去十年间，早有权威专家对变长数组进行了深入探讨<span class="footnote"><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3810.pdf" target="_blank" rel="noopener noreferrer">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3810.pdf</a></span>，其专业程度<span class="footnote"><a href="https://nullprogram.com/blog/2019/10/27/" target="_blank" rel="noopener noreferrer">https://nullprogram.com/blog/2019/10/27/</a></span>远非笔者所能企及。</p>
+<p class="zh">即便经过这些热烈讨论，变长数组（VLAs）仍未能进入 C++ 标准 —— 这背后必然存在合理考量：不仅仅是潜在的栈空间问题，或是假设理论上的无限栈可能引发的类型混乱，更因为 C++ 本身已具备更优秀、更安全的机制来处理这类特定场景。</p>
+<p class="zh">在本章中，我们将重点探讨作者认为极其实用、却始终未能以原生形态进入 C++ 标准的某些 C 语言特性。</p>
+<p class="zh"><h4 class="filename">11.1.1 参数列表的魔法</h4></p>
+<p class="zh">让我们从一个最简单的函数开始：int foo()。</p>
+<p class="zh">这个函数虽然简单，但确实能完成它的工作(无论那是什么)。</p>
+<p class="zh">当用 C 语言编译时，空参数列表意味着该函数可以接受任意数量的参数。这种设计在某些历史场景中非常灵活，但也带来了隐患：如果调用者意外传入了参数，可能会导致歧义甚至错误，因为编译器不会对参数进行强制检查。</p>
+<p class="zh">为了在 C 中明确表示一个函数不接受任何参数，我们必须在参数列表中显式使用 void，即：int foo(void)，这明确告诉编译器和开发者：“我什么都不收”。任何尝试传递参数的行为都会被编译器毫不留情地拒绝。</p>
+<p class="zh">相比之下，C++ 对这一设计进行了简化：将空参数列表直接视为等同于 void。也就是说，在 C++ 中：int foo()和int foo(void)是完全等价的，都表示该函数不接受任何参数。这种设计让 C++ 的语法更加简洁自然 —— 无参数的函数可以直接用空括号声明。</p>
+<p class="zh">虽然在 C 中仍需使用 void 来保证语义清晰与正确性，但在 C++ 中，两种写法都是合法的，而且通常习惯省略 void，采用更简洁的形式 int foo()。</p>
+<p class="zh">很巧妙，不是吗？</p>
+<p class="zh">不过，如果我们想给函数添加参数呢？让我们来修改一下函数原型：int foo(int array[static 10])。</p>
+<p class="zh">这个int foo(int array[static 10])看似普通的函数声明，其实使用了 C99 引入的一项非常有趣的特性：在数组参数中使用 static 关键字。</p>
+<p class="zh">具体来说，static 10 表示：调用该函数时，传入的数组必须至少包含 10 个有效元素。数字 10 明确指定了数组的最小尺寸，这使得编译器可以基于此做出某些优化假设，例如：避免边界检查或生成更高效的代码。</p>
+<p class="zh">更进一步的是，当在数组参数中使用 static 时，编译器还会假定该数组指针不可能为 NULL。因为空指针没有任何有效的元素存在，这违反了“至少有 10 个元素”的前提条件。</p>
+<p class="zh">这种设计不仅提升了程序的安全性和可读性，还减少了运行时不必要的空指针检查，从而降低了开销。</p>
+<p class="zh">令人欣喜的是，较新版本的 Clang（3.1.0 及以上） 会在你试图用臭名昭著的 NULL 指针调用此类函数时发出警告，提醒你潜在的危险行为：</p>
+<pre><code class="language-shell">warning: null passed to a callee which requires a non-null argument</code></pre>
+<p class="zh">遗憾的是，这个非常实用的语言特性并未被纳入任何 C++ 标准，甚至连现代的 C 编译器也并非全部支持它。例如，无论你指定哪个 C 标准版本，MSVC 都无法成功编译包含该语法的代码。尽管如此，对于那些不针对这些受限平台的开发者来说，这一特性在需要时确实可能派上大用场，尤其在提升代码安全性和优化潜力方面。</p>
+<p class="zh">另一个仅限于 C 语言开发者圈子的实用特性，是 C99 引入的 restrict 关键字。</p>
+<p class="zh">这是一种类型限定符，专为指针设计，用于向编译器提供关于内存访问的优化提示。具体而言，restrict 告诉编译器：被修饰的指针是当前作用域内访问其所指向对象（即某块内存）的唯一途径。</p>
+<p class="zh">有了这一保证，编译器便可以进行更加激进的优化操作，因为它可以安全地假设：不会有其他指针别名化（alias）这块内存。这意味着它可以放心地避免不必要的内存重加载或重复读取操作，从而生成更高效的机器码。</p>
+<p class="zh">当你在指针上使用 restrict 限定符时，实际上是在向编译器作出一个庄严承诺：在这段代码中，在这个指针的生命期内，它所指向的对象不会通过任何其他指针被访问。这种契约式的语义赋予了编译器极大的自由度，使其能够生成性能更优的代码。</p>
+<p class="zh">如果没有 restrict，编译器就必须保守地假设：任意两个指针都有可能指向同一块内存区域。这种潜在的“别名风险”会严重限制编译器的优化能力。</p>
+<p class="zh">举个简单的例子，来看看以下函数：</p>
+<pre class="line-numbers"><code class="language-cpp">void update1(int *a, int *b) {
   *a = *a + *b;
   *b = *b + *a;
-}</code></pre></p>
-<p>在这种情况下，编译器必须假定a和b可能存在别名关系(即可能指向同一内存地址)，可能会每次都从内存重新加载a或b的值以确保正确性。</p>
-<p>而使用restrict限定符的版本则不同：</p>
-<p><pre><code class="language-cpp">void update2(int *restrict a, int *restrict b) {
+}</code></pre>
+<p class="zh">在这种情况下，编译器必须假定a和b可能存在别名关系(即可能指向同一内存地址)，可能会每次都从内存重新加载a或b的值以确保正确性。</p>
+<p class="zh">而使用restrict限定符的版本则不同：</p>
+<pre class="line-numbers"><code class="language-cpp">void update2(int *restrict a, int *restrict b) {
   *a = *a + *b;
   *b = *b + *a;
-}</code></pre></p>
-<p>此时我们已明确告知编译器 *a 和 *b 不存在别名关系，因此编译器可以放心地进行优化，无需担心内存别名问题。</p>
-<p>以下是 GCC 14.2 使用 -O3 优化级别为这两个不同函数生成的汇编代码对比(附简要说明)：</p>
-<p><pre><code class="language-shell">update1:
+}</code></pre>
+<p class="zh">此时我们已明确告知编译器 *a 和 *b 不存在别名关系，因此编译器可以放心地进行优化，无需担心内存别名问题。</p>
+<p class="zh">以下是 GCC 14.2 使用 -O3 优化级别为这两个不同函数生成的汇编代码对比(附简要说明)：</p>
+<pre><code class="language-shell">update1:
   mov eax, DWORD PTR [rsi]; Load b from [rsi] into eax
   add eax, DWORD PTR [rdi]; Add a from [rdi] to eax
   mov DWORD PTR [rdi], eax; Store eax into [rdi] (a)
   add DWORD PTR [rsi], eax; Add eax to [rsi] (b)
-  ret ; Return</code></pre></p>
-<p>这是另一个：</p>
-<p><pre><code class="language-shell">update2:
+  ret ; Return</code></pre>
+<p class="zh">这是另一个：</p>
+<pre><code class="language-shell">update2:
   mov eax, DWORD PTR [rsi]; Load b from [rsi] into eax
   mov edx, DWORD PTR [rdi]; Load a from [rdi] into edx
   add edx, eax ; eax + edx (result in edx) - a
   add eax, edx ; edx + eax (result in eax) - b
   mov DWORD PTR [rdi], edx; Store edx into [rdi] - a
   mov DWORD PTR [rsi], eax; Store eax into [rsi] - b
-  ret ; Return</code></pre></p>
-<p>出人意料的是，使用了 restrict 的版本在生成的指令数量上反而略多了一些。然而，只要我们仔细查看汇编代码，就能明显看出 restrict 关键字所带来的优化效果。</p>
-<p>假设函数参数分别存放在寄存器 [rsi] 和 [rdi] 所指向的内存位置：</p>
-<p>第一个版本（未使用 restrict）必须在内存中完成所有加法运算，以确保每次读取都能获取最新值。这种保守策略虽然安全，却也带来了额外的开销，导致整体效率略低；</p>
-<p>而第二个版本（使用 restrict）则可以大胆地将这些耗时操作转换为两个极快的寄存器加法操作。</p>
-<p>这两个版本之间还有一个关键区别：</p>
-<p>在带 restrict 的版本（例如 update2）中，编译器能够安全地假设第二个参数所指向的值在整个操作过程中保持不变。这使得它可以通过精心设计的寄存器初始化和加法顺序，充分发挥寄存器高速访问的优势。</p>
-<p>而在第一个版本中，编译器必须考虑一种可能：像 a = *a + *b; 这样的语句可能会修改 b 所指向的内容（即 [rsi] 中的数据）。为了保证语义正确性，它不得不在内存中执行操作，并在每次访问时重新加载数据，以确保获取的是最新值。</p>
-<p>虽然对于这类简单的加法操作而言，restrict 带来的性能提升可能不像本书无法容纳的更复杂示例那样显著，但我们已经找到了足够有力的证据来证明：restrict关键字确实会影响生成的代码。</p>
-<p>遗憾的是，这一强大而实用的特性，未能进入 C++ 的标准之中。</p>
-<p>不过，关于 C++ 在与 C 兼容性方面的不足，我们的批评就到此为止吧。毕竟，它们从来都不是彼此的竞争者，而是相辅相成的语言生态。</p>
-<p>现在，让我们把目光转向一个更加引人入胜、也更具争议性的话题：</p>
-<p>C++ 真的能自我兼容吗？</p>
-<p>换句话说，新版本的 C++ 是否真正尊重了旧版本的行为？语言是否在进化过程中保持了连贯性和稳定性？这些问题的答案，远比表面看起来复杂得多……让我们一探究竟。</p>
+  ret ; Return</code></pre>
+<p class="zh">出人意料的是，使用了 restrict 的版本在生成的指令数量上反而略多了一些。然而，只要我们仔细查看汇编代码，就能明显看出 restrict 关键字所带来的优化效果。</p>
+<p class="zh">假设函数参数分别存放在寄存器 [rsi] 和 [rdi] 所指向的内存位置：</p>
+<p class="zh">第一个版本（未使用 restrict）必须在内存中完成所有加法运算，以确保每次读取都能获取最新值。这种保守策略虽然安全，却也带来了额外的开销，导致整体效率略低；</p>
+<p class="zh">而第二个版本（使用 restrict）则可以大胆地将这些耗时操作转换为两个极快的寄存器加法操作。</p>
+<p class="zh">这两个版本之间还有一个关键区别：</p>
+<p class="zh">在带 restrict 的版本（例如 update2）中，编译器能够安全地假设第二个参数所指向的值在整个操作过程中保持不变。这使得它可以通过精心设计的寄存器初始化和加法顺序，充分发挥寄存器高速访问的优势。</p>
+<p class="zh">而在第一个版本中，编译器必须考虑一种可能：像 a = *a + *b; 这样的语句可能会修改 b 所指向的内容（即 [rsi] 中的数据）。为了保证语义正确性，它不得不在内存中执行操作，并在每次访问时重新加载数据，以确保获取的是最新值。</p>
+<p class="zh">虽然对于这类简单的加法操作而言，restrict 带来的性能提升可能不像本书无法容纳的更复杂示例那样显著，但我们已经找到了足够有力的证据来证明：restrict关键字确实会影响生成的代码。</p>
+<p class="zh">遗憾的是，这一强大而实用的特性，未能进入 C++ 的标准之中。</p>
+<p class="zh">不过，关于 C++ 在与 C 兼容性方面的不足，我们的批评就到此为止吧。毕竟，它们从来都不是彼此的竞争者，而是相辅相成的语言生态。</p>
+<p class="zh">现在，让我们把目光转向一个更加引人入胜、也更具争议性的话题：</p>
+<p class="zh">C++ 真的能自我兼容吗？</p>
+<p class="zh">换句话说，新版本的 C++ 是否真正尊重了旧版本的行为？语言是否在进化过程中保持了连贯性和稳定性？这些问题的答案，远比表面看起来复杂得多……让我们一探究竟。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="11.0..html" class="prev-link">« 上一章：第11章</a>
@@ -133,6 +133,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

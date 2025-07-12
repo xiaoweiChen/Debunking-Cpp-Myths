@@ -24,9 +24,9 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">6.4. 现代C++的救赎</h1></section>
-  <p>重新审视前面的示例，但这次遵循现代 C++ 的最佳实践，将原生数组和原生指针替换为相应的 STL 容器。</p>
-<p>首先来看数组越界的例子。按照现代 C++ 的建议，将原生数组替换为 std::vector&lt;int&gt; 实例，从而得到以下函数：</p>
-<p><pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+  <p class="zh">重新审视前面的示例，但这次遵循现代 C++ 的最佳实践，将原生数组和原生指针替换为相应的 STL 容器。</p>
+<p class="zh">首先来看数组越界的例子。按照现代 C++ 的建议，将原生数组替换为 std::vector&lt;int&gt; 实例，从而得到以下函数：</p>
+<pre class="line-numbers"><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
   vector&lt;int&gt; values;
   values[0] = value1;
   values[1] = value2;
@@ -38,12 +38,12 @@
 TEST_CASE(&quot;try vector bounds&quot;){
   int result = doSomeWork(1, 234, 543, 23423);
   CHECK_EQ(1 + 234 + 543 + 23423, result);
-}</code></pre></p>
-<p>遗憾的是，运行这个示例的结果并不理想。无论是g++还是clang都没有报错，运行测试时得到以下结果：</p>
-<p><pre><code class="language-shell">TEST CASE: try vector bounds
-test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation signal</code></pre></p>
-<p>难道 std::vector&lt;&gt; 也不安全吗？实际上，仍然需要注意与内存分配相关的问题。面对这种情况，有几种选择：正确初始化容器、使用其提供的方法追加元素，或者预先为容器预留特定数量的内存空间。前两种方式通常是更安全、更推荐的做法，因为它们不容易引发错误。但即使采用第三种方式 —— 预分配内存，测试也仍然可以顺利通过：</p>
-<p><pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+}</code></pre>
+<p class="zh">遗憾的是，运行这个示例的结果并不理想。无论是g++还是clang都没有报错，运行测试时得到以下结果：</p>
+<pre><code class="language-shell">TEST CASE: try vector bounds
+test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation signal</code></pre>
+<p class="zh">难道 std::vector&lt;&gt; 也不安全吗？实际上，仍然需要注意与内存分配相关的问题。面对这种情况，有几种选择：正确初始化容器、使用其提供的方法追加元素，或者预先为容器预留特定数量的内存空间。前两种方式通常是更安全、更推荐的做法，因为它们不容易引发错误。但即使采用第三种方式 —— 预分配内存，测试也仍然可以顺利通过：</p>
+<pre class="line-numbers"><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
   vector&lt;int&gt; values;
   values.reserve(5);
   values[0] = value1;
@@ -51,17 +51,17 @@ test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation sig
   values[3] = value3;
   values[4] = value4;
   return values[0] + values[1] + values[3] + values[4];
-}</code></pre></p>
-<p>一个令人颇感意外的发现是 std::vector 的行为（至少在 g++ 中如此）：在我调用 reserve() 后尝试访问未赋值的 values[2] 时，得到的结果居然是 0。这比直接访问原始内存中残留的旧值要“友好”得多。我猜测这可能是 std::vector 默认分配器在分配内存时进行了零初始化，但这并非标准保证的行为。</p>
-<p>这种差异源于 operator[] 的设计特性 —— 不会执行边界检查，因此访问超出当前有效元素范围的位置将导致未定义行为。而如果改用 vector::at() 方法，则会触发运行时边界检查，并在越界访问时抛出异常，从而有效避免这类问题。</p>
-<p>尽管如此，我们仍需保持谨慎：即使使用现代 STL，也依然可能写出存在内存安全问题的代码。当然，只要不“耍小聪明”，老老实实地采用推荐的简单方式，许多问题就可以完全避免。</p>
-<p>例如，当使用初始化列表语法创建 std::vector 时，它会根据传入的数据自动构造内容，完全不需要手动计数或管理容量：</p>
-<p><pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+}</code></pre>
+<p class="zh">一个令人颇感意外的发现是 std::vector 的行为（至少在 g++ 中如此）：在我调用 reserve() 后尝试访问未赋值的 values[2] 时，得到的结果居然是 0。这比直接访问原始内存中残留的旧值要“友好”得多。我猜测这可能是 std::vector 默认分配器在分配内存时进行了零初始化，但这并非标准保证的行为。</p>
+<p class="zh">这种差异源于 operator[] 的设计特性 —— 不会执行边界检查，因此访问超出当前有效元素范围的位置将导致未定义行为。而如果改用 vector::at() 方法，则会触发运行时边界检查，并在越界访问时抛出异常，从而有效避免这类问题。</p>
+<p class="zh">尽管如此，我们仍需保持谨慎：即使使用现代 STL，也依然可能写出存在内存安全问题的代码。当然，只要不“耍小聪明”，老老实实地采用推荐的简单方式，许多问题就可以完全避免。</p>
+<p class="zh">例如，当使用初始化列表语法创建 std::vector 时，它会根据传入的数据自动构造内容，完全不需要手动计数或管理容量：</p>
+<pre class="line-numbers"><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
   vector&lt;int&gt; values{value1, value2, 0, value3, value4};
   return values[0] + values[1] + values[3] + values[4];
-}</code></pre></p>
-<p>当然，这种语法要求我们一次性添加所有元素，而非部分元素，从而有效规避“差一错误”。另一种方式是逐个添加元素：</p>
-<p><pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+}</code></pre>
+<p class="zh">当然，这种语法要求我们一次性添加所有元素，而非部分元素，从而有效规避“差一错误”。另一种方式是逐个添加元素：</p>
+<pre class="line-numbers"><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
   vector&lt;int&gt; values;
   values.push_back(value1);
   values.push_back(value2);
@@ -69,10 +69,10 @@ test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation sig
   values.push_back(value3);
   values.push_back(value4);
   return values[0] + values[1] + values[3] + values[4];
-}</code></pre></p>
-<p>正如预期，这个版本同样完美运行。启示在于：使用最朴素的写法，99%的情况下都能获得预期行为。这是所有编程语言的通用准则，对C++而言更是如此。</p>
-<p>现在，重新审视那个使用指针运算和void*越界访问内存的例子。其原始代码如下：</p>
-<p><pre><code class="language-cpp">int pointerBounds() {
+}</code></pre>
+<p class="zh">正如预期，这个版本同样完美运行。启示在于：使用最朴素的写法，99%的情况下都能获得预期行为。这是所有编程语言的通用准则，对C++而言更是如此。</p>
+<p class="zh">现在，重新审视那个使用指针运算和void*越界访问内存的例子。其原始代码如下：</p>
+<pre class="line-numbers"><code class="language-cpp">int pointerBounds() {
   int *aPointerToInt;
   void *aPointerToVoid;
   aPointerToVoid = new int();
@@ -85,24 +85,24 @@ test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation sig
   delete aPointerToVoid;
 
   return value;
-}</code></pre></p>
-<p>我已尽力将这段代码改用std::unique_ptr或std::shared_ptr实现，虽然可行但极其繁琐。首要难题在于处理所有的指针类型转换——无法直接将std::unique_ptr&lt;int&gt;转为std::unique_ptr&lt;char&gt;，唯一方法是提取原始值重新构造unique_ptr&lt;&gt;实例。</p>
-<p>第二个难点是void*无法直接对应到std::shared_ptr&lt;void&gt;：虽然可以通过手动分配内存并传入自定义删除器来实现，但过程复杂。即使用现代STL勉强能写出类似功能的代码，其实现成本之高也足以让开发者除非有特殊需求，否则宁愿选择安全写法。</p>
-<p>悬垂指针的例子同样棘手：</p>
-<p><pre><code class="language-cpp">int danglingPointer() {
+}</code></pre>
+<p class="zh">我已尽力将这段代码改用std::unique_ptr或std::shared_ptr实现，虽然可行但极其繁琐。首要难题在于处理所有的指针类型转换——无法直接将std::unique_ptr&lt;int&gt;转为std::unique_ptr&lt;char&gt;，唯一方法是提取原始值重新构造unique_ptr&lt;&gt;实例。</p>
+<p class="zh">第二个难点是void*无法直接对应到std::shared_ptr&lt;void&gt;：虽然可以通过手动分配内存并传入自定义删除器来实现，但过程复杂。即使用现代STL勉强能写出类似功能的代码，其实现成本之高也足以让开发者除非有特殊需求，否则宁愿选择安全写法。</p>
+<p class="zh">悬垂指针的例子同样棘手：</p>
+<pre class="line-numbers"><code class="language-cpp">int danglingPointer() {
   int *aPointerToInt = new int(234);
 
   delete aPointerToInt;
 
   return *aPointerToInt;
-}</code></pre></p>
-<p>智能指针无法在返回其指向的数值的同时主动释放内存。虽然可以通过unique_ptr::reset重新分配内存，但这又绕回了原生指针。最简洁的智能指针实现如下：</p>
-<p><pre><code class="language-cpp">int danglingPointer() {
+}</code></pre>
+<p class="zh">智能指针无法在返回其指向的数值的同时主动释放内存。虽然可以通过unique_ptr::reset重新分配内存，但这又绕回了原生指针。最简洁的智能指针实现如下：</p>
+<pre class="line-numbers"><code class="language-cpp">int danglingPointer() {
   unique_ptr&lt;int&gt; aPointerToInt = make_unique&lt;int&gt;(234);
   return *aPointerToInt;
-}</code></pre></p>
-<p>唯有这样，才能在正确返回值的同时实现内存的自动释放，从根本上杜绝悬垂指针的风险！当然，如果你手动分配内存并为 std::unique_ptr&lt;&gt; 指定一个空的删除器，理论上仍可能制造悬垂指针 —— 但在绝大多数实际场景中，完全没有这样做的理由。如果确实需要让多段代码共享同一块内存的所有权，还可以选择 std::shared_ptr&lt;&gt;，从而安全地实现多归属管理。至此，现代 C++ 已经覆盖了绝大部分常见的资源管理需求。</p>
-<p>由此我们得出结论：现代C++通过默认机制大幅提升了安全性，但仍存在局限性 —— 这正是接下来要探讨的重点。</p>
+}</code></pre>
+<p class="zh">唯有这样，才能在正确返回值的同时实现内存的自动释放，从根本上杜绝悬垂指针的风险！当然，如果你手动分配内存并为 std::unique_ptr&lt;&gt; 指定一个空的删除器，理论上仍可能制造悬垂指针 —— 但在绝大多数实际场景中，完全没有这样做的理由。如果确实需要让多段代码共享同一块内存的所有权，还可以选择 std::shared_ptr&lt;&gt;，从而安全地实现多归属管理。至此，现代 C++ 已经覆盖了绝大部分常见的资源管理需求。</p>
+<p class="zh">由此我们得出结论：现代C++通过默认机制大幅提升了安全性，但仍存在局限性 —— 这正是接下来要探讨的重点。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="6.3..html" class="prev-link">« 上一章：6.3. 旧C++的内存安全问题</a>
@@ -115,6 +115,18 @@ test.cpp:5: FATAL ERROR: test case CRASHED: SIGSEGV - Segmentation violation sig
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

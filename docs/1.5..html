@@ -24,12 +24,12 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">1.5. Kate Gregory --- 不要教授C语言</h1></section>
-  <p>在 CppCon 2015 的一次演讲中 (<a href="https://www.youtube.com/watch?v=YnWhqhNdYyk" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=YnWhqhNdYyk</a>) ，Kate Gregory 指出：C 语言并不是学习 C++ 的前提条件。她强调，在初级 C++ 课程的第一天就教授 printf、裸数组和 char 指针，实际上会对学习过程产生负面影响。</p>
-<p>相反，她建议从标准模板库(STL)中提供的对象入手进行教学。例如，std::string 和 std::vector 对初学者来说都非常直观易懂。而且，运算符重载也是使用这些类型的一种非常自然的方式。初学者理所当然地期望 &quot;abcd&quot; + &quot;efg&quot; 能够得到 &quot;abcdefg&quot;，而无需深入理解运算符重载背后的复杂机制，就可以写出简单的程序。这种方法还巧妙地避开了对析构函数和手动内存管理的讨论。</p>
-<p>她进一步指出，如果你从实际示例出发，向初学者介绍 lambda 表达式其实也并不困难。以在vector中查找元素为例：第一种方法是使用传统的 for 循环遍历；第二种方法则使用 std::find。但如果我们想在 std::vector&lt;int&gt; 中查找一个偶数呢？这时自然而然就会引入 lambda 表达式，而无需一开始就讲解编写 lambda 的各种可能方式。</p>
-<p>通过这种方式，她认为初学者能够迅速上手并开始使用现有的库。虽然他们的知识体系中可能会存在一些空白，但如果课程的目标受众是将要使用特定代码库的开发者，那么只需专门安排一个模块来介绍他们在工作中需要用到的特定编程习惯用法即可。而如果希望他们成长为库的设计者，则需要提供一门更高级别的课程，深入探讨指针、内存管理以及性能优化等主题。</p>
-<p>基于我过去 15 年培训复杂技能的经验，我认为这种教学方法非常有效。培训的关键在于了解你的目标受众，并尽最大努力避免“知识的诅咒” —— 很难回忆起自己当初“如何不了解现在掌握得如此熟练的知识”。这种方法通过快速建立成就感、提供清晰的学习路径，并激发初学者动手写代码的信心，从而更好地契合他们的学习心理，这无疑是学习 C++ 的一种显著改进的方式。</p>
-<p>然而，这并不是学习这门语言的唯一途径。这是一种结构化的、系统化的方法，但探索与实践同样是学习过程中不可或缺的一部分。确实，有一种非常适合通过探索来学习 C++ 的方法，它常常与 Twitter 上的一些热门话题相关：测试驱动开发(TDD)。</p>
+  <p class="zh">在 CppCon 2015 的一次演讲中 (<a href="https://www.youtube.com/watch?v=YnWhqhNdYyk" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=YnWhqhNdYyk</a>) ，Kate Gregory 指出：C 语言并不是学习 C++ 的前提条件。她强调，在初级 C++ 课程的第一天就教授 printf、裸数组和 char 指针，实际上会对学习过程产生负面影响。</p>
+<p class="zh">相反，她建议从标准模板库(STL)中提供的对象入手进行教学。例如，std::string 和 std::vector 对初学者来说都非常直观易懂。而且，运算符重载也是使用这些类型的一种非常自然的方式。初学者理所当然地期望 &quot;abcd&quot; + &quot;efg&quot; 能够得到 &quot;abcdefg&quot;，而无需深入理解运算符重载背后的复杂机制，就可以写出简单的程序。这种方法还巧妙地避开了对析构函数和手动内存管理的讨论。</p>
+<p class="zh">她进一步指出，如果你从实际示例出发，向初学者介绍 lambda 表达式其实也并不困难。以在vector中查找元素为例：第一种方法是使用传统的 for 循环遍历；第二种方法则使用 std::find。但如果我们想在 std::vector&lt;int&gt; 中查找一个偶数呢？这时自然而然就会引入 lambda 表达式，而无需一开始就讲解编写 lambda 的各种可能方式。</p>
+<p class="zh">通过这种方式，她认为初学者能够迅速上手并开始使用现有的库。虽然他们的知识体系中可能会存在一些空白，但如果课程的目标受众是将要使用特定代码库的开发者，那么只需专门安排一个模块来介绍他们在工作中需要用到的特定编程习惯用法即可。而如果希望他们成长为库的设计者，则需要提供一门更高级别的课程，深入探讨指针、内存管理以及性能优化等主题。</p>
+<p class="zh">基于我过去 15 年培训复杂技能的经验，我认为这种教学方法非常有效。培训的关键在于了解你的目标受众，并尽最大努力避免“知识的诅咒” —— 很难回忆起自己当初“如何不了解现在掌握得如此熟练的知识”。这种方法通过快速建立成就感、提供清晰的学习路径，并激发初学者动手写代码的信心，从而更好地契合他们的学习心理，这无疑是学习 C++ 的一种显著改进的方式。</p>
+<p class="zh">然而，这并不是学习这门语言的唯一途径。这是一种结构化的、系统化的方法，但探索与实践同样是学习过程中不可或缺的一部分。确实，有一种非常适合通过探索来学习 C++ 的方法，它常常与 Twitter 上的一些热门话题相关：测试驱动开发(TDD)。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="1.4..html" class="prev-link">« 上一章：1.4. Stroustrup学习法</a>
@@ -42,6 +42,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

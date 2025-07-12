@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第5章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— 法峻思枯</em>
-</div></p>
-<p>排序在各种领域中都扮演着至关重要的角色，它能够提升组织性、效率以及清晰度。无论是在图书馆或通讯录中按字母顺序排列信息，客服队列或数据分析中依据数字进行排序，还是时间线或日程安排按照时间先后顺序整理，任务管理或应急响应根据优先级处理，库存管理或数字文件的分类，竞赛排名，服装尺码的整理，旅行路线或邮件投递的地理路径规划，制造业或软件开发中的流程步骤，乃至组织架构或生物分类学中的层级结构 —— 排序都能优化流程、增强可访问性，并加强决策能力。</p>
-<p>通过采用字母序、数值序、时间序、优先级、类别、排名、尺寸大小、地理位置、操作步骤或层次结构等多种不同的标准，排序有助于在多种场景下实现高效的管理和运作。</p>
-<p>本章将深入探讨：为何C++类成员需要遵循特定的声明顺序？正确与错误地声明类成员分别会带来怎样的利弊？同时，也会简要回顾一下C++中的运算符执行顺序 —— 这一主题即便是对于经验丰富的开发者来说也可能充满挑战。</p>
-<p>完成本章后，你将对以下内容有更深入的理解：</p>
-<p><ul>
+</div>
+<p class="zh">排序在各种领域中都扮演着至关重要的角色，它能够提升组织性、效率以及清晰度。无论是在图书馆或通讯录中按字母顺序排列信息，客服队列或数据分析中依据数字进行排序，还是时间线或日程安排按照时间先后顺序整理，任务管理或应急响应根据优先级处理，库存管理或数字文件的分类，竞赛排名，服装尺码的整理，旅行路线或邮件投递的地理路径规划，制造业或软件开发中的流程步骤，乃至组织架构或生物分类学中的层级结构 —— 排序都能优化流程、增强可访问性，并加强决策能力。</p>
+<p class="zh">通过采用字母序、数值序、时间序、优先级、类别、排名、尺寸大小、地理位置、操作步骤或层次结构等多种不同的标准，排序有助于在多种场景下实现高效的管理和运作。</p>
+<p class="zh">本章将深入探讨：为何C++类成员需要遵循特定的声明顺序？正确与错误地声明类成员分别会带来怎样的利弊？同时，也会简要回顾一下C++中的运算符执行顺序 —— 这一主题即便是对于经验丰富的开发者来说也可能充满挑战。</p>
+<p class="zh">完成本章后，你将对以下内容有更深入的理解：</p>
+<ul>
     <li>以特定顺序准确声明类成员的重要性</li>  <li>按照所需顺序初始化类成员的意义</li>  <li>运算符执行顺序的相关规范
-</ul></li></p>
+</ul></li>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="4.4..html" class="prev-link">« 上一章：4.4. 总结</a>
@@ -46,6 +46,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

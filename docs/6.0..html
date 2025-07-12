@@ -24,15 +24,15 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第6章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— 汝之C++，尚循千禧故技</em>
-</div></p>
-<p>C++ 在安全性方面确实存在一些固有挑战，其中内存安全尤为突出。内存安全问题通常可分为两大类：空间安全问题（例如访问越界的内存）和时间安全问题（例如访问状态不确定或已被释放的内存）。为了应对这些问题，现代 C++ 提供了一系列改进措施，例如避免使用裸指针（naked pointers）、引入 std::span 以提供更安全的数组访问方式，以及利用 concepts 来加强类型安全和接口约束。</p>
-<p>然而，这些机制仍有局限，尚未形成一套完整的安全保障体系。本章将展示当前 C++ 内存安全机制的不足之处，并探讨“安全规范”（safety profiles）作为未来可能的改进方向。</p>
-<p>本章将涵盖以下主题：</p>
-<p><ul>
+</div>
+<p class="zh">C++ 在安全性方面确实存在一些固有挑战，其中内存安全尤为突出。内存安全问题通常可分为两大类：空间安全问题（例如访问越界的内存）和时间安全问题（例如访问状态不确定或已被释放的内存）。为了应对这些问题，现代 C++ 提供了一系列改进措施，例如避免使用裸指针（naked pointers）、引入 std::span 以提供更安全的数组访问方式，以及利用 concepts 来加强类型安全和接口约束。</p>
+<p class="zh">然而，这些机制仍有局限，尚未形成一套完整的安全保障体系。本章将展示当前 C++ 内存安全机制的不足之处，并探讨“安全规范”（safety profiles）作为未来可能的改进方向。</p>
+<p class="zh">本章将涵盖以下主题：</p>
+<ul>
     <li>内存安全的重要性</li>  <li>传统C++的内存安全问题</li>  <li>现代 C++ 提供的安全增强机制与解决方案</li>  <li>现代 C++ 方案的局限性与潜在缺陷</li>  <li>尚需进一步改进的方向与可能性
-</ul></li></p>
+</ul></li>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="5.6..html" class="prev-link">« 上一章：5.6. 总结</a>
@@ -45,6 +45,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

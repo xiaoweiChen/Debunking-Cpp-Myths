@@ -24,19 +24,19 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">3.4. 元编程</h1></section>
-  <p>似乎有一件事能够跨越技术栈和文化差异，将开发者们团结在一起：那就是对递归笑话的喜爱。在开发者的思维中，似乎天生就有一种对某种形式对称性的欣赏。当谈到编程语言与编程范式时，你很难找到一种比“能理解自身”的语言更具对称美感的概念了。</p>
-<p>这种思想对应的编程范式被称为 元编程，而将这一理念推向极致的语言则被称为 同像性语言。这类语言允许程序将其自身的结构当作数据来操作，从而实现对程序本身的分析、变换甚至执行。</p>
-<p>具备这种特性的典型语言包括 Lisp 及其众多变体，其中最新的代表是 Clojure。这些语言的设计使得代码本身就是一种可以直接操作的数据结构，极大提升了灵活性和抽象能力。</p>
-<p>元编程是一种极为强大的工具，但同时也极具挑战性，在大型项目中如果使用不当，很容易引入复杂性和维护难题。现代编程语言中也包含一些与元编程相关的特性，例如插桩、反射以及动态执行指令等。然而，除了注解等少数功能外，这些机制在实际开发中的使用频率并不高。</p>
-<p>但 C++ 是一个例外。</p>
-<p>元编程的一个核心思想是：将运行时的计算尽可能提前到编译时进行。而 C++ 通过 模板元编程 完美地拥抱了这一理念。随着语言的发展，C++11 引入了 constexpr，C++20 进一步加入了 consteval，这使得编译期计算的表达更加自然、安全且易于使用。</p>
-<p>一个经典的例子是阶乘函数的实现。一个在运行时计算阶乘的递归实现如下所示：</p>
-<p><pre><code class="language-cpp">int factorial(const int number){
+  <p class="zh">似乎有一件事能够跨越技术栈和文化差异，将开发者们团结在一起：那就是对递归笑话的喜爱。在开发者的思维中，似乎天生就有一种对某种形式对称性的欣赏。当谈到编程语言与编程范式时，你很难找到一种比“能理解自身”的语言更具对称美感的概念了。</p>
+<p class="zh">这种思想对应的编程范式被称为 元编程，而将这一理念推向极致的语言则被称为 同像性语言。这类语言允许程序将其自身的结构当作数据来操作，从而实现对程序本身的分析、变换甚至执行。</p>
+<p class="zh">具备这种特性的典型语言包括 Lisp 及其众多变体，其中最新的代表是 Clojure。这些语言的设计使得代码本身就是一种可以直接操作的数据结构，极大提升了灵活性和抽象能力。</p>
+<p class="zh">元编程是一种极为强大的工具，但同时也极具挑战性，在大型项目中如果使用不当，很容易引入复杂性和维护难题。现代编程语言中也包含一些与元编程相关的特性，例如插桩、反射以及动态执行指令等。然而，除了注解等少数功能外，这些机制在实际开发中的使用频率并不高。</p>
+<p class="zh">但 C++ 是一个例外。</p>
+<p class="zh">元编程的一个核心思想是：将运行时的计算尽可能提前到编译时进行。而 C++ 通过 模板元编程 完美地拥抱了这一理念。随着语言的发展，C++11 引入了 constexpr，C++20 进一步加入了 consteval，这使得编译期计算的表达更加自然、安全且易于使用。</p>
+<p class="zh">一个经典的例子是阶乘函数的实现。一个在运行时计算阶乘的递归实现如下所示：</p>
+<pre class="line-numbers"><code class="language-cpp">int factorial(const int number){
   if(number == 0) return 1;
   return number * factorial(number - 1);
-}</code></pre></p>
-<p>同样的功能也可以通过模板元编程实现， C++ 模板的一个特性是：它们不仅可以接受类型作为参数，还可以接受值作为模板参数。我们既可以定义一个通用模板（例如接受任意整数的模板），也可以为特定值提供特化版本。基于此，我们可以写出如下的阶乘模板：</p>
-<p><pre><code class="language-cpp">template&lt;int number&gt;
+}</code></pre>
+<p class="zh">同样的功能也可以通过模板元编程实现， C++ 模板的一个特性是：它们不仅可以接受类型作为参数，还可以接受值作为模板参数。我们既可以定义一个通用模板（例如接受任意整数的模板），也可以为特定值提供特化版本。基于此，我们可以写出如下的阶乘模板：</p>
+<pre class="line-numbers"><code class="language-cpp">template&lt;int number&gt;
 struct Factorial {
   enum { value = number * Factorial&lt;number - 1&gt;::value};
 };
@@ -44,14 +44,14 @@ struct Factorial {
 template&lt;&gt;
 struct Factorial&lt;0&gt;{
   enum {value = 1};
-}</code></pre></p>
-<p>这个实现与之前的递归版本逻辑相同，但不同之处在于：当我们调用 Factorial&lt;25&gt;::value 时，整个计算过程会在编译期间完成，而不是在运行时执行。</p>
-<p>从 C++11 开始，广义常量表达式的引入可以不再依赖模板，而是改用更直观的 constexpr 和 consteval 来明确告诉编译器哪些函数或值应该在编译期求值。下面是使用 constexpr 实现的简化版阶乘函数：</p>
-<p><pre><code class="language-cpp">constexpr int factorial(const int number) {
+}</code></pre>
+<p class="zh">这个实现与之前的递归版本逻辑相同，但不同之处在于：当我们调用 Factorial&lt;25&gt;::value 时，整个计算过程会在编译期间完成，而不是在运行时执行。</p>
+<p class="zh">从 C++11 开始，广义常量表达式的引入可以不再依赖模板，而是改用更直观的 constexpr 和 consteval 来明确告诉编译器哪些函数或值应该在编译期求值。下面是使用 constexpr 实现的简化版阶乘函数：</p>
+<pre class="line-numbers"><code class="language-cpp">constexpr int factorial(const int number) {
   return (number == 0) ? 1 : (number * factorial(number - 1));
-}</code></pre></p>
-<p>这些元编程技术为 C++ 开发者提供了更大的自由度，使我们可以在运行时效率与编译时优化之间做出权衡。它本质上是在CPU 时间与可执行文件大小之间的平衡点。如果你有充足的内存空间，但又希望某些计算尽可能快速完成，那么将结果预先缓存在可执行文件中便是一个理想的选择，而这正是 constexpr 和 consteval 所擅长的领域。</p>
-<p>但这还不是全部。我们甚至可以编写出在编译阶段就能被证明正确的 C++ 程序。要做到这一点，我们需要充分发挥 强类型系统 的潜力，构建出具有高度表达力和安全性的一类代码 —— 这也是现代 C++ 元编程探索的方向之一。</p>
+}</code></pre>
+<p class="zh">这些元编程技术为 C++ 开发者提供了更大的自由度，使我们可以在运行时效率与编译时优化之间做出权衡。它本质上是在CPU 时间与可执行文件大小之间的平衡点。如果你有充足的内存空间，但又希望某些计算尽可能快速完成，那么将结果预先缓存在可执行文件中便是一个理想的选择，而这正是 constexpr 和 consteval 所擅长的领域。</p>
+<p class="zh">但这还不是全部。我们甚至可以编写出在编译阶段就能被证明正确的 C++ 程序。要做到这一点，我们需要充分发挥 强类型系统 的潜力，构建出具有高度表达力和安全性的一类代码 —— 这也是现代 C++ 元编程探索的方向之一。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="3.3..html" class="prev-link">« 上一章：3.3. 函数式编程</a>
@@ -64,6 +64,18 @@ struct Factorial&lt;0&gt;{
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

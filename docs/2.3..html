@@ -24,22 +24,22 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.3. 微软的 C++</h1></section>
-  <p>回顾过去已经足够多了。现在，让我们换个角度，来看看一个曾经在 C++ 世界中叱咤风云、但随着时间推移逐渐淡出主流视野的编译器：OpenWatcom。</p>
-<p>OpenWatcom 是一个开源的集成开发环境（IDE）和编译器套件，支持 C 和 C++（以及 Fortran，不过这门语言并非本书的重点）。它最初由 Watcom International Corporation 开发，并于 2003 年由 Sybase 公司将其开源发布。</p>
-<p>它支持多种操作系统，包括 DOS、Windows、OS/2 和 Linux，是那些希望为复古平台开发有趣项目或进行业余探索的开发者的理想选择。</p>
-<p>使用它的动机未必是为了商业利益，而更多是一种情怀 —— 那种当你站在 80×25 字符屏幕前时，从脊背传来的甜蜜怀旧感。也许正是这种情感，解释了为什么今天仍有众多高级开发者，愿意在巨大的 WQUXGA（甚至更大）分辨率屏幕上，坚持在一个嵌套于 6×4 网格终端窗口中的 VI 编辑器里编写代码。</p>
-<p>但让我们把焦点重新放回到 OpenWatcom 编译器上。在浏览其 Project 2 的发行说明（Release Notes）时，我们注意到一段非常有趣的描述 —— 容我稍作强调，“这非常有趣的短语”(出自“与 10.0 版本的主要区别”部分，第 29 条)：</p>
-<p><pre><code class="language-shell">我们实现了一个 Microsoft Visual C++ 的扩展功能，该功能在解析 Windows 95 SDK 头文件时是必不可少的。
+  <p class="zh">回顾过去已经足够多了。现在，让我们换个角度，来看看一个曾经在 C++ 世界中叱咤风云、但随着时间推移逐渐淡出主流视野的编译器：OpenWatcom。</p>
+<p class="zh">OpenWatcom 是一个开源的集成开发环境（IDE）和编译器套件，支持 C 和 C++（以及 Fortran，不过这门语言并非本书的重点）。它最初由 Watcom International Corporation 开发，并于 2003 年由 Sybase 公司将其开源发布。</p>
+<p class="zh">它支持多种操作系统，包括 DOS、Windows、OS/2 和 Linux，是那些希望为复古平台开发有趣项目或进行业余探索的开发者的理想选择。</p>
+<p class="zh">使用它的动机未必是为了商业利益，而更多是一种情怀 —— 那种当你站在 80×25 字符屏幕前时，从脊背传来的甜蜜怀旧感。也许正是这种情感，解释了为什么今天仍有众多高级开发者，愿意在巨大的 WQUXGA（甚至更大）分辨率屏幕上，坚持在一个嵌套于 6×4 网格终端窗口中的 VI 编辑器里编写代码。</p>
+<p class="zh">但让我们把焦点重新放回到 OpenWatcom 编译器上。在浏览其 Project 2 的发行说明（Release Notes）时，我们注意到一段非常有趣的描述 —— 容我稍作强调，“这非常有趣的短语”(出自“与 10.0 版本的主要区别”部分，第 29 条)：</p>
+<pre><code class="language-shell">我们实现了一个 Microsoft Visual C++ 的扩展功能，该功能在解析 Windows 95 SDK 头文件时是必不可少的。
 
 示例：
 
 typedef struct S {
 } S, const *CSP;
 
-^^^^^ - 这种写法在 ISO C 或 ISO C++ 中是不允许的</code></pre></p>
-<p>嗯……什么？我刚才是不是看对了？Visual C++ 实际上有一个允许编译非标准代码的扩展？</p>
-<p>是的，你没有看错。下面这个简短的代码段，在今天几乎无法通过任何主流 C++ 编译器的编译 —— 但 Microsoft Visual C++，以及 OpenWatcom 的 C++ 编译器，根据其文档说明<span class="footnote"><a href="https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html" target="_blank" rel="noopener noreferrer">https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html</a></span> 却是个例外：</p>
-<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+^^^^^ - 这种写法在 ISO C 或 ISO C++ 中是不允许的</code></pre>
+<p class="zh">嗯……什么？我刚才是不是看对了？Visual C++ 实际上有一个允许编译非标准代码的扩展？</p>
+<p class="zh">是的，你没有看错。下面这个简短的代码段，在今天几乎无法通过任何主流 C++ 编译器的编译 —— 但 Microsoft Visual C++，以及 OpenWatcom 的 C++ 编译器，根据其文档说明<span class="footnote"><a href="https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html" target="_blank" rel="noopener noreferrer">https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html</a></span> 却是个例外：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 typedef struct S {
   int a;
 } S, const *CSP;
@@ -47,16 +47,16 @@ int main() {
   S s1; s1.a = 1;
   CSP ps1 = &amp;s1;
   std::cout &lt;&lt; ps1-&gt;a;
-}</code></pre></p>
-<p>……令人费解的是，由于一些作者目前无法破解的原因，这段代码序列竟然也被 ICC（Intel C++ Compiler）的多个版本所接受 —— 这是一款功能强大但遗憾停产的 C++ 编译器。</p>
-<p>那么，我们不禁要问：既然一个主流编译器加上两个相对“小众但历史悠久”的编译器都接受了这段代码，我们是否也应该考虑使用它呢？它是符合标准的吗？</p>
-<p>对于第二个问题，答案显然是否定的。至于第一个问题，答案则更加微妙。因为在做出判断之前，我们必须重新审视影响开发决策的背景、项目需求以及其他相关因素。</p>
-<p>我们是否希望尽可能地坚持使用标准 C++？是否有可能在不依赖特定供应商扩展的情况下实现所需的解决方案？我们是否受限于某些老旧的编译器或操作系统？或者我们是否并不关心跨平台兼容性？</p>
-<p>举例来说，如果正在开发一个基于 Microsoft 平台的应用程序，采用其提供的 C++ 托管扩展是否会为我们节省大量时间和精力？还是应该坚持使用我们熟悉且更接近标准的语法和类型系统？</p>
-<p>Microsoft 以其对 C 和 C++ 提供大量平台特定扩展而闻名，以至于官方文档中专门设有一节介绍其特有的 C++ 关键字<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/cpp/keywords-cpp?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/cpp/keywords-cpp?view=msvc-170</a></span>。这说明，非标准 C++ 在实际工程实践中是有一定市场需求的，而且往往具备合理的理由：其中许多扩展确实非常实用，能显著提升开发效率，但代价是将我们的代码绑定到特定平台、编译器以及工具链上。</p>
-<p>其中一个典型的 Microsoft 扩展就是 <code>__declspec</code> 关键字。作为 Microsoft 对 C/C++ 语法的一种扩展，<code>__declspec</code> 允许开发者为特定的构造指定 Microsoft 特有的存储类属性。例如，它可以控制 DLL 导出行为、内存对齐方式等，这些功能并未包含在 ANSI 标准关键字（如 static 或 extern）之中。</p>
-<p>通过使用 <code>__declspec</code>，开发者可以轻松启用那些仅在其编译器中可用的功能（你没看错，惊喜不断），从而增强代码的表现力和性能。如下所示是一个典型的使用示例：</p>
-<p><pre><code class="language-cpp">struct person {
+}</code></pre>
+<p class="zh">……令人费解的是，由于一些作者目前无法破解的原因，这段代码序列竟然也被 ICC（Intel C++ Compiler）的多个版本所接受 —— 这是一款功能强大但遗憾停产的 C++ 编译器。</p>
+<p class="zh">那么，我们不禁要问：既然一个主流编译器加上两个相对“小众但历史悠久”的编译器都接受了这段代码，我们是否也应该考虑使用它呢？它是符合标准的吗？</p>
+<p class="zh">对于第二个问题，答案显然是否定的。至于第一个问题，答案则更加微妙。因为在做出判断之前，我们必须重新审视影响开发决策的背景、项目需求以及其他相关因素。</p>
+<p class="zh">我们是否希望尽可能地坚持使用标准 C++？是否有可能在不依赖特定供应商扩展的情况下实现所需的解决方案？我们是否受限于某些老旧的编译器或操作系统？或者我们是否并不关心跨平台兼容性？</p>
+<p class="zh">举例来说，如果正在开发一个基于 Microsoft 平台的应用程序，采用其提供的 C++ 托管扩展是否会为我们节省大量时间和精力？还是应该坚持使用我们熟悉且更接近标准的语法和类型系统？</p>
+<p class="zh">Microsoft 以其对 C 和 C++ 提供大量平台特定扩展而闻名，以至于官方文档中专门设有一节介绍其特有的 C++ 关键字<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/cpp/keywords-cpp?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/cpp/keywords-cpp?view=msvc-170</a></span>。这说明，非标准 C++ 在实际工程实践中是有一定市场需求的，而且往往具备合理的理由：其中许多扩展确实非常实用，能显著提升开发效率，但代价是将我们的代码绑定到特定平台、编译器以及工具链上。</p>
+<p class="zh">其中一个典型的 Microsoft 扩展就是 <code>__declspec</code> 关键字。作为 Microsoft 对 C/C++ 语法的一种扩展，<code>__declspec</code> 允许开发者为特定的构造指定 Microsoft 特有的存储类属性。例如，它可以控制 DLL 导出行为、内存对齐方式等，这些功能并未包含在 ANSI 标准关键字（如 static 或 extern）之中。</p>
+<p class="zh">通过使用 <code>__declspec</code>，开发者可以轻松启用那些仅在其编译器中可用的功能（你没看错，惊喜不断），从而增强代码的表现力和性能。如下所示是一个典型的使用示例：</p>
+<pre class="line-numbers"><code class="language-cpp">struct person {
   void set_age(int page) { m_age = page; }
   int get_age() const { return m_age; }
   __declspec (property(get = get_age, put = set_age)) int age;
@@ -69,33 +69,33 @@ int main() {
   person joe;
   joe.age = 12;
   std::cout &lt;&lt; &quot;Hello &quot; &lt;&lt; joe.age;
-}</code></pre></p>
-<p>过使用 Microsoft 的 <code>__declspec(property(...))</code> 语法，前面的代码实现了一个名为 age 的属性，该属性通过指定的方法间接访问和修改私有成员变量 m_age，从而在保持数据封装的同时，提供了简洁而直观的接口。</p>
-<p>这种基于 <code>__declspec</code> 扩展的功能不仅强大，而且非常实用。甚至让像 Clang 这样的开源编译器也专门提供了一个选项来支持它：-fdeclspec。启用这个标志后，你就可以在使用 Clang 编译的项目中合法地使用 <code>__declspec</code> 关键字。</p>
-<p>那么问题来了：这是否意味着 <code>__declspec</code> 已不再是 Microsoft 独有的扩展？我们是否正在见证一个原本平台相关的特性向跨平台功能演进的趋势？</p>
-<p>在 C++ 社区的核心圈子里，有一个常常被回避但又真实存在的事实是：真正需要编写完全跨平台兼容代码的情况其实并不多见。大多数开发者服务于特定公司，为特定产品开发或维护代码，通常只针对一个操作系统、一套编译器工具链工作。他们遵循雇主设定的技术规范，并乐于使用编译器所支持的所有扩展功能。</p>
-<p>这并不意味着他们不希望编写符合标准的 C++ 代码。恰恰相反，我相信他们始终致力于写出所能想到的最佳质量代码。只不过，他们选择充分利用当前编译器所提供的所有可能性 —— 因为那是必须使用的工具。而在下一份工作中，他们可能会切换到另一个平台、另一套编译器，自然也会遗忘前一个环境下的那些专属优势。因为这些编译器特定的语法和扩展，并非绑定于某个开发者的个人偏好，而是由其工作环境决定的。</p>
-<p>来看一个典型的例子：</p>
-<p><pre><code class="language-cpp">char arr[6] = {&#x27;a&#x27;, &#x27;b&#x27;, &quot;cde&quot;};</code></pre></p>
-<p>这段代码不仅“辣眼”，而且明显违背了标准 C++ 的数组初始化规则。谁会尝试以这种方式初始化一个大小为 6 的字符数组呢？然而，Microsoft Visual C++ 编译器却能优雅地接受它。当厌倦了手动输入每一个字符和逗号时，可能会直接插入一个字符串字面量，因为它足够聪明，能够检测数组的大小，并将各部分长度进行匹配，如果总长度不符，还会发出警告。</p>
-<p>这正是 Microsoft C++ 编译器的一个独特之处：它不仅实现了标准中的内容，还添加了许多非标准但极具实用性的功能，有时甚至允许一些会让“语言律师”<span class="footnote">译者注：“语言律师”特指那些精通编程语言规范细节的专家</span>皱眉的写法。</p>
-<p>再看下面这个示例：</p>
-<p><pre><code class="language-cpp">class person {
+}</code></pre>
+<p class="zh">过使用 Microsoft 的 <code>__declspec(property(...))</code> 语法，前面的代码实现了一个名为 age 的属性，该属性通过指定的方法间接访问和修改私有成员变量 m_age，从而在保持数据封装的同时，提供了简洁而直观的接口。</p>
+<p class="zh">这种基于 <code>__declspec</code> 扩展的功能不仅强大，而且非常实用。甚至让像 Clang 这样的开源编译器也专门提供了一个选项来支持它：-fdeclspec。启用这个标志后，你就可以在使用 Clang 编译的项目中合法地使用 <code>__declspec</code> 关键字。</p>
+<p class="zh">那么问题来了：这是否意味着 <code>__declspec</code> 已不再是 Microsoft 独有的扩展？我们是否正在见证一个原本平台相关的特性向跨平台功能演进的趋势？</p>
+<p class="zh">在 C++ 社区的核心圈子里，有一个常常被回避但又真实存在的事实是：真正需要编写完全跨平台兼容代码的情况其实并不多见。大多数开发者服务于特定公司，为特定产品开发或维护代码，通常只针对一个操作系统、一套编译器工具链工作。他们遵循雇主设定的技术规范，并乐于使用编译器所支持的所有扩展功能。</p>
+<p class="zh">这并不意味着他们不希望编写符合标准的 C++ 代码。恰恰相反，我相信他们始终致力于写出所能想到的最佳质量代码。只不过，他们选择充分利用当前编译器所提供的所有可能性 —— 因为那是必须使用的工具。而在下一份工作中，他们可能会切换到另一个平台、另一套编译器，自然也会遗忘前一个环境下的那些专属优势。因为这些编译器特定的语法和扩展，并非绑定于某个开发者的个人偏好，而是由其工作环境决定的。</p>
+<p class="zh">来看一个典型的例子：</p>
+<pre class="line-numbers"><code class="language-cpp">char arr[6] = {&#x27;a&#x27;, &#x27;b&#x27;, &quot;cde&quot;};</code></pre>
+<p class="zh">这段代码不仅“辣眼”，而且明显违背了标准 C++ 的数组初始化规则。谁会尝试以这种方式初始化一个大小为 6 的字符数组呢？然而，Microsoft Visual C++ 编译器却能优雅地接受它。当厌倦了手动输入每一个字符和逗号时，可能会直接插入一个字符串字面量，因为它足够聪明，能够检测数组的大小，并将各部分长度进行匹配，如果总长度不符，还会发出警告。</p>
+<p class="zh">这正是 Microsoft C++ 编译器的一个独特之处：它不仅实现了标准中的内容，还添加了许多非标准但极具实用性的功能，有时甚至允许一些会让“语言律师”<span class="footnote">译者注：“语言律师”特指那些精通编程语言规范细节的专家</span>皱眉的写法。</p>
+<p class="zh">再看下面这个示例：</p>
+<pre class="line-numbers"><code class="language-cpp">class person {
 public:
   int age;
   class {
   public:
     std::string name;
   };
-}</code></pre></p>
-<p>这个类定义显然不是标准 C++，但确实可以正常运行：</p>
-<p><pre><code class="language-cpp">int main() {
+}</code></pre>
+<p class="zh">这个类定义显然不是标准 C++，但确实可以正常运行：</p>
+<pre class="line-numbers"><code class="language-cpp">int main() {
   person joe;
   joe.name = &quot;Joe&quot;;
   std::cout &lt;&lt; &quot;Hello &quot; &lt;&lt; joe.name;
-}</code></pre></p>
-<p>当使用 Microsoft 自己的 C++ 编译器编译时，上述代码没有问题。请注意，包含 name 成员的匿名类是一个拥有构造函数、析构函数，以及其他多种特性的完整对象。这是 Microsoft 对标准的一种“友好偏离” —— 如果愿意这么称呼的话 —— 因为匿名联合体虽然在 C++ 中广为人知，但匿名结构体却是 C 语言（从 C11 开始）才引入的概念。目前，没有其他主流 C++ 编译器支持这种用法。</p>
-<p>顺便一提，如果你对 C 语言中的匿名结构体不太熟悉，这里简单说明一下：它们是一种简化嵌套结构声明的方式。当内部结构仅在局部使用且无需命名时，可以省略类型名，使代码更加简洁易读。字段可以直接访问，而无需通过嵌套结构名。这种机制有助于将相关字段组织成逻辑块，避免不必要的类型定义带来的混乱。</p>
+}</code></pre>
+<p class="zh">当使用 Microsoft 自己的 C++ 编译器编译时，上述代码没有问题。请注意，包含 name 成员的匿名类是一个拥有构造函数、析构函数，以及其他多种特性的完整对象。这是 Microsoft 对标准的一种“友好偏离” —— 如果愿意这么称呼的话 —— 因为匿名联合体虽然在 C++ 中广为人知，但匿名结构体却是 C 语言（从 C11 开始）才引入的概念。目前，没有其他主流 C++ 编译器支持这种用法。</p>
+<p class="zh">顺便一提，如果你对 C 语言中的匿名结构体不太熟悉，这里简单说明一下：它们是一种简化嵌套结构声明的方式。当内部结构仅在局部使用且无需命名时，可以省略类型名，使代码更加简洁易读。字段可以直接访问，而无需通过嵌套结构名。这种机制有助于将相关字段组织成逻辑块，避免不必要的类型定义带来的混乱。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.2..html" class="prev-link">« 上一章：2.2. 加纳的偏远一隅</a>
@@ -108,6 +108,18 @@ public:
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

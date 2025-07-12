@@ -24,14 +24,14 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.7. 未来之路</h1></section>
-  <p>我们即将探讨的最后一个关于代码是否符合标准的情形，涉及 C++ 生态系统中最基础、最核心的部分：编译器本身。</p>
-<p>请不要忘记，编译器本质上也是一种程序，由数百万行代码组成。全球各地都有开发者在为它们贡献代码：添加新特性、修复漏洞、提升标准兼容性、发布新版本 —— 这一切都是为了确保编译器能够正常运行。</p>
-<p>这些项目也有自己的开发时间线。某些特性的实现不可能一蹴而就，有时某个特定时间点上，某款编译器尚未支持某些标准特性，仅仅是因为没有足够的人力或优先级去完成相关实现。</p>
-<p>在 C++ 知识的权威来源<span class="footnote"><a href="https://en.cppreference.com/w/cpp/compiler_support" target="_blank" rel="noopener noreferrer">https://en.cppreference.com/w/cpp/compiler_support</a></span>(即 C++ 官方网站或相关权威资源)中，有一份非常实用的文档，详细列出了各个 C++ 标准特性的支持情况，以及哪些编译器已经实现了某个特定功能。</p>
-<p>在标准更新期间（或者当你被迫使用一个尚未实现某些特性的旧版编译器时），C++ 开发者社区曾采用过许多技巧和变通方案，以弥补即将到来的新版本编译器中缺失的功能。</p>
-<p>例如，当 mutable 关键字在 C++98 中引入时，一些编译器对它的支持滞后于其他主流编译器。对于使用这些编译器的开发者来说，在 const 成员函数中修改成员变量（这是在同一标准中引入的功能）变得颇具挑战性。</p>
-<p>这种情况下，开发者不得不使用一种（相当丑陋的）变通方式来模拟 mutable 的行为：</p>
-<p><pre><code class="language-cpp">class Counter {
+  <p class="zh">我们即将探讨的最后一个关于代码是否符合标准的情形，涉及 C++ 生态系统中最基础、最核心的部分：编译器本身。</p>
+<p class="zh">请不要忘记，编译器本质上也是一种程序，由数百万行代码组成。全球各地都有开发者在为它们贡献代码：添加新特性、修复漏洞、提升标准兼容性、发布新版本 —— 这一切都是为了确保编译器能够正常运行。</p>
+<p class="zh">这些项目也有自己的开发时间线。某些特性的实现不可能一蹴而就，有时某个特定时间点上，某款编译器尚未支持某些标准特性，仅仅是因为没有足够的人力或优先级去完成相关实现。</p>
+<p class="zh">在 C++ 知识的权威来源<span class="footnote"><a href="https://en.cppreference.com/w/cpp/compiler_support" target="_blank" rel="noopener noreferrer">https://en.cppreference.com/w/cpp/compiler_support</a></span>(即 C++ 官方网站或相关权威资源)中，有一份非常实用的文档，详细列出了各个 C++ 标准特性的支持情况，以及哪些编译器已经实现了某个特定功能。</p>
+<p class="zh">在标准更新期间（或者当你被迫使用一个尚未实现某些特性的旧版编译器时），C++ 开发者社区曾采用过许多技巧和变通方案，以弥补即将到来的新版本编译器中缺失的功能。</p>
+<p class="zh">例如，当 mutable 关键字在 C++98 中引入时，一些编译器对它的支持滞后于其他主流编译器。对于使用这些编译器的开发者来说，在 const 成员函数中修改成员变量（这是在同一标准中引入的功能）变得颇具挑战性。</p>
+<p class="zh">这种情况下，开发者不得不使用一种（相当丑陋的）变通方式来模拟 mutable 的行为：</p>
+<pre class="line-numbers"><code class="language-cpp">class Counter {
   int viewCount = 0;
 public:
   void view() const {
@@ -41,12 +41,12 @@ public:
   void print() const {
     std::cout &lt;&lt; &quot;Count: &quot; &lt;&lt; viewCount &lt;&lt; std::endl;
   }
-}</code></pre></p>
-<p>假设编译器支持 const_cast，那么这段代码是合法的。但如果连 const_cast 都不被支持，那就只能退而求其次，使用传统的 C 风格强制类型转换：</p>
-<p><pre><code class="language-cpp">((Counter*)(this))-&gt;viewCount++;</code></pre></p>
-<p>mutable 并不是第一个因编译器缺乏支持而给开发者带来困扰的语言特性。早在 C++11 引入 constexpr 之前（甚至在其推出多年后，对于 Microsoft Visual C++ 的开发者来说也是如此），想要实现编译时常量表达式，必须依赖各种模板元编程技巧（或者直接使用宏，但宏是“邪恶”的，应尽量避免使用）。</p>
-<p>例如，下面是一个典型的模板递归实现，用于计算阶乘：</p>
-<p><pre><code class="language-cpp">template &lt;unsigned int N&gt;
+}</code></pre>
+<p class="zh">假设编译器支持 const_cast，那么这段代码是合法的。但如果连 const_cast 都不被支持，那就只能退而求其次，使用传统的 C 风格强制类型转换：</p>
+<pre class="line-numbers"><code class="language-cpp">((Counter*)(this))-&gt;viewCount++;</code></pre>
+<p class="zh">mutable 并不是第一个因编译器缺乏支持而给开发者带来困扰的语言特性。早在 C++11 引入 constexpr 之前（甚至在其推出多年后，对于 Microsoft Visual C++ 的开发者来说也是如此），想要实现编译时常量表达式，必须依赖各种模板元编程技巧（或者直接使用宏，但宏是“邪恶”的，应尽量避免使用）。</p>
+<p class="zh">例如，下面是一个典型的模板递归实现，用于计算阶乘：</p>
+<pre class="line-numbers"><code class="language-cpp">template &lt;unsigned int N&gt;
 struct Factorial {
   static const unsigned long long value = N * Factorial&lt;N - 1&gt;::value;
 };
@@ -54,13 +54,13 @@ template &lt;&gt;
 struct Factorial&lt;0&gt; {
   static const unsigned long long value = 1;
 };
-const unsigned long long fac5 = Factorial&lt;5&gt;::value;</code></pre></p>
-<p>相比之下，使用现代支持 constexpr 的编译器，可以写出更加简洁、直观的等效实现：</p>
-<p><pre><code class="language-cpp">constexpr unsigned long long factorial(unsigned int n) {
+const unsigned long long fac5 = Factorial&lt;5&gt;::value;</code></pre>
+<p class="zh">相比之下，使用现代支持 constexpr 的编译器，可以写出更加简洁、直观的等效实现：</p>
+<pre class="line-numbers"><code class="language-cpp">constexpr unsigned long long factorial(unsigned int n) {
   return n &lt;= 1 ? 1 : n * factorial(n - 1);
 }
-const unsigned long long fac5too = factorial(5);</code></pre></p>
-<p>我觉得，这种写法不仅在语法上更清晰，而且在可读性和表达力方面实现了质的飞跃。。</p>
+const unsigned long long fac5too = factorial(5);</code></pre>
+<p class="zh">我觉得，这种写法不仅在语法上更清晰，而且在可读性和表达力方面实现了质的飞跃。。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.6..html" class="prev-link">« 上一章：2.6. 鲜为人知的那些事</a>
@@ -73,6 +73,18 @@ const unsigned long long fac5too = factorial(5);</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,23 +24,23 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">10.5. 供应链安全</h1></section>
-  <p>但凡关注技术安全的人都清楚，软件始终存在安全隐患。随着软件应用渗透日常生活的方方面面，这一问题正日趋严峻。</p>
-<p>提升安全性需要双管齐下：网络安全专家负责发现漏洞并构建防护工具，而软件开发人员则需在发布前排查安全问题并管控风险。我们深知没有绝对安全的软件，但也明白现状可以大幅改善。</p>
-<p>其中关键环节在于管理第三方库的潜在漏洞，这些漏洞主要来自两种情况：无意引入的缺陷，或恶意攻击者故意注入的后门。</p>
-<p>客观而言，所有技术栈都面临此风险。许多知名C++库都经过大型企业的安全审查 —— 如果就职于大公司，自有专业团队处理这些隐患。但并非所有开发都在大公司进行，也并非所有库都受到同等重视，正如xz后门事件所警示的那样。</p>
-<p>让我们重点讨论第二种情况，恶意攻击者主要通过以下方式注入漏洞：</p>
-<p><ul>
+  <p class="zh">但凡关注技术安全的人都清楚，软件始终存在安全隐患。随着软件应用渗透日常生活的方方面面，这一问题正日趋严峻。</p>
+<p class="zh">提升安全性需要双管齐下：网络安全专家负责发现漏洞并构建防护工具，而软件开发人员则需在发布前排查安全问题并管控风险。我们深知没有绝对安全的软件，但也明白现状可以大幅改善。</p>
+<p class="zh">其中关键环节在于管理第三方库的潜在漏洞，这些漏洞主要来自两种情况：无意引入的缺陷，或恶意攻击者故意注入的后门。</p>
+<p class="zh">客观而言，所有技术栈都面临此风险。许多知名C++库都经过大型企业的安全审查 —— 如果就职于大公司，自有专业团队处理这些隐患。但并非所有开发都在大公司进行，也并非所有库都受到同等重视，正如xz后门事件所警示的那样。</p>
+<p class="zh">让我们重点讨论第二种情况，恶意攻击者主要通过以下方式注入漏洞：</p>
+<ul>
     <li>代码贡献渗透:通过向开源项目提交“有用”的代码贡献，夹带漏洞。典型案例是2021年发现的有意破坏Node.js事件，攻击者试图提交看似合理的ES模块兼容性修复，实则包含内存破坏漏洞。</li>  <li>项目分支污染:克隆知名开源项目后，在新增功能中植入恶意代码。例如2018年的event-stream事件，攻击者接管维护权后，在加密功能中注入窃取比特币钱包的代码。</li>  <li>维护者身份劫持:通过社会工程学手段成为项目维护者后实施入侵。如震惊业界的xz后门事件(详见笔者深度分析：<a href="https://mozaicworks.com/blog/xz-backdoorand-other-news" target="_blank" rel="noopener noreferrer">https://mozaicworks.com/blog/xz-backdoorand-other-news</a>)，攻击者经过两年潜伏才触发后门。</li>  <li>二进制文件替换:在非官方渠道发布带漏洞的编译版本,或劫持发布流程。PyPI就曾多次出现仿冒知名库的恶意包,名称仅差一个字符。</li>  <li>下载链路劫持:通过DNS污染或本地hosts文件篡改，将下载请求重定向到恶意服务器。2018年GitHub曾遭遇中间人攻击，导致部分用户下载被注入的代码。
-</ul></li></p>
-<p>前述列表中的所有问题都相当严重。大型企业的安全部门和IT运维团队通常会关注这些风险，但对于小型企业而言，可能需要额外提高警惕。目前，已知的解决方案是通过数字签名或哈希值验证所有二进制文件。</p>
-<p>虽然编程语言包管理器和Linux系统会自动执行这种验证，但从GitHub手动下载二进制文件时，则需人工验证签名 —— 这要求开发者同时提供配套的库文件签名。</p>
-<p>第一种情况则更为复杂：如何判断某个库是否存在漏洞？对于开源代码，普遍观点是&quot;众人审查&quot;能发现所有问题。但这种观点高度依赖于项目贡献者数量及其专业水平。</p>
-<p>提到的xz后门事件令人不寒而栗，尤其是问题发现者 —— 开发者Andres Freund仅仅因为在微基准测试中注意到sshd进程CPU占用异常而起了疑心(<a href="https://mastodon.social/@AndresFreundTec/112180406142695845" target="_blank" rel="noopener noreferrer">https://mastodon.social/@AndresFreundTec/112180406142695845</a>)。</p>
-<p>这一事件短暂暴露了开源库维护者过度劳累的问题，但很快又重归沉寂。</p>
-<p>即便假设多数开源库没有被获得维护者权限的恶意分子攻击，漏洞依然可能潜伏 —— C++在这方面尤为突出，因其自身的安全特性本就存在挑战。小型团队必须持续关注所用库的已报告漏洞，或者购买能自动监控的安全工具。</p>
-<p>即便一切运行正常，最佳实践仍是维护应用程序的依赖库清单，以便运维人员定期检查所有使用库的漏洞。该领域的推荐方案是创建“软件物料清单(SBOM)”，其中包含所有库及其依赖项的详细记录。</p>
-<p>现有工具(如Grype <a href="https://github.com/anchore/grype" target="_blank" rel="noopener noreferrer">https://github.com/anchore/grype</a> 及其配套工具Syft <a href="https://github.com/anchore/syft" target="_blank" rel="noopener noreferrer">https://github.com/anchore/syft</a>)可自动生成SBOM并基于清单扫描漏洞，不过多数工具仅支持Docker容器环境。</p>
-<p>由此，我们得出本章的结论。</p>
+</ul></li>
+<p class="zh">前述列表中的所有问题都相当严重。大型企业的安全部门和IT运维团队通常会关注这些风险，但对于小型企业而言，可能需要额外提高警惕。目前，已知的解决方案是通过数字签名或哈希值验证所有二进制文件。</p>
+<p class="zh">虽然编程语言包管理器和Linux系统会自动执行这种验证，但从GitHub手动下载二进制文件时，则需人工验证签名 —— 这要求开发者同时提供配套的库文件签名。</p>
+<p class="zh">第一种情况则更为复杂：如何判断某个库是否存在漏洞？对于开源代码，普遍观点是&quot;众人审查&quot;能发现所有问题。但这种观点高度依赖于项目贡献者数量及其专业水平。</p>
+<p class="zh">提到的xz后门事件令人不寒而栗，尤其是问题发现者 —— 开发者Andres Freund仅仅因为在微基准测试中注意到sshd进程CPU占用异常而起了疑心(<a href="https://mastodon.social/@AndresFreundTec/112180406142695845" target="_blank" rel="noopener noreferrer">https://mastodon.social/@AndresFreundTec/112180406142695845</a>)。</p>
+<p class="zh">这一事件短暂暴露了开源库维护者过度劳累的问题，但很快又重归沉寂。</p>
+<p class="zh">即便假设多数开源库没有被获得维护者权限的恶意分子攻击，漏洞依然可能潜伏 —— C++在这方面尤为突出，因其自身的安全特性本就存在挑战。小型团队必须持续关注所用库的已报告漏洞，或者购买能自动监控的安全工具。</p>
+<p class="zh">即便一切运行正常，最佳实践仍是维护应用程序的依赖库清单，以便运维人员定期检查所有使用库的漏洞。该领域的推荐方案是创建“软件物料清单(SBOM)”，其中包含所有库及其依赖项的详细记录。</p>
+<p class="zh">现有工具(如Grype <a href="https://github.com/anchore/grype" target="_blank" rel="noopener noreferrer">https://github.com/anchore/grype</a> 及其配套工具Syft <a href="https://github.com/anchore/syft" target="_blank" rel="noopener noreferrer">https://github.com/anchore/syft</a>)可自动生成SBOM并基于清单扫描漏洞，不过多数工具仅支持Docker容器环境。</p>
+<p class="zh">由此，我们得出本章的结论。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="10.4..html" class="prev-link">« 上一章：10.4. 兼容性</a>
@@ -53,6 +53,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

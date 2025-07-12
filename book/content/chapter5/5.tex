@@ -35,13 +35,13 @@ int main() {
 {{\bfseries 表格续自上一页}} \\
 \endhead
 %
-Microsoft Visual C++ (after 2005) & \begin{tabular}[c]{@{}l@{}}a=1 b=1 c=1 \\ \\ f=3 \\ \\ i=4\end{tabular} \\ \hline
+Microsoft Visual C++ (2005之后的版本) & \begin{tabular}[c]{@{}l@{}}a=1 b=1 c=1 \\ \\ f=3 \\ \\ i=4\end{tabular} \\ \hline
 Microsoft VS.NET 2003  & \begin{tabular}[c]{@{}l@{}}a=3 b=2 c=1 \\ \\ f=6 \\ \\ i=4\end{tabular} \\ \hline
 Microsoft Visual C++ 6 & \begin{tabular}[c]{@{}l@{}}a=1 b=1 c=1 \\ \\ f=3 \\ \\ i=4\end{tabular} \\ \hline
-ICC and Clang agree on this…      & \begin{tabular}[c]{@{}l@{}}f=a=1 b=2 c=3 \\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
-GCC, after 6.5         & \begin{tabular}[c]{@{}l@{}}f=a=3 b=2 c=1 \\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
-GCC, before 6.5        & \begin{tabular}[c]{@{}l@{}}a=3 b=2 c=1 f=\\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
-Turbo C Lite and Borland C++55    & \begin{tabular}[c]{@{}l@{}}a=3 b=2 c=1 \\ \\ f=6 \\ \\ i=1\end{tabular} \\ \hline
+ICC 和 Clang 允许如此…      & \begin{tabular}[c]{@{}l@{}}f=a=1 b=2 c=3 \\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
+GCC, 6.5之后的版本         & \begin{tabular}[c]{@{}l@{}}f=a=3 b=2 c=1 \\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
+GCC, 6.5之前的版本        & \begin{tabular}[c]{@{}l@{}}a=3 b=2 c=1 f=\\ \\ 6 \\ \\ i=4\end{tabular} \\ \hline
+Turbo C Lite 和 Borland C++55    & \begin{tabular}[c]{@{}l@{}}a=3 b=2 c=1 \\ \\ f=6 \\ \\ i=1\end{tabular} \\ \hline
 \end{longtable}
 
 因此，我们面临着多种可能的选择 --- 有些较为直观，有些则相当特殊。所有这些看似奇怪的结果都宣称自己是“正统答案”，即便同一厂商的不同编译器版本也可能给出不同的结果。而它们的确都是正确的。

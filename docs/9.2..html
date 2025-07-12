@@ -24,29 +24,29 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">9.2. 零的定义</h1></section>
-  <p>零，在数字王国中独树一帜。</p>
-<p>早在古埃及文明中，就已初现“零”的概念；古巴比伦人则将其用作占位符 —— 但那时它仍未被视为一个真正的数字。而古希腊人对“零”始终心存疑虑：尽管他们认识到其重要性，却因哲学观念的束缚，始终未将其正式纳入数字体系。正如雅典集市上的哲人所思：存在与否并非关键，“无”如何成为“有”，才是终极之问。</p>
-<p>直到公元五世纪，印度数学家 婆罗摩笈多（Brahmagupta） 才首次将零定义为一个独立的数字，并系统地制定了其算术规则。这一突破性的思想经由 花拉子米（Al-Khwarizmi） 传入伊斯兰世界，并在十二世纪通过 斐波那契（Fibonacci） 引入欧洲，从此彻底改变了数学的发展轨迹。（感谢维基百科让这段历史得以广泛传播）</p>
-<p>零拥有多重独特属性：作为加法单位元，任何数加零保持不变；任何数与零相乘归零，而除零运算则无定义。它是数轴上的中性元素，非正非负却属于偶数。在指数运算中，零的正数次幂仍为零，而任何非零数的零次幂恒为1。</p>
-<p>这些特性使零成为数学基石，我们不得不承认它或许是史上最重要的数字(没有之一)，其地位足以与π、e比肩 —— 当然还有那个万恶之源$\sqrt{-1}$(即虚数i)。</p>
-<p>既然我们已经证明了零是独一无二的数字，那么同样可以断言：C++也是一门独一无异的语言。截至 2024 年的最新标准，C++ 提供了 六种不同的方式 来将值初始化为零——这恰恰印证了零作为史上最重要数字的至尊地位，也体现了 C++ 的灵活性和表达力。</p>
-<p><pre><code class="language-cpp">int z;
+  <p class="zh">零，在数字王国中独树一帜。</p>
+<p class="zh">早在古埃及文明中，就已初现“零”的概念；古巴比伦人则将其用作占位符 —— 但那时它仍未被视为一个真正的数字。而古希腊人对“零”始终心存疑虑：尽管他们认识到其重要性，却因哲学观念的束缚，始终未将其正式纳入数字体系。正如雅典集市上的哲人所思：存在与否并非关键，“无”如何成为“有”，才是终极之问。</p>
+<p class="zh">直到公元五世纪，印度数学家 婆罗摩笈多（Brahmagupta） 才首次将零定义为一个独立的数字，并系统地制定了其算术规则。这一突破性的思想经由 花拉子米（Al-Khwarizmi） 传入伊斯兰世界，并在十二世纪通过 斐波那契（Fibonacci） 引入欧洲，从此彻底改变了数学的发展轨迹。（感谢维基百科让这段历史得以广泛传播）</p>
+<p class="zh">零拥有多重独特属性：作为加法单位元，任何数加零保持不变；任何数与零相乘归零，而除零运算则无定义。它是数轴上的中性元素，非正非负却属于偶数。在指数运算中，零的正数次幂仍为零，而任何非零数的零次幂恒为1。</p>
+<p class="zh">这些特性使零成为数学基石，我们不得不承认它或许是史上最重要的数字(没有之一)，其地位足以与π、e比肩 —— 当然还有那个万恶之源$\sqrt{-1}$(即虚数i)。</p>
+<p class="zh">既然我们已经证明了零是独一无二的数字，那么同样可以断言：C++也是一门独一无异的语言。截至 2024 年的最新标准，C++ 提供了 六种不同的方式 来将值初始化为零——这恰恰印证了零作为史上最重要数字的至尊地位，也体现了 C++ 的灵活性和表达力。</p>
+<pre class="line-numbers"><code class="language-cpp">int z;
 int main()
 {
   int z1 = 0;
   int z2(0);
   int z3{0};
   int z4 = {0};
-  int z5;
+  int z5{};
   int z6();
-}</code></pre></p>
-<p>逐行解析这些简洁却内涵丰富的初始化方式：</p>
-<p><ul>
-    <li><code>int z;</code>:声明全局整型变量z,未显式初始化的全局变量会被编译器自动零值初始化(这是C++的铁律)</li>  <li><code>int z1 = 0;</code>:复制初始化：先创建变量z1，再将0赋值给它。经典C风格初始化方式。</li>  <li><code>int z2(0);</code>:直接初始化：将0作为参数传递给整型的"构造函数"(虽然基本类型没有真正的构造函数，但语法形式如此)。</li>  <li><code>int z3{0};</code>:大括号初始化(统一初始化语法)。优势：防止窄化转换，提供跨类型的统一初始化方式。我们将在下一章深入探讨这种特殊语法。</li>  <li><code>int z4 = {0};</code>:复制列表初始化：复制初始化与大括号初始化的混合体。对于基本类型，实际效果与z3完全相同。</li>  <li><code>int z5;</code>:值初始化：通过空大括号进行零值初始化。本质：确保变量被零初始化而无需显式赋值。对基本类型而言，等效于=0但更具现代C++风格
-</ul></li></p>
-<p>这种对零值初始化的多重考量，难道不令人叹服吗？于是人们不禁要问：为何C++不默认将局部变量初始化为零(或其默认值)以防万一？这个问题的答案，半是历史渊源，半是实用主义考量。</p>
-<p>由于C++脱胎于C语言，且被设计为尽可能贴近硬件(硅基世界)，编译器不会浪费宝贵的处理器周期去初始化一个值 —— 如果开发者后续可能赋予它不同的值。正如某位著名侦探所言：“这再基本不过了，亲爱的读者。”<span class="footnote">译者注：这句话模仿的是英国作家阿瑟·柯南·道尔笔下的著名侦探夏洛克·福尔摩斯的经典台词风格。</span></p>
-<p>最后，虽然我未加详述，但希望您已看出int z6();中最令人头疼的解析问题。所谓“最令人头疼的解析”(most vexing parse)，特指C++中因语法歧义导致编译器误判对象声明的经典问题。当使用括号声明变量时(如本例所示)，编译器可能将其解析为函数声明而非变量定义。</p>
+}</code></pre>
+<p class="zh">逐行解析这些简洁却内涵丰富的初始化方式：</p>
+<ul>
+    <li><code>int z;</code>:声明全局整型变量z,未显式初始化的全局变量会被编译器自动零值初始化(这是C++的铁律)</li>  <li><code>int z1 = 0;</code>:复制初始化：先创建变量z1，再将0赋值给它。经典C风格初始化方式。</li>  <li><code>int z2(0);</code>:直接初始化：将0作为参数传递给整型的"构造函数"(虽然基本类型没有真正的构造函数，但语法形式如此)。</li>  <li><code>int z3{0};</code>:大括号初始化(统一初始化语法)。优势：防止窄化转换，提供跨类型的统一初始化方式。我们将在下一章深入探讨这种特殊语法。</li>  <li><code>int z4 = {0};</code>:复制列表初始化：复制初始化与大括号初始化的混合体。对于基本类型，实际效果与z3完全相同。</li>  <li><code>int z5{};</code>:值初始化：通过空大括号{}进行零值初始化。本质：确保变量被零初始化而无需显式赋值。对基本类型而言，等效于=0但更具现代C++风格
+</ul></li>
+<p class="zh">这种对零值初始化的多重考量，难道不令人叹服吗？于是人们不禁要问：为何C++不默认将局部变量初始化为零(或其默认值)以防万一？这个问题的答案，半是历史渊源，半是实用主义考量。</p>
+<p class="zh">由于C++脱胎于C语言，且被设计为尽可能贴近硬件(硅基世界)，编译器不会浪费宝贵的处理器周期去初始化一个值 —— 如果开发者后续可能赋予它不同的值。正如某位著名侦探所言：“这再基本不过了，亲爱的读者。”<span class="footnote">译者注：这句话模仿的是英国作家阿瑟·柯南·道尔笔下的著名侦探夏洛克·福尔摩斯的经典台词风格。</span></p>
+<p class="zh">最后，虽然我未加详述，但希望您已看出int z6();中最令人头疼的解析问题。所谓“最令人头疼的解析”(most vexing parse)，特指C++中因语法歧义导致编译器误判对象声明的经典问题。当使用括号声明变量时(如本例所示)，编译器可能将其解析为函数声明而非变量定义。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="9.1..html" class="prev-link">« 上一章：9.1. 追求美</a>
@@ -59,6 +59,18 @@ int main()
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,11 +24,11 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">12.4. Rust的优势</h1></section>
-  <p>综上所述，Rust 相较于 C++ 确实展现出了多方面的优势。作为一门后来者，它能够站在巨人的肩膀上，汲取已有语言的教训与经验，采纳最成熟、最先进的编程范式。</p>
-<p>我认为，Rust 中“默认不可变性”与“所有权模型”的结合，是一种极具价值的设计选择。这种组合不仅促使开发者写出更安全、更健壮的代码，也在潜移默化中改变了我们对内存管理的认知。虽然这套机制初看之下学习曲线陡峭，且与传统做法大相径庭，但一旦掌握，便能轻松构建出行为清晰、可预测的程序。</p>
-<p>此外，Rust 标准库原生支持单元测试、内建包管理器（Cargo）、以及对多种编辑器的智能补全和项目管理支持，这些本就应是现代编程语言的标准配置。而在闭包语法、复合类型表达等方面，Rust 的设计也显得更加简洁而优雅。</p>
-<p>那么问题来了：C++ 是否还有竞争力？它的存在价值和应用场景又在哪里？</p>
-<p>这正是我们接下来要深入探讨的问题。面对 Rust 这样的现代系统编程语言，C++ 是否还能守住自己的阵地？它又在哪些领域依然不可或缺？让我们继续剖析这场语言之争的核心所在。</p>
+  <p class="zh">综上所述，Rust 相较于 C++ 确实展现出了多方面的优势。作为一门后来者，它能够站在巨人的肩膀上，汲取已有语言的教训与经验，采纳最成熟、最先进的编程范式。</p>
+<p class="zh">我认为，Rust 中“默认不可变性”与“所有权模型”的结合，是一种极具价值的设计选择。这种组合不仅促使开发者写出更安全、更健壮的代码，也在潜移默化中改变了我们对内存管理的认知。虽然这套机制初看之下学习曲线陡峭，且与传统做法大相径庭，但一旦掌握，便能轻松构建出行为清晰、可预测的程序。</p>
+<p class="zh">此外，Rust 标准库原生支持单元测试、内建包管理器（Cargo）、以及对多种编辑器的智能补全和项目管理支持，这些本就应是现代编程语言的标准配置。而在闭包语法、复合类型表达等方面，Rust 的设计也显得更加简洁而优雅。</p>
+<p class="zh">那么问题来了：C++ 是否还有竞争力？它的存在价值和应用场景又在哪里？</p>
+<p class="zh">这正是我们接下来要深入探讨的问题。面对 Rust 这样的现代系统编程语言，C++ 是否还能守住自己的阵地？它又在哪些领域依然不可或缺？让我们继续剖析这场语言之争的核心所在。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="12.3..html" class="prev-link">« 上一章：12.3. Rust的特性</a>
@@ -41,6 +41,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

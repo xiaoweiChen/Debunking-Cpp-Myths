@@ -24,12 +24,12 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">8.4. 总结</h1></section>
-  <p>C++ 编程神话的形成，源于这门语言漫长而不断演进的历史轨迹、开发者群体之间参差不齐的技术掌握程度，以及社区中普遍存在的心理诉求 —— 对性能极致掌控的执念与技术优越感。</p>
-<p>在早期，C++ 编译器生成的代码效率往往逊色于手工优化的版本，由此催生了大量关于“必须手动优化”的传说：比如为了追求极致性能，开发者不惜用平台相关的汇编语言重写整个函数模块。这些如今看来已显过时的做法，在当时却成为塑造 C++ 神话的重要素材。</p>
-<p>尽管现代编译器和语言特性早已突飞猛进，许多曾经的“真理”却依然顽固地流传至今，甚至掩盖了更高效、更安全的现代最佳实践。再加上 C++ 社区特有的精英主义文化，使得某些落后的认知被反复强化，仿佛不写点汇编就不好意思说自己是“真正的系统程序员”。</p>
-<p>有趣的是，在这样的背景下，C++ 依旧稳居高性能关键应用领域的王者地位。它不仅存活了下来，还在嵌入式系统、游戏引擎、高频交易、操作系统开发等领域持续占据核心位置。</p>
-<p>下一章我们将举办编程语言选美大赛，经过层层淘汰后，最终加冕的无冕之王自然是 —— (此处鼓点渐强)C++。</p>
-<p>坦白讲，我们对这门语言的偏爱早已藏不住了。或许读者早在本书前几章就该察觉：这场选美比赛从一开始，冠军就已经内定。</p>
+  <p class="zh">C++ 编程神话的形成，源于这门语言漫长而不断演进的历史轨迹、开发者群体之间参差不齐的技术掌握程度，以及社区中普遍存在的心理诉求 —— 对性能极致掌控的执念与技术优越感。</p>
+<p class="zh">在早期，C++ 编译器生成的代码效率往往逊色于手工优化的版本，由此催生了大量关于“必须手动优化”的传说：比如为了追求极致性能，开发者不惜用平台相关的汇编语言重写整个函数模块。这些如今看来已显过时的做法，在当时却成为塑造 C++ 神话的重要素材。</p>
+<p class="zh">尽管现代编译器和语言特性早已突飞猛进，许多曾经的“真理”却依然顽固地流传至今，甚至掩盖了更高效、更安全的现代最佳实践。再加上 C++ 社区特有的精英主义文化，使得某些落后的认知被反复强化，仿佛不写点汇编就不好意思说自己是“真正的系统程序员”。</p>
+<p class="zh">有趣的是，在这样的背景下，C++ 依旧稳居高性能关键应用领域的王者地位。它不仅存活了下来，还在嵌入式系统、游戏引擎、高频交易、操作系统开发等领域持续占据核心位置。</p>
+<p class="zh">下一章我们将举办编程语言选美大赛，经过层层淘汰后，最终加冕的无冕之王自然是 —— (此处鼓点渐强)C++。</p>
+<p class="zh">坦白讲，我们对这门语言的偏爱早已藏不住了。或许读者早在本书前几章就该察觉：这场选美比赛从一开始，冠军就已经内定。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="8.3..html" class="prev-link">« 上一章：8.3. 单指令霸权</a>
@@ -42,6 +42,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,10 +24,10 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">6.6. 仍需努力</h1></section>
-  <p>目前，C++ 标准化委员会正在推进一项名为 安全规范（safety profiles） 的重要提案。该方案结合了编译器增强、静态分析和运行时检查工具，旨在系统性地消除绝大多数内存安全相关的问题。尽管其具体落地时间尚未明确，但这项任务的复杂性和挑战性已令人敬畏。</p>
-<p>全球范围内，现存的 C++ 代码量可能高达数百亿行。任何新安全机制都必须在兼容性和实用性之间取得平衡：一方面，应尽可能减少对现有代码的破坏性影响，理想情况下只需标注潜在问题而无需大规模重构；另一方面，还必须控制性能开销，以满足众多高性能应用场景的需求。</p>
-<p>然而，问题的紧迫性同样不容忽视。随着软件安全日益受到重视，C++ 因内存安全缺陷而纳入美国，乃至其他国家政府项目技术禁用清单的风险正在上升。这一趋势不仅关乎语言本身的技术演进，更将深远影响其未来的使用生态与行业地位。</p>
-<p>最终，C++ 是否能在保持灵活性与性能优势的同时，成功应对内存安全挑战，仍有待时间和社区共同努力来揭晓答案。</p>
+  <p class="zh">目前，C++ 标准化委员会正在推进一项名为 安全规范（safety profiles） 的重要提案。该方案结合了编译器增强、静态分析和运行时检查工具，旨在系统性地消除绝大多数内存安全相关的问题。尽管其具体落地时间尚未明确，但这项任务的复杂性和挑战性已令人敬畏。</p>
+<p class="zh">全球范围内，现存的 C++ 代码量可能高达数百亿行。任何新安全机制都必须在兼容性和实用性之间取得平衡：一方面，应尽可能减少对现有代码的破坏性影响，理想情况下只需标注潜在问题而无需大规模重构；另一方面，还必须控制性能开销，以满足众多高性能应用场景的需求。</p>
+<p class="zh">然而，问题的紧迫性同样不容忽视。随着软件安全日益受到重视，C++ 因内存安全缺陷而纳入美国，乃至其他国家政府项目技术禁用清单的风险正在上升。这一趋势不仅关乎语言本身的技术演进，更将深远影响其未来的使用生态与行业地位。</p>
+<p class="zh">最终，C++ 是否能在保持灵活性与性能优势的同时，成功应对内存安全挑战，仍有待时间和社区共同努力来揭晓答案。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="6.5..html" class="prev-link">« 上一章：6.5. 现代C++的局限性</a>
@@ -40,6 +40,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

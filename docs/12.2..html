@@ -24,35 +24,35 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">12.2. 为什么要竞争？</h1></section>
-  <p>2001 年，我作为一名初级 C++ 开发者在巴黎工作时，最大的挑战就是让代码实现预期功能。当时开发的是一个工业印刷机的知识库系统，用于帮助操作员识别印刷故障的源头。</p>
-<p>在那个年代，这类桌面应用的主要选择就是 Windows 平台下的 C++，使用 Visual C++、微软基础类库（MFC）和 Windows API 开发，采用微软推崇的文档-视图架构（算是 MVC 模式的简化版）。这个项目让我备受挑战：不仅要应对 C++ 内存管理的难题，还得处理 MFC 和 Windows API 的各种怪癖。</p>
-<p>当时能依靠的只有官方文档、CodeProject网站(<a href="https://codeproject.com" target="_blank" rel="noopener noreferrer">https://codeproject.com</a>)和一位难得有空指导的资深同事。简而言之，我独自面对着一套复杂的技术体系，几乎孤立无援，这就是千禧年初的软件开发现状！</p>
-<p>不过别误会，我并非抱怨：正是这些挑战让这段经历弥足珍贵，成为我成长的关键。</p>
-<p>那时我的注意力完全集中在手头的技术上。虽然听说过 PHP，也曾用 Java 开发过小程序和网页应用，但 C++、MFC 和 Windows API 已经耗尽了我的全部精力。</p>
-<p>每天 90 分钟的通勤时间倒是让我在一年内读完了整本《指环王》，这大概算是唯一的调剂。</p>
-<p>职业生涯第二个重要项目则截然不同：虽然仍是 C++ 开发，但采用了高度结构化的导师制模式，打造了一个当时还未命名为“NoSQL”的数据库引擎。</p>
-<p>这段经历让我学会了编写测试用例（当时还没有现成的 C++ 测试框架，我们甚至自建了测试引擎），通过撰写设计文档并与同事评审来掌握软件设计要领，还首次体验了代码审查制度。</p>
-<p>通过精读 Scott Meyers 的《Effective C++》《More Effective C++》和 Andrei Alexandrescu 的《Modern C++ Design》等经典著作，我对 C++ 的理解达到了新高度。</p>
-<p>随着 C# 的出现，我决定转向新技术。在具备 Java 和 C++ 基础后，系统学习 C# 让我领悟到两点：</p>
-<p><ul>
+  <p class="zh">2001 年，我作为一名初级 C++ 开发者在巴黎工作时，最大的挑战就是让代码实现预期功能。当时开发的是一个工业印刷机的知识库系统，用于帮助操作员识别印刷故障的源头。</p>
+<p class="zh">在那个年代，这类桌面应用的主要选择就是 Windows 平台下的 C++，使用 Visual C++、微软基础类库（MFC）和 Windows API 开发，采用微软推崇的文档-视图架构（算是 MVC 模式的简化版）。这个项目让我备受挑战：不仅要应对 C++ 内存管理的难题，还得处理 MFC 和 Windows API 的各种怪癖。</p>
+<p class="zh">当时能依靠的只有官方文档、CodeProject网站(<a href="https://codeproject.com" target="_blank" rel="noopener noreferrer">https://codeproject.com</a>)和一位难得有空指导的资深同事。简而言之，我独自面对着一套复杂的技术体系，几乎孤立无援，这就是千禧年初的软件开发现状！</p>
+<p class="zh">不过别误会，我并非抱怨：正是这些挑战让这段经历弥足珍贵，成为我成长的关键。</p>
+<p class="zh">那时我的注意力完全集中在手头的技术上。虽然听说过 PHP，也曾用 Java 开发过小程序和网页应用，但 C++、MFC 和 Windows API 已经耗尽了我的全部精力。</p>
+<p class="zh">每天 90 分钟的通勤时间倒是让我在一年内读完了整本《指环王》，这大概算是唯一的调剂。</p>
+<p class="zh">职业生涯第二个重要项目则截然不同：虽然仍是 C++ 开发，但采用了高度结构化的导师制模式，打造了一个当时还未命名为“NoSQL”的数据库引擎。</p>
+<p class="zh">这段经历让我学会了编写测试用例（当时还没有现成的 C++ 测试框架，我们甚至自建了测试引擎），通过撰写设计文档并与同事评审来掌握软件设计要领，还首次体验了代码审查制度。</p>
+<p class="zh">通过精读 Scott Meyers 的《Effective C++》《More Effective C++》和 Andrei Alexandrescu 的《Modern C++ Design》等经典著作，我对 C++ 的理解达到了新高度。</p>
+<p class="zh">随着 C# 的出现，我决定转向新技术。在具备 Java 和 C++ 基础后，系统学习 C# 让我领悟到两点：</p>
+<ul>
     <li>技术转型会随着经验积累变得越来越容易；</li>  <li>每种技术都有其优劣。
-</ul></li></p>
-<p>用 C# 开发桌面应用确实更轻松，无需再为内存管理问题提心吊胆，开发效率显著提升，编程过程也更有乐趣。当然，这种便利的代价是牺牲了对底层的控制力，以及某种程度上编程严谨性的降低。</p>
-<p>后来我开始思考编程语言泛滥的现象。</p>
-<p>依我看，纯粹从技术角度出发，我们只需要 5–7 种语言：网页开发、系统编程、脚本处理各一种，再加上几种面向 AI、工作流、方程求解等细分领域的语言。就算我判断有误，20 种也绰绰有余。</p>
-<p>但现实是，如今我们拥有数百种编程语言，从主流语言到小众甚至极客向的 Brainfuck、Whitespace 等，在 TIOBE 编程语言排行榜上可见一斑。</p>
-<p>为何会出现这种现象？</p>
-<p>在我看来，这种现象的根源不在于技术需求，而在于文化因素。</p>
-<p>当然，技术特性确实重要 —— 面向对象和函数式编程特性后来都被引入各种主流语言；安全性、并行与并发、易用性、社区生态等都是编程语言的关键考量。但创造新语言的决策终究源于人，而语言设计中的种种选择又折射出设计者的个人偏好。</p>
-<p>文学与哲学的发展轨迹也遵循类似规律：总是主流与反主流思潮相互激荡。浪漫主义是对古典主义的反叛，现实主义又是对浪漫主义的修正。</p>
-<p>编程语言的演进同样如此：Java 是对 C++ 的反拨，Ruby on Rails 又是对 Java 的革新。不同的是，文学潮流受社会变迁影响，而技术浪潮则由双重力量塑造：</p>
-<p><ul>
+</ul></li>
+<p class="zh">用 C# 开发桌面应用确实更轻松，无需再为内存管理问题提心吊胆，开发效率显著提升，编程过程也更有乐趣。当然，这种便利的代价是牺牲了对底层的控制力，以及某种程度上编程严谨性的降低。</p>
+<p class="zh">后来我开始思考编程语言泛滥的现象。</p>
+<p class="zh">依我看，纯粹从技术角度出发，我们只需要 5–7 种语言：网页开发、系统编程、脚本处理各一种，再加上几种面向 AI、工作流、方程求解等细分领域的语言。就算我判断有误，20 种也绰绰有余。</p>
+<p class="zh">但现实是，如今我们拥有数百种编程语言，从主流语言到小众甚至极客向的 Brainfuck、Whitespace 等，在 TIOBE 编程语言排行榜上可见一斑。</p>
+<p class="zh">为何会出现这种现象？</p>
+<p class="zh">在我看来，这种现象的根源不在于技术需求，而在于文化因素。</p>
+<p class="zh">当然，技术特性确实重要 —— 面向对象和函数式编程特性后来都被引入各种主流语言；安全性、并行与并发、易用性、社区生态等都是编程语言的关键考量。但创造新语言的决策终究源于人，而语言设计中的种种选择又折射出设计者的个人偏好。</p>
+<p class="zh">文学与哲学的发展轨迹也遵循类似规律：总是主流与反主流思潮相互激荡。浪漫主义是对古典主义的反叛，现实主义又是对浪漫主义的修正。</p>
+<p class="zh">编程语言的演进同样如此：Java 是对 C++ 的反拨，Ruby on Rails 又是对 Java 的革新。不同的是，文学潮流受社会变迁影响，而技术浪潮则由双重力量塑造：</p>
+<ul>
     <li>技术生态的变革：如互联网兴起推动 Java 成为 Web 开发对 C++ 的替代方案，如今计算向客户端迁移又催生需要 C++/Rust 等底层语言的 WebAssembly 应用；</li>  <li>新一代开发者的审美取向：如 Ruby on Rails 以自由表达对抗 Java 的刻板印象，尽管这种“编程愉悦感”缺乏扎实的技术依据 —— 但技术本就不是人类决策的全部要素，开发者亦然。
-</ul></li></p>
-<p>至此您应该明白其中的关联：</p>
-<p>Rust 正是对 C++ 的全面回应。</p>
-<p>它既针对 C++ 现存的技术痛点，也挑战 C++ 的底层方法论。</p>
-<p>接下来，让我们具体审视 Rust 带来的变革。</p>
+</ul></li>
+<p class="zh">至此您应该明白其中的关联：</p>
+<p class="zh">Rust 正是对 C++ 的全面回应。</p>
+<p class="zh">它既针对 C++ 现存的技术痛点，也挑战 C++ 的底层方法论。</p>
+<p class="zh">接下来，让我们具体审视 Rust 带来的变革。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="12.1..html" class="prev-link">« 上一章：12.1. 环境要求</a>
@@ -65,6 +65,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

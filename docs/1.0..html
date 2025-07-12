@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第1章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— 愿诸君倾尽全力</em>
-</div></p>
-<p>C++ 的&quot;难学&quot;名声在开发者社区中广为流传 —— 无论是经验丰富的 C++ 程序员，还是仅仅听说过这门语言的人，都普遍持有这种看法。但这种认知究竟从何而来？我们将揭示这一观念背后的多重因素。</p>
-<p>部分原因可以追溯到历史背景：C++ 已有近 40 年的发展历程（从 1985 年算起），早期的语言标准对开发者确实不够友好，要求程序员必须精通底层内存管理等复杂概念。然而，随着 C++11、C++14、C++17、C++20 乃至 C++23 等现代标准的推出，这门语言已经发生了革命性的变化 —— 现在的 C++ 允许开发者编写出与 Java 或 C# 同样简洁优雅的代码。</p>
-<p>尽管如此，C++ 在系统编程领域的独特地位，仍然要求开发者掌握比其他现代语言更多的底层知识。这正是 C++ 学习曲线显得陡峭的根本原因。</p>
-<p>在本章中，我们将介绍以下主要主题:</p>
-<p><ul>
+</div>
+<p class="zh">C++ 的&quot;难学&quot;名声在开发者社区中广为流传 —— 无论是经验丰富的 C++ 程序员，还是仅仅听说过这门语言的人，都普遍持有这种看法。但这种认知究竟从何而来？我们将揭示这一观念背后的多重因素。</p>
+<p class="zh">部分原因可以追溯到历史背景：C++ 已有近 40 年的发展历程（从 1985 年算起），早期的语言标准对开发者确实不够友好，要求程序员必须精通底层内存管理等复杂概念。然而，随着 C++11、C++14、C++17、C++20 乃至 C++23 等现代标准的推出，这门语言已经发生了革命性的变化 —— 现在的 C++ 允许开发者编写出与 Java 或 C# 同样简洁优雅的代码。</p>
+<p class="zh">尽管如此，C++ 在系统编程领域的独特地位，仍然要求开发者掌握比其他现代语言更多的底层知识。这正是 C++ 学习曲线显得陡峭的根本原因。</p>
+<p class="zh">在本章中，我们将介绍以下主要主题:</p>
+<ul>
     <li>难学的根源剖析</li>  <li>核心难点及高效掌握策略</li>  <li>Stroustrup 推荐的 C++ 学习法</li>  <li>测试驱动开发(TDD)在 C++ 学习中的应用</li>  <li>掌握 C++ 后的强大能力
-</ul></li></p>
+</ul></li>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="preface.html" class="prev-link">« 上一章：前言</a>
@@ -46,6 +46,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

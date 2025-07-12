@@ -24,12 +24,12 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">4.4. 总结</h1></section>
-  <p>在本章中，作者尝试对 Linux 和 Windows 上的应用程序启动过程提供一个并不那么全面的概述。我们介绍了程序执行初期的一些关键步骤，包括 main() 函数之前的初始化流程。虽然这些内容远未达到这两个平台本身所要求的完整程度，但若真要详尽覆盖这个主题，本书的书名恐怕也得改写成别的了 —— 因为这是一个庞大而小众的主题，并不会吸引广泛的开发者群体。</p>
-<p>通过探索 Linux 中的 ELF 格式、理解 execve() 系统调用以及分析 _start() 函数，你已经获得了关于底层架构和初始化例程的宝贵知识。同样地，在对 Windows 的讨论中，我们重点介绍了控制台应用程序与 GUI 应用程序的启动流程，强调了各个节区(section)的作用，以及它们是如何共同协作来启动你的那个“总是不听话”的程序的，尤其是在它无法正常运行时。</p>
-<p>为了给大家留下进一步深入研究的空间，我们建议你进行动手实验：创建并分析二进制文件、修改启动例程、观察其在不同操作系统上的行为变化。你甚至可以手动修改可执行文件头中的各种地址，来看看会发生什么、以及它们是怎么崩溃的。</p>
-<p>这种实践性的方法不仅会强化你在本章中学到的概念，还会让你更深入、更实际地掌握应用程序的启动机制。通过积极的探索和实验，你将提升自己在软件开发领域中排错、优化和创新的能力，同时还能学到许多关于软件及其运行环境既实用又有趣的冷知识。</p>
-<p>在下一章中，将介绍类成员声明的正确顺序问题。通过一位开发者踏上编写无 bug 代码之旅的冒险故事，我们将一起发现那些隐藏的 bug。</p>
-<p>请继续阅读吧，你一定会有所收获的。</p>
+  <p class="zh">在本章中，作者尝试对 Linux 和 Windows 上的应用程序启动过程提供一个并不那么全面的概述。我们介绍了程序执行初期的一些关键步骤，包括 main() 函数之前的初始化流程。虽然这些内容远未达到这两个平台本身所要求的完整程度，但若真要详尽覆盖这个主题，本书的书名恐怕也得改写成别的了 —— 因为这是一个庞大而小众的主题，并不会吸引广泛的开发者群体。</p>
+<p class="zh">通过探索 Linux 中的 ELF 格式、理解 execve() 系统调用以及分析 _start() 函数，你已经获得了关于底层架构和初始化例程的宝贵知识。同样地，在对 Windows 的讨论中，我们重点介绍了控制台应用程序与 GUI 应用程序的启动流程，强调了各个节区(section)的作用，以及它们是如何共同协作来启动你的那个“总是不听话”的程序的，尤其是在它无法正常运行时。</p>
+<p class="zh">为了给大家留下进一步深入研究的空间，我们建议你进行动手实验：创建并分析二进制文件、修改启动例程、观察其在不同操作系统上的行为变化。你甚至可以手动修改可执行文件头中的各种地址，来看看会发生什么、以及它们是怎么崩溃的。</p>
+<p class="zh">这种实践性的方法不仅会强化你在本章中学到的概念，还会让你更深入、更实际地掌握应用程序的启动机制。通过积极的探索和实验，你将提升自己在软件开发领域中排错、优化和创新的能力，同时还能学到许多关于软件及其运行环境既实用又有趣的冷知识。</p>
+<p class="zh">在下一章中，将介绍类成员声明的正确顺序问题。通过一位开发者踏上编写无 bug 代码之旅的冒险故事，我们将一起发现那些隐藏的 bug。</p>
+<p class="zh">请继续阅读吧，你一定会有所收获的。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="4.3..html" class="prev-link">« 上一章：4.3. 打开天窗</a>
@@ -42,6 +42,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

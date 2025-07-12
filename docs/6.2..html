@@ -24,12 +24,12 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">6.2. 内存安全很重要</h1></section>
-  <p>在现代社会中，我们早已习惯基础设施的稳定运行 —— 电力供应、清洁水源和卫生系统如同生活的背景音，无需我们操心其背后的维护与运转。而软件作为后起之秀，已悄然渗透进人类生活的方方面面：从支付与娱乐，到紧急医疗服务，再到交通出行。尽管如此，却常常忽视软件的重要性。</p>
-<p>内存安全问题正是这一现象的典型体现。它不仅可能导致程序崩溃或需要重启的小故障，更可能成为黑客攻击的入口，甚至引发系统级灾难。虽然不同领域的软件对安全性的要求各不相同（例如医疗系统与单机游戏显然不可同日而语），但无论在哪一个领域，开发者都有责任编写功能完善、行为可靠且能保护用户安全的代码 —— 甚至偶尔还能带来惊喜。毕竟，我们所写的每一行代码，最终都是为了服务“人”本身。而人，永远是最重要的考量因素。</p>
-<p>然而，在享受现代软件所带来的便利的同时，我们也必须面对它潜藏的风险：个人信息泄露、资金被盗、医院系统遭受勒索软件攻击导致救治延误……随着软件无处不在，它也必须做得更好。但许多开发者却往往选择视而不见，用“软件本就复杂”、“用户自己操作不当”或“没有绝对无 bug 的程序”作为借口来推卸责任。诚然，软件确实越来越复杂，技术更新也日益加速，半年前还运行良好的代码，如今可能已因环境变化而失效。但这些现实挑战，并不能成为我们逃避责任的理由。</p>
-<p>航空业同样面临复杂系统与人为因素的挑战，但它通过建立完善的体系和严格的标准，使飞行成为当今最安全的交通方式之一。相比之下，软件行业直到近年来才开始真正重视安全性问题。2024年2月26日，白宫发布了一份技术建议报告，明确要求国家安全相关应用使用内存安全语言（包括 Java、C#、Python 和 Rust），并将 C/C++ 明确排除在外(详见：<a href="https://www.whitehouse.gov/oncd/briefing-room/2024/02/26/press-releasetechnical-report/" target="_blank" rel="noopener noreferrer">https://www.whitehouse.gov/oncd/briefing-room/2024/02/26/press-releasetechnical-report/</a>)。这份报告的出台，让许多人第一次意识到内存安全问题的严重性。</p>
-<p>起初，这份报告引发了惊讶、调侃与不安。然而仅仅五个月后，2024年7月19日，CrowdStrike 的一次内存错误便在全球范围内引发 Windows 系统内核恐慌，造成航班停飞、急救系统瘫痪、支付中断等严重后果，数百万人的生活因此受到影响。这次事件无疑是一记警钟，标志着软件安全问题不再只是开发者的内部议题，而是已经真实影响到社会运作的关键环节。</p>
-<p>这也是为什么我们必须正视内存安全问题。它不仅是技术层面的挑战，更是关乎信任、责任与未来政策方向的重要议题。</p>
+  <p class="zh">在现代社会中，我们早已习惯基础设施的稳定运行 —— 电力供应、清洁水源和卫生系统如同生活的背景音，无需我们操心其背后的维护与运转。而软件作为后起之秀，已悄然渗透进人类生活的方方面面：从支付与娱乐，到紧急医疗服务，再到交通出行。尽管如此，却常常忽视软件的重要性。</p>
+<p class="zh">内存安全问题正是这一现象的典型体现。它不仅可能导致程序崩溃或需要重启的小故障，更可能成为黑客攻击的入口，甚至引发系统级灾难。虽然不同领域的软件对安全性的要求各不相同（例如医疗系统与单机游戏显然不可同日而语），但无论在哪一个领域，开发者都有责任编写功能完善、行为可靠且能保护用户安全的代码 —— 甚至偶尔还能带来惊喜。毕竟，我们所写的每一行代码，最终都是为了服务“人”本身。而人，永远是最重要的考量因素。</p>
+<p class="zh">然而，在享受现代软件所带来的便利的同时，我们也必须面对它潜藏的风险：个人信息泄露、资金被盗、医院系统遭受勒索软件攻击导致救治延误……随着软件无处不在，它也必须做得更好。但许多开发者却往往选择视而不见，用“软件本就复杂”、“用户自己操作不当”或“没有绝对无 bug 的程序”作为借口来推卸责任。诚然，软件确实越来越复杂，技术更新也日益加速，半年前还运行良好的代码，如今可能已因环境变化而失效。但这些现实挑战，并不能成为我们逃避责任的理由。</p>
+<p class="zh">航空业同样面临复杂系统与人为因素的挑战，但它通过建立完善的体系和严格的标准，使飞行成为当今最安全的交通方式之一。相比之下，软件行业直到近年来才开始真正重视安全性问题。2024年2月26日，白宫发布了一份技术建议报告，明确要求国家安全相关应用使用内存安全语言（包括 Java、C#、Python 和 Rust），并将 C/C++ 明确排除在外(详见：<a href="https://www.whitehouse.gov/oncd/briefing-room/2024/02/26/press-releasetechnical-report/" target="_blank" rel="noopener noreferrer">https://www.whitehouse.gov/oncd/briefing-room/2024/02/26/press-releasetechnical-report/</a>)。这份报告的出台，让许多人第一次意识到内存安全问题的严重性。</p>
+<p class="zh">起初，这份报告引发了惊讶、调侃与不安。然而仅仅五个月后，2024年7月19日，CrowdStrike 的一次内存错误便在全球范围内引发 Windows 系统内核恐慌，造成航班停飞、急救系统瘫痪、支付中断等严重后果，数百万人的生活因此受到影响。这次事件无疑是一记警钟，标志着软件安全问题不再只是开发者的内部议题，而是已经真实影响到社会运作的关键环节。</p>
+<p class="zh">这也是为什么我们必须正视内存安全问题。它不仅是技术层面的挑战，更是关乎信任、责任与未来政策方向的重要议题。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="6.1..html" class="prev-link">« 上一章：6.1. 环境要求</a>
@@ -42,6 +42,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

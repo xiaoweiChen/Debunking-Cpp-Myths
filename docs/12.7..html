@@ -24,24 +24,24 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">12.7. 总结</h1></section>
-  <p>通过本章的探讨，我们可以清晰地看到：Rust 是一门极具前瞻性的系统编程语言。它的设计者不仅善于汲取历史经验，更在关键领域实现了突破性创新。最终呈现出的是一门兼具现代性、安全性和性能优势的语言，具体体现在：</p>
-<p><ul>
+  <p class="zh">通过本章的探讨，我们可以清晰地看到：Rust 是一门极具前瞻性的系统编程语言。它的设计者不仅善于汲取历史经验，更在关键领域实现了突破性创新。最终呈现出的是一门兼具现代性、安全性和性能优势的语言，具体体现在：</p>
+<ul>
     <li>更优雅、简洁的语法，减少了冗余与复杂度；</li>  <li>无需垃圾回收的内存管理机制，通过所有权与借用模型实现内存安全；</li>  <li>全面现代化的开发体验，从包管理到编译器提示，处处体现对开发者友好的设计理念。
-</ul></li></p>
-<p>然而，尽管 Rust 展现出强大的潜力，C++ 的统治地位仍难以被撼动。</p>
-<p>其背后是数十年积累形成的庞大生态体系 —— 包括海量的库、框架、技术文档、代码案例以及无数实战经验。这些资源不是一朝一夕可以复制或替代的。</p>
-<p>虽然 Rust 已经在 WebAssembly、系统工具链、嵌入式等领域站稳脚跟，并展现出强劲的增长势头，但要全面取代 C++ 依然遥不可及。</p>
-<p>需要强调的是，编程语言的选择从来不只是技术问题，文化因素同样至关重要：</p>
-<p><ul>
+</ul></li>
+<p class="zh">然而，尽管 Rust 展现出强大的潜力，C++ 的统治地位仍难以被撼动。</p>
+<p class="zh">其背后是数十年积累形成的庞大生态体系 —— 包括海量的库、框架、技术文档、代码案例以及无数实战经验。这些资源不是一朝一夕可以复制或替代的。</p>
+<p class="zh">虽然 Rust 已经在 WebAssembly、系统工具链、嵌入式等领域站稳脚跟，并展现出强劲的增长势头，但要全面取代 C++ 依然遥不可及。</p>
+<p class="zh">需要强调的是，编程语言的选择从来不只是技术问题，文化因素同样至关重要：</p>
+<ul>
     <li>新一代开发者可能更倾向于选择 Rust 这样的现代语言；</li>  <li>美国国家安全局（NSA）和白宫等机构正推动“内存安全优先”的政策导向；</li>  <li>这些趋势都有可能促使 Rust 在新项目中获得更多采用机会。
-</ul></li></p>
-<p>那么，Rust 究竟何时才能真正挑战甚至主导市场？</p>
-<p>我们不妨设定几个关键前提条件：</p>
-<p><ol>
+</ul></li>
+<p class="zh">那么，Rust 究竟何时才能真正挑战甚至主导市场？</p>
+<p class="zh">我们不妨设定几个关键前提条件：</p>
+<ol>
     <li>赢得越来越多开发者的青睐，形成良性社区增长；</li>  <li>成为行业合规标准中的强制要求，例如政府或金融领域的编码规范；</li>  <li>C++ 在内存安全方面的改进进展缓慢，无法满足日益增长的安全需求；</li>  <li>生成式 AI 实现高效的 C++ 到 Rust 自动代码转换，降低迁移门槛。
-</ol></li></p>
-<p>综上所述，虽然未来充满变数，但目前来看：C++ 至少有超过 50% 的概率将在未来十年内继续保持主流语言地位。</p>
-<p>这一判断，应当说是相对稳妥而现实的。</p>
+</ol></li>
+<p class="zh">综上所述，虽然未来充满变数，但目前来看：C++ 至少有超过 50% 的概率将在未来十年内继续保持主流语言地位。</p>
+<p class="zh">这一判断，应当说是相对稳妥而现实的。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="12.6..html" class="prev-link">« 上一章：12.6. 为什么仍然需要C++</a>
@@ -54,6 +54,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

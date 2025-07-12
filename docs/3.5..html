@@ -24,15 +24,15 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">3.5. 强类型的极限</h1></section>
-  <p>在软件开发中，最大的挑战之一就是避免 bug。这个问题如此普遍，以至于我们专门用“bug”这个词来形容它，仿佛代码出错是一种不可避免的现象。但事实上，大多数所谓的“bug”本质上只是开发者犯下的错误（mistakes）。</p>
-<p>既然我们拥有编译器，那为什么不利用它来施加足够的限制，使得一旦出现潜在问题，编译器就能立即通知我们呢？理论上我们完全可以做到这一点，只不过这需要付出一定的设计与实现成本。</p>
-<p>在前一节中，我们讨论了模板元编程（template metaprogramming），但我们忽略了一个关键特性：模板元编程是图灵完备的（Turing complete）。这意味着，任何可以用常规方式写出的程序，也可以通过模板元编程在编译时完成。</p>
-<p>这一思想非常强大，也在多个领域被广泛探讨。如果你想尝试一门完全围绕这一理念构建的编程语言，不妨试试 Idris(<a href="https://www.idris-lang.org/" target="_blank" rel="noopener noreferrer">https://www.idris-lang.org/</a>)。许多开发者可能也熟悉 Haskell 中在编译期进行验证的能力。而我第一次接触到这个概念，是在 Andrei Alexandrescu 于 2001 年出版的开创性著作《Modern C++ Design: Generic Programming and Design Patterns Applied》中。</p>
-<p>让我们从一个简单的问题入手。“原始类型痴迷” 是导致 bug 和代码异味的一个常见来源。它指的是过度依赖原始类型（如 int 或 double）来表示本应更复杂的语义信息。例如，将长度、金额、温度或重量等值简单地表示为数字，却忽略了它们所代表的单位和含义。</p>
-<p>与其这样，不如为这些概念定义特定的类型。以“金额”为例，它可以是一个包含上下文精度控制的值（比如会计系统中常用的七位小数）以及货币种类的封装类型。即使当前系统只处理一种货币，这种做法仍然非常有价值 —— 因为你几乎可以肯定一件事：随着功能不断增加，原本只支持单一货币的系统，最终很可能需要支持多种货币。</p>
-<p>与“原始类型痴迷”密切相关的一个问题是：如何对原始类型的取值范围进行约束。例如，一个表示一天中小时数的值，不应该只是一个普通的 unsigned int，而必须在 0 到 23 的范围内（这里我们假设使用的是 24 小时制）。如果我们能告诉编译器：“任何不在 0 到 23 范围内的值都不能作为合法的小时数”，并在传入非法值（如 27）时给出明确的错误提示，那就再好不过了。</p>
-<p>在这种情况下，由于取值有限，使用 enum 可能是一个可行的解决方案。但为了说明运行时和编译时两种不同策略的设计思路，我们先来看一个运行时的实现方式。我们可以创建一个名为 Hour 的类，在构造函数中对输入值进行合法性检查，并在非法时抛出异常：</p>
-<p><pre><code class="language-cpp">class Hour{
+  <p class="zh">在软件开发中，最大的挑战之一就是避免 bug。这个问题如此普遍，以至于我们专门用“bug”这个词来形容它，仿佛代码出错是一种不可避免的现象。但事实上，大多数所谓的“bug”本质上只是开发者犯下的错误（mistakes）。</p>
+<p class="zh">既然我们拥有编译器，那为什么不利用它来施加足够的限制，使得一旦出现潜在问题，编译器就能立即通知我们呢？理论上我们完全可以做到这一点，只不过这需要付出一定的设计与实现成本。</p>
+<p class="zh">在前一节中，我们讨论了模板元编程（template metaprogramming），但我们忽略了一个关键特性：模板元编程是图灵完备的（Turing complete）。这意味着，任何可以用常规方式写出的程序，也可以通过模板元编程在编译时完成。</p>
+<p class="zh">这一思想非常强大，也在多个领域被广泛探讨。如果你想尝试一门完全围绕这一理念构建的编程语言，不妨试试 Idris(<a href="https://www.idris-lang.org/" target="_blank" rel="noopener noreferrer">https://www.idris-lang.org/</a>)。许多开发者可能也熟悉 Haskell 中在编译期进行验证的能力。而我第一次接触到这个概念，是在 Andrei Alexandrescu 于 2001 年出版的开创性著作《Modern C++ Design: Generic Programming and Design Patterns Applied》中。</p>
+<p class="zh">让我们从一个简单的问题入手。“原始类型痴迷” 是导致 bug 和代码异味的一个常见来源。它指的是过度依赖原始类型（如 int 或 double）来表示本应更复杂的语义信息。例如，将长度、金额、温度或重量等值简单地表示为数字，却忽略了它们所代表的单位和含义。</p>
+<p class="zh">与其这样，不如为这些概念定义特定的类型。以“金额”为例，它可以是一个包含上下文精度控制的值（比如会计系统中常用的七位小数）以及货币种类的封装类型。即使当前系统只处理一种货币，这种做法仍然非常有价值 —— 因为你几乎可以肯定一件事：随着功能不断增加，原本只支持单一货币的系统，最终很可能需要支持多种货币。</p>
+<p class="zh">与“原始类型痴迷”密切相关的一个问题是：如何对原始类型的取值范围进行约束。例如，一个表示一天中小时数的值，不应该只是一个普通的 unsigned int，而必须在 0 到 23 的范围内（这里我们假设使用的是 24 小时制）。如果我们能告诉编译器：“任何不在 0 到 23 范围内的值都不能作为合法的小时数”，并在传入非法值（如 27）时给出明确的错误提示，那就再好不过了。</p>
+<p class="zh">在这种情况下，由于取值有限，使用 enum 可能是一个可行的解决方案。但为了说明运行时和编译时两种不同策略的设计思路，我们先来看一个运行时的实现方式。我们可以创建一个名为 Hour 的类，在构造函数中对输入值进行合法性检查，并在非法时抛出异常：</p>
+<pre class="line-numbers"><code class="language-cpp">class Hour{
 private:
   int theValue = 0;
   void setValue(int candidateValue) {
@@ -61,13 +61,13 @@ TEST_CASE(&quot;Valid hour&quot;){
 
 TEST_CASE(&quot;Invalid hour&quot;){
   CHECK_THROWS(Hour(30));
-}</code></pre></p>
-<p>那么，如果我们希望将这种检查提前到编译时又该怎么做呢？这时就轮到 constexpr 大显身手了。我们可以结合 static_assert 来在编译期验证数值是否合法：</p>
-<p><pre><code class="language-cpp">template &lt;int Min, int Max&gt;
+}</code></pre>
+<p class="zh">那么，如果我们希望将这种检查提前到编译时又该怎么做呢？这时就轮到 constexpr 大显身手了。我们可以结合 static_assert 来在编译期验证数值是否合法：</p>
+<pre class="line-numbers"><code class="language-cpp">template &lt;int Min, int Max&gt;
 class RangedInteger{
 private:
   int theValue;
-  constexpr RangedInteger(int theValue) : theValue(theValue) 
+  constexpr RangedInteger(int theValue) : theValue(theValue) {}
 public:
   template &lt;int CandidateValue&gt;
   static constexpr RangedInteger make() {
@@ -80,15 +80,15 @@ public:
   }
 };
 
-using Hour = RangedInteger&lt;0, 23&gt;</code></pre></p>
-<p>在上面的实现中，下面这段测试代码可以完美运行：</p>
-<p><pre><code class="language-cpp">TEST_CASE(&quot;Valid hour&quot;){
+using Hour = RangedInteger&lt;0, 23&gt;</code></pre>
+<p class="zh">在上面的实现中，下面这段测试代码可以完美运行：</p>
+<pre class="line-numbers"><code class="language-cpp">TEST_CASE(&quot;Valid hour&quot;){
   constexpr Hour h = Hour::make&lt;10&gt;();
 
   CHECK_EQ(10, h.value());
-}</code></pre></p>
-<p>但如果尝试传递一个超出范围的值，就会触发编译错误：</p>
-<p><pre><code class="language-shell">TEST_CASE("Invalid hour"){
+}</code></pre>
+<p class="zh">但如果尝试传递一个超出范围的值，就会触发编译错误：</p>
+<pre><code class="language-shell">TEST_CASE("Invalid hour"){
   constexpr Hour h2 = Hour::make&lt;30&gt;();
 }
 Hour.h: In instantiation of 'static constexpr RangedInteger&lt;Min, Max&gt;
@@ -97,14 +97,14 @@ RangedInteger&lt;Min, Max&gt;::make() [with int CandidateValue = 30; int Min
 Hour.h:11:87: error: static assertion failed: Value out of range.
    11 | static_assert(CandidateValue &gt;= Min &amp;&amp; CandidateValue &lt;= Max, "Value out of range.");
       |                                        ~~~~~~~~~~~~~~~^~~~~~
-Hour.h:11:87: note: '(30 &lt;= 23)' evaluates to false</code></pre></p>
-<p>这条错误信息清楚地告诉我们：30 不是一个合法的小时值，而这正是我们想要的效果！</p>
-<p>这只是众多技巧中的一种，适用于希望编写出在编译时就能证明计算合法有效的 C++ 程序。模板元编程是图灵完备的，理论上可以在编译时实现任何运行时能完成的任务。当然，这其中也存在权衡。</p>
-<p>需要注意的是，这里的 Hour 值必须是 constexpr 的，会直接嵌入到可执行文件中。这是有意为之的，要将类型约束发挥到极致，唯一的方法就是将其直接编译进程序单元中。</p>
-<p>在实践中，我发现这类技术虽然强大，但也容易让代码变得极其难以理解和维护。修改这类代码需要极高的纪律性，因为哪怕是一点点改动，也可能引入新的 bug —— 这些 bug 本来可以通过强类型机制避免。基本原则始终是：多用扩展的方式添加新功能，少去修改已有代码，除非是为了修复问题。</p>
-<p>目前我们的示例还算简洁清晰，但随着类型抽象层次的加深，六个月后再回看当初的设计思路时，你可能会发现很难还原其背后的逻辑。从积极的一面来看，这种技术非常适合用于开发专注于特定领域的类库。</p>
-<p>虽然我认为这种技术非常有趣，但在实际项目中我更倾向于保留更大的自由度。我会采用自己的一套方法：测试驱动开发（TDD）、持续重构、极致关注命名质量以及追求简单设计。我更希望有一种方式，让我写出我想写的代码，而让编译器去处理那些繁琐的细节。</p>
-<p>正因如此，接下来我要介绍的最后一种编程范式，会尽可能地淡化类型的影响，从而提供另一种视角来看待程序设计与实现。</p>
+Hour.h:11:87: note: '(30 &lt;= 23)' evaluates to false</code></pre>
+<p class="zh">这条错误信息清楚地告诉我们：30 不是一个合法的小时值，而这正是我们想要的效果！</p>
+<p class="zh">这只是众多技巧中的一种，适用于希望编写出在编译时就能证明计算合法有效的 C++ 程序。模板元编程是图灵完备的，理论上可以在编译时实现任何运行时能完成的任务。当然，这其中也存在权衡。</p>
+<p class="zh">需要注意的是，这里的 Hour 值必须是 constexpr 的，会直接嵌入到可执行文件中。这是有意为之的，要将类型约束发挥到极致，唯一的方法就是将其直接编译进程序单元中。</p>
+<p class="zh">在实践中，我发现这类技术虽然强大，但也容易让代码变得极其难以理解和维护。修改这类代码需要极高的纪律性，因为哪怕是一点点改动，也可能引入新的 bug —— 这些 bug 本来可以通过强类型机制避免。基本原则始终是：多用扩展的方式添加新功能，少去修改已有代码，除非是为了修复问题。</p>
+<p class="zh">目前我们的示例还算简洁清晰，但随着类型抽象层次的加深，六个月后再回看当初的设计思路时，你可能会发现很难还原其背后的逻辑。从积极的一面来看，这种技术非常适合用于开发专注于特定领域的类库。</p>
+<p class="zh">虽然我认为这种技术非常有趣，但在实际项目中我更倾向于保留更大的自由度。我会采用自己的一套方法：测试驱动开发（TDD）、持续重构、极致关注命名质量以及追求简单设计。我更希望有一种方式，让我写出我想写的代码，而让编译器去处理那些繁琐的细节。</p>
+<p class="zh">正因如此，接下来我要介绍的最后一种编程范式，会尽可能地淡化类型的影响，从而提供另一种视角来看待程序设计与实现。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="3.4..html" class="prev-link">« 上一章：3.4. 元编程</a>
@@ -117,6 +117,18 @@ Hour.h:11:87: note: '(30 &lt;= 23)' evaluates to false</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

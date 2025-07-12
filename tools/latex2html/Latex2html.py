@@ -131,6 +131,14 @@ def convert_itemize_to_html(latex_text):
   text = latex_text.replace(r'\begin{itemize}', '<ul>')
   text = text.replace(r'\end{itemize}', '</ul>')
 
+  text = text.replace('---', '——')
+  text = text.replace(r'\#', '#')
+  text = text.replace(r'\%', '%')
+  text = text.replace(r'\_', '_')
+  text = text.replace(r'\&', '&')
+  text = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', text)
+  text = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', text)
+
   # 处理 \item
   def item_replacer(match):
     content = match.group(1).strip()
@@ -157,6 +165,14 @@ def convert_enumerate_to_html(latex_text):
   # 替换 \begin{enumerate} 和 \end{enumerate}
   text = latex_text.replace(r'\begin{enumerate}', '<ol>')
   text = text.replace(r'\end{enumerate}', '</ol>')
+
+  text = text.replace('---', '——')
+  text = text.replace(r'\#', '#')
+  text = text.replace(r'\%', '%')
+  text = text.replace(r'\_', '_')
+  text = text.replace(r'\&', '&')
+  text = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', text)
+  text = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', text)
 
   # 处理 \item
   def item_replacer(match):
@@ -228,6 +244,7 @@ def convert_longtable_to_html(html):
           content = re.sub(r'\\end\{tabular\}', '', content)
           content = content.replace(r'\$', '&#36;')
           content = content.replace(r'\%', '&#37;')
+          content = content.replace(r'\&', '&')
           content = content.replace(r'\_', '&#95;')
           content = content.replace(r'\{', '&#123;')
           content = content.replace(r'\}', '&#125;')
@@ -246,6 +263,7 @@ def convert_longtable_to_html(html):
           content = re.sub(r'\\end\{tabular\}', '', content)
           content = content.replace(r'\$', '&#36;')
           content = content.replace(r'\%', '&#37;')
+          content = content.replace(r'\&', '&')
           content = content.replace(r'\_', '&#95;')
           content = content.replace(r'\{', '&#123;')
           content = content.replace(r'\}', '&#125;')
@@ -254,6 +272,7 @@ def convert_longtable_to_html(html):
     html_table += '  </tbody>\n</table>\n'
     return html_table
 
+  html = html.replace('---', '——')
   html = re.sub(r'^\\begin\{longtable\}.*$', r'\\begin{longtable}', html, flags=re.MULTILINE)
   html = re.sub(r'\\begin\{longtable\}\s*([\s\S]*?)\\end\{longtable\}', table_replacer, html)
   return html
@@ -270,7 +289,7 @@ def process_cpp_env(html_text):
 
     cleaned_code = '\n'.join(lines)
     escaped_code = html.escape(cleaned_code)
-    return f'<pre><code class="language-cpp">{escaped_code}</code></pre>'
+    return f'<pre class="line-numbers"><code class="language-cpp">{escaped_code}</code></pre>'
 
   html_text = re.sub(r'\\begin\{cpp\}([\s\S]*?)\\end\{cpp\}', replacer, html_text)
   return html_text
@@ -286,7 +305,7 @@ def process_rust_env(html_text):
       lines = lines[1:]
 
     cleaned_code = '\n'.join(lines)
-    return f'<pre><code class="language-rust">{cleaned_code}</code></pre>'
+    return f'<pre class="line-numbers"><code class="language-rust">{cleaned_code}</code></pre>'
 
   html_text = re.sub(r'\\begin\{rust\}([\s\S]*?)\\end\{rust\}', replacer, html_text)
   return html_text
@@ -309,7 +328,7 @@ def process_my_tip(html):
     content = match.group(2)
 
     paragraphs = [p for p in re.split(r'\n{2,}', content) if p.strip()]
-    inner_html = ''.join(f'<p>{p}</p>' for p in paragraphs)
+    inner_html = ''.join(f'<p class="zh">{p}</p>' for p in paragraphs)
 
     begin_match = re.search(r'\\begin\{([^\}]+)\}', inner_html)
     env_name = ""
@@ -326,6 +345,8 @@ def process_my_tip(html):
 
     return f'<div class="tip-box tip"><strong>{title}</strong>{inner_html}</div>'
 
+  html = html.replace('---', '——')
+  html = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', html)
   html = re.sub(r'\\begin\{myTip\}\{(.*?)\}([\s\S]*?)\\end\{myTip\}', replacer, html)
   return html
 
@@ -335,7 +356,7 @@ def process_my_notic(html):
     content = match.group(2)
 
     paragraphs = [p for p in re.split(r'\n{2,}', content) if p.strip()]
-    inner_html = ''.join(f'<p>{p}</p>' for p in paragraphs)
+    inner_html = ''.join(f'<p class="zh">{p}</p>' for p in paragraphs)
 
     begin_match = re.search(r'\\begin\{([^\}]+)\}', inner_html)
     env_name = ""
@@ -352,6 +373,8 @@ def process_my_notic(html):
 
     return f'<div class="tip-box note"><strong>{title}</strong>{inner_html}</div>'
 
+  html = html.replace('---', '——')
+  html = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', html)
   html = re.sub(r'\\begin\{myNotic\}\{(.*?)\}([\s\S]*?)\\end\{myNotic\}', replacer, html)
   return html
 
@@ -379,22 +402,39 @@ def convert_my_graphic(html, image_root_dir, output_dir):
     </div>'''
   return re.sub(r'\\myGraphic\{([\d.]+)\}\{(.*?)\}\{(.*?)\}', replacer, html)
 
+def convert_center_to_html(html_text):
+  html_text = html_text.replace('---', '——')
+  html_text = re.sub(r'\\textbf\{(.*?)\}', r'<strong>\1</strong>', html_text)
+  html_text = re.sub(r'\\textit\{(.*?)\}', r'<em>\1</em>', html_text)
+  html_text = re.sub(r'\\begin\{center\}([\s\S]*?)\\end\{center\}', r'<div style="text-align:center">\1</div>', html_text)
+  return html_text
+
+def convert_flushright_to_html(html_text):
+  html_text = html_text.replace('---', '——')
+  html_text = re.sub(r'\\textbf\{(.*?)\}', r'<strong>\1</strong>', html_text)
+  html_text = re.sub(r'\\textit\{(.*?)\}', r'<em>\1</em>', html_text)
+  html_text = re.sub(r'\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}', r'<div style="text-align:right">\1</div>', html_text)
+  return html_text
+
 def process_latex_env(paragraph_content):
   begin_match = re.search(r'\\begin\{([^\}]+)\}', paragraph_content)
 
   if not begin_match:
-    paragraph_content = html.escape(paragraph_content)
-    return paragraph_content
+    return paragraph_content, False
   
   env_name = begin_match.group(1)
 
   match env_name:
     case 'flushright':
-      paragraph_content = re.sub(r'\\begin\{flushright\}([\s\S]*?)\\end\{flushright\}', r'<div style="text-align:right">\1</div>', paragraph_content)
+      paragraph_content = convert_flushright_to_html(paragraph_content)
     case 'itemize':
       paragraph_content = convert_itemize_to_html(paragraph_content)
     case 'enumerate':
       paragraph_content = convert_enumerate_to_html(paragraph_content)
+    case 'center':
+      paragraph_content = convert_center_to_html(paragraph_content)
+    case 'myNotic':
+      paragraph_content = process_my_notic(paragraph_content)
     case 'longtable':
       paragraph_content = convert_longtable_to_html(paragraph_content)
     case 'shell':
@@ -411,36 +451,48 @@ def process_latex_env(paragraph_content):
       print("unkown environment:", env_name)
       exit(-10)
 
-  return paragraph_content
+  return paragraph_content, True
 
 def process_special_paragraph(paragraph_content, image_root_dir, output_dir):
-  paragraph_content = process_latex_env(paragraph_content)
+  paragraph_content, matched_latex_env = process_latex_env(paragraph_content)
 
-  # 替换特殊字符
-  paragraph_content = convert_my_graphic(paragraph_content, image_root_dir, output_dir)
-  paragraph_content = paragraph_content.replace('---', '——')
-  paragraph_content = re.sub(r'\\hspace\*{\\fill}', '<br>', paragraph_content)
-  paragraph_content = re.sub(r'\\mySubsubsection\{(.*?)\}\{(.*?)\}', r'<h4 class="filename">\1 \2</h4>', paragraph_content)
-  paragraph_content = re.sub(r'\\mySubsection\{(.*?)\}\{(.*?)\}', r'<h3 class="filename">\1 \2</h3>', paragraph_content)
-  paragraph_content = re.sub(r'\\mySubsectionNoFile\{(.*?)\}\{(.*?)\}', r'<h3 class="filename">\1\2</h3>', paragraph_content)
-  paragraph_content = re.sub(r'\\textbf\{(.*?)\}', r'<strong>\1</strong>', paragraph_content)
-  paragraph_content = re.sub(r'\\textit\{(.*?)\}', r'<em>\1</em>', paragraph_content)
-  paragraph_content = re.sub(r'\\href\{(.*?)\}\{(.*?)\}', r'<a href="\1">\2</a>', paragraph_content)
-  paragraph_content = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', paragraph_content)
-  paragraph_content = re.sub(r'\$\s*\\sim\s*\$', '~', paragraph_content)
-  paragraph_content = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', paragraph_content)
-  paragraph_content = re.sub(r'\\footnote\{(.*?)\}', r'<span class="footnote">\1</span>', paragraph_content)
-  paragraph_content = paragraph_content.replace(r'\#', '#')
-  paragraph_content = paragraph_content.replace(r'\%', '%')
-  paragraph_content = paragraph_content.replace(r'\_', '_')
-  paragraph_content = paragraph_content.replace(r'\&', '&')
-  paragraph_content = re.sub(r'\\filename\{(.*?)\}', r'<div class="filename">\1</div>', paragraph_content)
-  paragraph_content = re.sub(r'\\begin\{center\}([\s\S]*?)\\end\{center\}', r'<div style="text-align:center">\1</div>', paragraph_content)
-  paragraph_content = paragraph_content.replace('{}', '')
-  paragraph_content = paragraph_content.replace('\}', '}')
-  paragraph_content = paragraph_content.replace('\{', '{')
+  if matched_latex_env:
+    return paragraph_content
+  else:
+    # 替换特殊字符
+    paragraph_content = paragraph_content.replace(r'>{}>', '>>')
+    paragraph_content = paragraph_content.replace(r'<{}<', '<<')
+    paragraph_content = paragraph_content.replace(r'-{}-', '--')
+    paragraph_content = paragraph_content.replace(r'\#', '#')
+    paragraph_content = paragraph_content.replace(r'\%', '%')
+    paragraph_content = paragraph_content.replace(r'\_', '_')
+    paragraph_content = paragraph_content.replace(r'\&', '&')
+    paragraph_content = paragraph_content.replace('\}', '}')
+    paragraph_content = paragraph_content.replace('\{', '{')
+    paragraph_content = paragraph_content.replace('---', '——')
 
-  return paragraph_content
+    paragraph_content = html.escape(paragraph_content)
+
+    paragraph_content = paragraph_content.replace('-&gt;', '&rarr;')
+
+    paragraph_content = convert_my_graphic(paragraph_content, image_root_dir, output_dir)
+    
+    paragraph_content = re.sub(r'\\hspace\*{\\fill}', '<br>', paragraph_content)
+    paragraph_content = re.sub(r'\\mySubsubsection\{(.*?)\}\{(.*?)\}', r'<h4 class="filename">\1 \2</h4>', paragraph_content)
+    paragraph_content = re.sub(r'\\mySubsection\{(.*?)\}\{(.*?)\}', r'<h3 class="filename">\1 \2</h3>', paragraph_content)
+    paragraph_content = re.sub(r'\\mySubsectionNoFile\{(.*?)\}\{(.*?)\}', r'<h3 class="filename">\1\2</h3>', paragraph_content)
+    paragraph_content = re.sub(r'\\textbf\{(.*?)\}', r'<strong>\1</strong>', paragraph_content)
+    paragraph_content = re.sub(r'\\textit\{(.*?)\}', r'<em>\1</em>', paragraph_content)
+    paragraph_content = re.sub(r'\\texttt\{(.*?)\}', r'<code>\1</code>', paragraph_content)
+    paragraph_content = re.sub(r'\\href\{(.*?)\}\{(.*?)\}', r'<a href="\1">\2</a>', paragraph_content)
+    paragraph_content = re.sub(r'\\url\{(https?://[^\}]+)\}', r'<a href="\1" target="_blank" rel="noopener noreferrer">\1</a>', paragraph_content)
+    paragraph_content = re.sub(r'\$\s*\\sim\s*\$', '~', paragraph_content)
+    paragraph_content = re.sub(r'\\verb(.)(.+?)\1', r'<code>\2</code>', paragraph_content)
+    paragraph_content = re.sub(r'\\footnote\{(.*?)\}', r'<span class="footnote">\1</span>', paragraph_content)
+    
+    paragraph_content = re.sub(r'\\filename\{(.*?)\}', r'<div class="filename">\1</div>', paragraph_content)
+
+    return f'<p class="zh">{paragraph_content}</p>'
 
 def generate_content(latex_content, input_dir, output_dir):
   content_info = latex_content['content_info']
@@ -458,7 +510,7 @@ def generate_content(latex_content, input_dir, output_dir):
     for paragraph_line in section_info['section_content']:
       processed_line = process_special_paragraph(paragraph_line, image_root_dir, output_dir)
       if len(processed_line) > 0:
-        content_lines.append(f"<p>{processed_line}</p>")
+        content_lines.append(f"{processed_line}")
 
     if len(content_lines) > 0:
 

@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第11章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— 即已有C，岂止于B……A……或亦@乎？</em>
-</div></p>
-<p>最初，编程语言的圣言镌刻于 BCPL（Basic Combined Programming Language 的缩写，绝非巴尔的摩县公共图书馆）之中。作为编译器领域的初代霸主，它以铁血般的语法统治了数个迭代版本。然而岁月无情，新特性、新范式、新语法层出不穷。不久之后，一位新的王位继承者从比特之海中崛起，那便是 B 语言。但世人鲜少理解 B 语言“无类型”设计的精妙之处。随着新一代王者候选 —— C语言<span class="footnote"><a href="https://www.bell-labs.com/usr/dmr/www/chist.html" target="_blank" rel="noopener noreferrer">https://www.bell-labs.com/usr/dmr/www/chist.html</a></span>的出现，B语言很快退出历史舞台。</p>
-<p>C 语言成为系统级编程的事实标准，其语法结构渗透进过去乃至本世纪所有主流编程语言之中（比如那无处不在的花括号 {}）。它宛如计算机王国中的圣胶，将各类编程语言粘合在一起，共赴神圣仪式。</p>
-<p>直到一位普罗米修斯式的人物<span class="footnote">没错，Bjarne Stroustrup，说的就是你。</span>出现 —— 他将“类”的概念引入C语言，先是创造了“带类的C”(C with classes)，随后开发出史上首个C++编译器Cfront(它能将C++代码转换为C代码，可惜已湮灭在时光长河中)。但它的遗产永存：这门语言本身、数十个在不同时期(或多或少)符合标准的C++编译器、数百种未定义行为案例，以及过去三十年间迭代的各个标准版本(最新可用的是C++23，而标准委员会正在酝酿更强大的C++26) —— 所有这些共同构成了我们挚爱的编程语言：C++。</p>
-<p>本章将用以下话题让你如遇早高峰般寸步难离(却又欲罢不能)：</p>
-<p><ul>
+</div>
+<p class="zh">最初，编程语言的圣言镌刻于 BCPL（Basic Combined Programming Language 的缩写，绝非巴尔的摩县公共图书馆）之中。作为编译器领域的初代霸主，它以铁血般的语法统治了数个迭代版本。然而岁月无情，新特性、新范式、新语法层出不穷。不久之后，一位新的王位继承者从比特之海中崛起，那便是 B 语言。但世人鲜少理解 B 语言“无类型”设计的精妙之处。随着新一代王者候选 —— C语言<span class="footnote"><a href="https://www.bell-labs.com/usr/dmr/www/chist.html" target="_blank" rel="noopener noreferrer">https://www.bell-labs.com/usr/dmr/www/chist.html</a></span>的出现，B语言很快退出历史舞台。</p>
+<p class="zh">C 语言成为系统级编程的事实标准，其语法结构渗透进过去乃至本世纪所有主流编程语言之中（比如那无处不在的花括号 {}）。它宛如计算机王国中的圣胶，将各类编程语言粘合在一起，共赴神圣仪式。</p>
+<p class="zh">直到一位普罗米修斯式的人物<span class="footnote">没错，Bjarne Stroustrup，说的就是你。</span>出现 —— 他将“类”的概念引入C语言，先是创造了“带类的C”(C with classes)，随后开发出史上首个C++编译器Cfront(它能将C++代码转换为C代码，可惜已湮灭在时光长河中)。但它的遗产永存：这门语言本身、数十个在不同时期(或多或少)符合标准的C++编译器、数百种未定义行为案例，以及过去三十年间迭代的各个标准版本(最新可用的是C++23，而标准委员会正在酝酿更强大的C++26) —— 所有这些共同构成了我们挚爱的编程语言：C++。</p>
+<p class="zh">本章将用以下话题让你如遇早高峰般寸步难离(却又欲罢不能)：</p>
+<ul>
     <li>C++真的向后兼容C吗？</li>  <li>C++真的向后兼容C++自身吗？
-</ul></li></p>
+</ul></li>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="10.6..html" class="prev-link">« 上一章：10.6. 总结</a>
@@ -46,6 +46,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

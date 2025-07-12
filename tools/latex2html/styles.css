@@ -168,6 +168,10 @@ blockquote {
   font-size: 1.1em;
 }
 
+p.zh {
+  text-indent: 2em;
+}
+
 .author-info a {
   color: var(--link-color);
   text-decoration: none;
@@ -349,4 +353,24 @@ footer {
   margin-top: 8px;
   font-size: 0.95em;
   color: #555;
+}
+
+/* 始终显示 Prism 的复制按钮 */
+div.code-toolbar > .toolbar {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* 避免按钮遮挡代码 */
+div.code-toolbar > .toolbar .toolbar-item {
+  pointer-events: auto;
+}
+
+div.code-toolbar > .toolbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+pre.code-toolbar {
+  position: relative;
 }

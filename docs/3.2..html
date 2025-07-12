@@ -24,19 +24,19 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">3.2. 多面性</h1></section>
-  <p>如果你像我一样，经常在不同的组织、团队和专业技术会议之间穿梭往来，你会很快注意到两件事：C++ 开发者的兴趣与其他开发者截然不同，而且 C++ 社区实际上是由众多小型、专业化的开发者群体组成的。这种现象在其他编程语言社区中并不常见。</p>
-<p><ul>
+  <p class="zh">如果你像我一样，经常在不同的组织、团队和专业技术会议之间穿梭往来，你会很快注意到两件事：C++ 开发者的兴趣与其他开发者截然不同，而且 C++ 社区实际上是由众多小型、专业化的开发者群体组成的。这种现象在其他编程语言社区中并不常见。</p>
+<ul>
     <li>谈论 Java 时，讨论往往集中在 Spring 框架和 REST API 或 Android 工具包</li>  <li>C# 主要围绕微软的技术栈展开，高度标准化</li>  <li>JavaScript 几乎总是离不开 React 或富客户端网页开发
-</ul></li></p>
-<p>然而,当你将一百位来自不同背景的 C++ 开发者聚集在一个房间里,你会发现他们之间的巨大差异。这些差异反映了他们在各自领域中的独特需求和挑战:</p>
-<p><ul>
+</ul></li>
+<p class="zh">然而,当你将一百位来自不同背景的 C++ 开发者聚集在一个房间里,你会发现他们之间的巨大差异。这些差异反映了他们在各自领域中的独特需求和挑战:</p>
+<ul>
     <li>嵌入式 C++ 开发者 关注的是对所有资源的严格控制。对于销量以百万计的设备而言，哪怕增加 1MB 的内存都会迅速推高成本。</li>  <li>高频交易领域的开发者 对避免 CPU 缓存未命中有着深刻的理解，并且知道如何通过优化自动化交易算法来“节省”几皮秒（picosecond）的时间 —— 因为最微小的时间单位可能意味着数百万欧元的差距。</li>  <li>工程软件开发者 相对宽松一些，但仍需确保复杂渲染模型中更改的正确性。</li>  <li>铁路、汽车或工厂自动化系统的开发者 则主要关注系统的弹性和鲁棒性。
-</ul></li></p>
-<p>虽然这幅图景远非完整，但它已经足以展示 C++ 开发者之间的巨大多样性，这是其他任何语言的开发者群体所无法比拟的。我们甚至可以说，C++ 是目前仍是广泛使用的一种通用编程语言。其他主流语言大多仅用于特定类型的程序：Java 用于企业后端服务和 Android 开发，C# 用于 Web 和 Windows 应用及服务，JavaScript 用于富客户端网页和无服务器后端，Python 用于脚本、数据科学和 DevOps。而 C++ 却广泛应用于嵌入式软件、工厂系统、金融交易、仿真、工程工具、操作系统等多个领域。</p>
-<p>那句老话“形式追随功能”原本是用来描述人类建造的一切事物的设计理念，包括编程语言。这句话同样适用于 C++。项目和开发者类型的巨大多样性被融入到了语言之中，再加上 Bjarne Stroustrup 希望它尽可能强大的愿景，使得 C++ 成为了一个多功能的语言集合体。</p>
-<p>C++ 并不是一门单一的语言；每一位开发者都在使用 C++ 的一个子集，而这往往与其在同一组织工作的同事所使用的部分大相径庭。</p>
-<p>C++ 起源于面向对象编程兴起的时代，最初只是“带有对象的 C”。但与此同时，C++ 与 C 保持了向后兼容，所以仍然可以在 C++ 中编写结构化编程风格的代码。后来模板变得不可或缺，再后来 lambda 表达式也变得实用。虽然 C++ 一直以来都是多种编程范式的集合体，但在今天，这种特性更加明显。</p>
-<p>为了证明这一点，让我们来看看几种你可以在 C++ 中使用的编程范式，首先从函数式编程开始。</p>
+</ul></li>
+<p class="zh">虽然这幅图景远非完整，但它已经足以展示 C++ 开发者之间的巨大多样性，这是其他任何语言的开发者群体所无法比拟的。我们甚至可以说，C++ 是目前仍是广泛使用的一种通用编程语言。其他主流语言大多仅用于特定类型的程序：Java 用于企业后端服务和 Android 开发，C# 用于 Web 和 Windows 应用及服务，JavaScript 用于富客户端网页和无服务器后端，Python 用于脚本、数据科学和 DevOps。而 C++ 却广泛应用于嵌入式软件、工厂系统、金融交易、仿真、工程工具、操作系统等多个领域。</p>
+<p class="zh">那句老话“形式追随功能”原本是用来描述人类建造的一切事物的设计理念，包括编程语言。这句话同样适用于 C++。项目和开发者类型的巨大多样性被融入到了语言之中，再加上 Bjarne Stroustrup 希望它尽可能强大的愿景，使得 C++ 成为了一个多功能的语言集合体。</p>
+<p class="zh">C++ 并不是一门单一的语言；每一位开发者都在使用 C++ 的一个子集，而这往往与其在同一组织工作的同事所使用的部分大相径庭。</p>
+<p class="zh">C++ 起源于面向对象编程兴起的时代，最初只是“带有对象的 C”。但与此同时，C++ 与 C 保持了向后兼容，所以仍然可以在 C++ 中编写结构化编程风格的代码。后来模板变得不可或缺，再后来 lambda 表达式也变得实用。虽然 C++ 一直以来都是多种编程范式的集合体，但在今天，这种特性更加明显。</p>
+<p class="zh">为了证明这一点，让我们来看看几种你可以在 C++ 中使用的编程范式，首先从函数式编程开始。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="3.1..html" class="prev-link">« 上一章：3.1. 环境要求</a>
@@ -49,6 +49,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

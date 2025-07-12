@@ -24,11 +24,11 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.4. 自由的编译器</h1></section>
-  <p>当今三大主流 C++ 编译器中的两个 —— GCC 和 Clang —— 是以开源方式开发和维护的。从理论上讲，任何人都可以为这些编译器贡献代码，提出新特性，甚至修复问题。然而在实践中，真正推动其发展的，往往是少数具备专业知识、持续投入且通常受到大型企业支持的核心开发者。</p>
-<p>截至 2024 年，GCC、Clang 以及我们在上一节中提到的 Microsoft Visual C++（MSVC），是当前最符合 C++ 标准的编译器，三者之间难以简单地分出高下。尽管它们都致力于实现标准规范，但这并不意味着它们没有各自独特的扩展功能。事实上，许多开发者认为，合理使用这些扩展反而能提升代码的表现力与效率。</p>
-<p>以 GCC 的“计算 goto”功能为例（Clang 同样支持这一特性），它便是一个极具争议但又颇具实用价值的非标准扩展。我们曾在学校里学到：goto 是邪恶的，应该永远避免使用。如果你在学校没听过这句话，也请不要从本书中学到它 —— 因为这次，“它其实并不完全正确”。</p>
-<p>与其说 goto 是“邪恶”的，不如说它是一种强大而容易滥用的语言特性。那么，当我们谈到“计算 goto”时，我们是否可以说它是“经过计算的邪恶”呢？下面这段代码究竟属于“纯粹的邪恶”，还是“经过计算的邪恶”？让我们来看一个示例：</p>
-<p><pre><code class="language-cpp">int main() {
+  <p class="zh">当今三大主流 C++ 编译器中的两个 —— GCC 和 Clang —— 是以开源方式开发和维护的。从理论上讲，任何人都可以为这些编译器贡献代码，提出新特性，甚至修复问题。然而在实践中，真正推动其发展的，往往是少数具备专业知识、持续投入且通常受到大型企业支持的核心开发者。</p>
+<p class="zh">截至 2024 年，GCC、Clang 以及我们在上一节中提到的 Microsoft Visual C++（MSVC），是当前最符合 C++ 标准的编译器，三者之间难以简单地分出高下。尽管它们都致力于实现标准规范，但这并不意味着它们没有各自独特的扩展功能。事实上，许多开发者认为，合理使用这些扩展反而能提升代码的表现力与效率。</p>
+<p class="zh">以 GCC 的“计算 goto”功能为例（Clang 同样支持这一特性），它便是一个极具争议但又颇具实用价值的非标准扩展。我们曾在学校里学到：goto 是邪恶的，应该永远避免使用。如果你在学校没听过这句话，也请不要从本书中学到它 —— 因为这次，“它其实并不完全正确”。</p>
+<p class="zh">与其说 goto 是“邪恶”的，不如说它是一种强大而容易滥用的语言特性。那么，当我们谈到“计算 goto”时，我们是否可以说它是“经过计算的邪恶”呢？下面这段代码究竟属于“纯粹的邪恶”，还是“经过计算的邪恶”？让我们来看一个示例：</p>
+<pre class="line-numbers"><code class="language-cpp">int main() {
   std::vector&lt;void*&gt; labels = { &amp;&amp;start, &amp;&amp;state1, &amp;&amp;state2, &amp;&amp;end };
   int state = 0;
   goto *labels[state];
@@ -47,50 +47,50 @@
   end:
     std::cout &lt;&lt; &quot;In end state&quot; &lt;&lt; std::endl;
     return 0;
-}</code></pre></p>
-<p>第一行代码并没有问题。真正的挑战从那之后才开始。这个非常实用但非标准的功能 —— 计算 goto —— 允许通过指针跳转到特定的标签位置。这些标签地址可以在运行时动态选择，并用于实现高效的解释器、虚拟机或状态机等结构。标签指针通常通过一个指针数组初始化，而这些指针又指向各自标签的实际地址。</p>
-<p>由于它操作的是指针，因此我们甚至可以使用“令人望而生畏”的指针运算来对地址进行一些动态调整。这在某些底层性能敏感的场景中极具吸引力。</p>
-<p>然而，与任何强大的工具一样，它也可能带来风险。与标准 goto 不同的是，计算 goto 并不会考虑对象生命周期的管理。如果跳过了某个具有自动存储期的对象的构造点，或者跳出了它的作用域，那么该对象的析构函数将不会被调用。这可能导致资源泄漏、未定义行为，甚至是难以追踪的 bug。</p>
-<p>所以，请把它当作一种“受控的危险”：只有在你完全理解后果的情况下才应使用它。</p>
-<p>另一个来自 GCC 的有趣扩展（同样也被 Clang 支持，真是令人惊喜），也展示了一种对标准 C++ 语法的实用偏离。它使得以下这段代码能够在上述两个编译器上顺利编译：</p>
-<p><pre><code class="language-cpp">int y = ({ int x = 10; x + 5; });</code></pre></p>
-<p>很整洁，不是吗？这个特性被称为 “表达式中的语句和声明”，它带来了你能想象到的各种好处：内部声明的对象可以被很好地封装，如果使用得当，甚至可以让宏的使用变得更加安全。</p>
-<p>可惜的是，它并不是标准 C++ 的一部分。</p>
-<p>Clang 作为编译器世界中的“新秀”<span class="footnote">好吧，如果我们能称一个已有 15 年历史的编译器为“新”的话 —— 与 GCC 相比，它的诞生时间确实要晚很多，毕竟 GCC 早在 1987 年就已问世。但无论如何，Clang 仍然是一个相对年轻却技术精湛的参与者</span>，在支持这类创新特性方面走得更远。</p>
-<p>下面这段代码只能在 Clang 下成功编译，并且得益于其特有的编译器选项和新兴语言特性的支持：</p>
-<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+}</code></pre>
+<p class="zh">第一行代码并没有问题。真正的挑战从那之后才开始。这个非常实用但非标准的功能 —— 计算 goto —— 允许通过指针跳转到特定的标签位置。这些标签地址可以在运行时动态选择，并用于实现高效的解释器、虚拟机或状态机等结构。标签指针通常通过一个指针数组初始化，而这些指针又指向各自标签的实际地址。</p>
+<p class="zh">由于它操作的是指针，因此我们甚至可以使用“令人望而生畏”的指针运算来对地址进行一些动态调整。这在某些底层性能敏感的场景中极具吸引力。</p>
+<p class="zh">然而，与任何强大的工具一样，它也可能带来风险。与标准 goto 不同的是，计算 goto 并不会考虑对象生命周期的管理。如果跳过了某个具有自动存储期的对象的构造点，或者跳出了它的作用域，那么该对象的析构函数将不会被调用。这可能导致资源泄漏、未定义行为，甚至是难以追踪的 bug。</p>
+<p class="zh">所以，请把它当作一种“受控的危险”：只有在你完全理解后果的情况下才应使用它。</p>
+<p class="zh">另一个来自 GCC 的有趣扩展（同样也被 Clang 支持，真是令人惊喜），也展示了一种对标准 C++ 语法的实用偏离。它使得以下这段代码能够在上述两个编译器上顺利编译：</p>
+<pre class="line-numbers"><code class="language-cpp">int y = ({ int x = 10; x + 5; });</code></pre>
+<p class="zh">很整洁，不是吗？这个特性被称为 “表达式中的语句和声明”，它带来了你能想象到的各种好处：内部声明的对象可以被很好地封装，如果使用得当，甚至可以让宏的使用变得更加安全。</p>
+<p class="zh">可惜的是，它并不是标准 C++ 的一部分。</p>
+<p class="zh">Clang 作为编译器世界中的“新秀”<span class="footnote">好吧，如果我们能称一个已有 15 年历史的编译器为“新”的话 —— 与 GCC 相比，它的诞生时间确实要晚很多，毕竟 GCC 早在 1987 年就已问世。但无论如何，Clang 仍然是一个相对年轻却技术精湛的参与者</span>，在支持这类创新特性方面走得更远。</p>
+<p class="zh">下面这段代码只能在 Clang 下成功编译，并且得益于其特有的编译器选项和新兴语言特性的支持：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 int main() {
   int (^square)(int) = ^(int num) { return num * num; };
   int y = square(12);
   std::cout &lt;&lt; y &lt;&lt; std::endl;
-}</code></pre></p>
-<p>这一特性被称为 Clang 中的 Blocks。要正确使用它，你需要安装 BlocksRuntime<span class="footnote"><a href="https://github.com/mackyle/blocksruntime" target="_blank" rel="noopener noreferrer">https://github.com/mackyle/blocksruntime</a></span> 库，并在编译时为 Clang 指定一个特殊的标志：-fblocks。完成这些配置之后，你就可以成功编译前面的代码了。</p>
-<p>从行为上看，Blocks 与 C++11 引入的 lambda 表达式非常相似。考虑到 Blocks 是在 2008 年由 Clang 首先提出并实现的，我们可以说它是标准 C++ lambda 的“前身”或“灵感来源”。</p>
-<p>如果你对它们之间的关系感兴趣，下面是用标准 C++ 编写的等效 lambda 示例：</p>
-<p><pre><code class="language-cpp">auto square = [](int num) -&gt;int { return num * num; };</code></pre></p>
-<p>所以，如果你刚才看到类似 Blocks 的语法时感到有些困惑，那可能只是你对 C++ 新特性的记忆需要一次小小的“刷新”。</p>
-<p>顺便提一句，在任何情况下，下面这种写法都不是标准 C++：</p>
-<p><pre><code class="language-cpp">int array[n] = {0};</code></pre></p>
-<p>这是一个可变长度数组，是 C 语言中的一项功能。由于存在诸多安全和可移植性问题，C++ 标准并未将其纳入其中。</p>
-<p>尽管如此，GCC 编译器仍然接受上述写法，而 Clang 则会报错：</p>
-<p><pre><code class="language-shell">error: variable-sized object may not be initialized
-   5 | int array[n] = {0};</code></pre></p>
-<p>根据错误提示，修复方法其实很简单。可以将原始代码改写为更符合现代 C++ 风格的形式：</p>
-<p><pre><code class="language-cpp">auto generate(int n) -&gt; std::vector&lt;int&gt;{
+}</code></pre>
+<p class="zh">这一特性被称为 Clang 中的 Blocks。要正确使用它，你需要安装 BlocksRuntime<span class="footnote"><a href="https://github.com/mackyle/blocksruntime" target="_blank" rel="noopener noreferrer">https://github.com/mackyle/blocksruntime</a></span> 库，并在编译时为 Clang 指定一个特殊的标志：-fblocks。完成这些配置之后，你就可以成功编译前面的代码了。</p>
+<p class="zh">从行为上看，Blocks 与 C++11 引入的 lambda 表达式非常相似。考虑到 Blocks 是在 2008 年由 Clang 首先提出并实现的，我们可以说它是标准 C++ lambda 的“前身”或“灵感来源”。</p>
+<p class="zh">如果你对它们之间的关系感兴趣，下面是用标准 C++ 编写的等效 lambda 示例：</p>
+<pre class="line-numbers"><code class="language-cpp">auto square = [](int num) -&gt;int { return num * num; };</code></pre>
+<p class="zh">所以，如果你刚才看到类似 Blocks 的语法时感到有些困惑，那可能只是你对 C++ 新特性的记忆需要一次小小的“刷新”。</p>
+<p class="zh">顺便提一句，在任何情况下，下面这种写法都不是标准 C++：</p>
+<pre class="line-numbers"><code class="language-cpp">int array[n] = {0};</code></pre>
+<p class="zh">这是一个可变长度数组，是 C 语言中的一项功能。由于存在诸多安全和可移植性问题，C++ 标准并未将其纳入其中。</p>
+<p class="zh">尽管如此，GCC 编译器仍然接受上述写法，而 Clang 则会报错：</p>
+<pre><code class="language-shell">error: variable-sized object may not be initialized
+   5 | int array[n] = {0};</code></pre>
+<p class="zh">根据错误提示，修复方法其实很简单。可以将原始代码改写为更符合现代 C++ 风格的形式：</p>
+<pre class="line-numbers"><code class="language-cpp">auto generate(int n) -&gt; std::vector&lt;int&gt;{
   int array[n];
   for(int i=0; i&lt;n; i++) array[i] = i;
   return std::vector&lt;int&gt;{array, array + n};
-}</code></pre></p>
-<p>这样修改后，即使是 Clang（以及其他主流编译器，如 ICC）也能顺利通过编译，无论这段代码是否完全符合标准……或者说，更准确地说 —— 体现了标准之外的现实世界。</p>
-<p><h4 class="filename">2.4.1 敬属性</h4></p>
-<p>令人惊讶的是，GCC、Clang 和 Microsoft Visual C++ 在 C++ 语言的一个非常具体的扩展上达成了共识：我们需要一种机制，能够将元数据附加到某些语言结构（如类型、函数、变量等）之上。这些元数据随后可以被编译器或其他工具使用，用于生成优化代码、执行静态检查或提供额外功能。</p>
-<p>在现代 C++（即 C++11）引入标准化的双方括号语法 [[attribute]] 来指定属性之前，各主流编译器都各自实现了自己的方式来声明这些关键属性：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">这样修改后，即使是 Clang（以及其他主流编译器，如 ICC）也能顺利通过编译，无论这段代码是否完全符合标准……或者说，更准确地说 —— 体现了标准之外的现实世界。</p>
+<p class="zh"><h4 class="filename">2.4.1 敬属性</h4></p>
+<p class="zh">令人惊讶的是，GCC、Clang 和 Microsoft Visual C++ 在 C++ 语言的一个非常具体的扩展上达成了共识：我们需要一种机制，能够将元数据附加到某些语言结构（如类型、函数、变量等）之上。这些元数据随后可以被编译器或其他工具使用，用于生成优化代码、执行静态检查或提供额外功能。</p>
+<p class="zh">在现代 C++（即 C++11）引入标准化的双方括号语法 [[attribute]] 来指定属性之前，各主流编译器都各自实现了自己的方式来声明这些关键属性：</p>
+<ul>
     <li>GCC 和 Clang 使用 __attribute__((attribute-name))</li>  <li>Microsoft Visual C++ 使用 __declspec(attribute-name)
-</ul></li></p>
-<p>随着 C++11 的发布，标准化委员会认识到这些属性的重要性和实用性，并将其中最常用的一些提升为语言标准的一部分，例如 [[noreturn]]。后续的标准更新也不断引入新的属性，如 [[fallthrough]]、[[nodiscard]] 等。</p>
-<p>然而，许多其他有用的属性仍然局限于它们最初诞生的编译器。下面的代码段展示了一些典型的非标准但广泛使用的属性示例：</p>
-<p><pre><code class="language-cpp">void old_function() __attribute__((deprecated));
+</ul></li>
+<p class="zh">随着 C++11 的发布，标准化委员会认识到这些属性的重要性和实用性，并将其中最常用的一些提升为语言标准的一部分，例如 [[noreturn]]。后续的标准更新也不断引入新的属性，如 [[fallthrough]]、[[nodiscard]] 等。</p>
+<p class="zh">然而，许多其他有用的属性仍然局限于它们最初诞生的编译器。下面的代码段展示了一些典型的非标准但广泛使用的属性示例：</p>
+<pre class="line-numbers"><code class="language-cpp">void old_function() __attribute__((deprecated));
 void fatal_error() __attribute__((noreturn));
 int pure_function(int x) __attribute__((pure));
 int x __attribute__((aligned(16)));
@@ -103,13 +103,13 @@ void fatal_error() {
 }
 int pure_function(int x) {
   return x * x;
-}</code></pre></p>
-<p>上述代码中展示了 GCC 和 Clang 支持的一些常见属性及其用途:</p>
-<p><ul>
+}</code></pre>
+<p class="zh">上述代码中展示了 GCC 和 Clang 支持的一些常见属性及其用途:</p>
+<ul>
     <li>__attribute__((deprecated))  标记old_function为已弃用，提醒开发者避免使用。</li>  <li>__attribute__((noreturn)) 告知编译器 fatal_error 函数不会返回，有助于优化和警告抑制。</li>  <li>__attribute__((pure))  表示 pure_function 是一个纯函数，除了返回值外没有副作用，可用于进一步优化。</li>  <li>__attribute__((aligned(16))) 将变量 x 对齐到 16 字节边界，常用于性能敏感或硬件交互场景。
-</ul></li></p>
-<p>这些编译器 <span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html</a></span> 提供的属性列表非常庞大 <span class="footnote"><a href="https://clang.llvm.org/docs/AttributeReference.html" target="_blank" rel="noopener noreferrer">https://clang.llvm.org/docs/AttributeReference.html</a></span>。如果正在某个特定平台上进行开发，并且主要关注点不是代码的可移植性、平台独立性或严格的标准合规性，强烈建议对相关文档进行查阅。</p>
-<p>通过正确使用编译器提供的扩展属性，可以充分利用其强大的功能，在性能、安全性和代码表达力方面获得显著提升。</p>
+</ul></li>
+<p class="zh">这些编译器 <span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gcc/Function-Attributes.html</a></span> 提供的属性列表非常庞大 <span class="footnote"><a href="https://clang.llvm.org/docs/AttributeReference.html" target="_blank" rel="noopener noreferrer">https://clang.llvm.org/docs/AttributeReference.html</a></span>。如果正在某个特定平台上进行开发，并且主要关注点不是代码的可移植性、平台独立性或严格的标准合规性，强烈建议对相关文档进行查阅。</p>
+<p class="zh">通过正确使用编译器提供的扩展属性，可以充分利用其强大的功能，在性能、安全性和代码表达力方面获得显著提升。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.3..html" class="prev-link">« 上一章：2.3. 微软的 C++</a>
@@ -122,6 +122,18 @@ int pure_function(int x) {
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

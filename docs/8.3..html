@@ -24,44 +24,44 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">8.3. 单指令霸权</h1></section>
-  <p>在本章前文中，我们已不幸耗尽了从各种文化典故中借来的华丽开场白 —— 无论是关于技术面试、职业抉择、人生选择，还是该选红色药丸还是蓝色药丸的哲学探讨。因此，现在聚焦于求职者在技术面试中可能遇到的技术性问题(短短这段引言中，&quot;技术&quot;一词已出现四次)。</p>
-<p>数年前，笔者本人就曾被要求编写一个计算32位整数中&quot;1&quot;比特位(即置位比特)数量的代码片段。下面让我们快速实现这个功能：</p>
-<p><pre><code class="language-cpp">int countOneBits(uint32_t n) {
+  <p class="zh">在本章前文中，我们已不幸耗尽了从各种文化典故中借来的华丽开场白 —— 无论是关于技术面试、职业抉择、人生选择，还是该选红色药丸还是蓝色药丸的哲学探讨。因此，现在聚焦于求职者在技术面试中可能遇到的技术性问题(短短这段引言中，&quot;技术&quot;一词已出现四次)。</p>
+<p class="zh">数年前，笔者本人就曾被要求编写一个计算32位整数中&quot;1&quot;比特位(即置位比特)数量的代码片段。下面让我们快速实现这个功能：</p>
+<pre class="line-numbers"><code class="language-cpp">int countOneBits(uint32_t n) {
   int count = 0;
   while (n) {
     count += n &amp; 1;
     n &gt;&gt;= 1;
   }
   return count;
-}</code></pre></p>
-<p>其实现原理如下：首先初始化计数器为0。接着进入循环处理每个比特位 —— 只要整数n不为零，就将最低有效位(通过n&amp;1获取)累加到计数器，然后将n右移一位(丢弃已处理的最低位)。当所有比特处理完毕(n变为0时)，返回统计到的置位比特总数。整个过程虽不复杂，却需要扎实的位运算功底。</p>
-<p>这种比特计数算法在计算领域有着奇特的重要性：从错误检测校正、数据压缩、密码学、算法优化，到数字信号处理、硬件设计和性能评估均有应用。难怪它最终以std::popcount的形式纳入C++20标准模板库(STL)。</p>
-<p>更有趣的是，该操作不仅存在于STL中，甚至被固化到处理器指令层面，即著名的POPCNT指令 —— 其&quot;著名&quot;程度在2024年达到顶峰，微软利用该指令阻止老旧设备安装Windows 11而引发争议<span class="footnote"><a href="https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/" target="_blank" rel="noopener noreferrer">https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/</a></span>。</p>
-<p>对应聘者而言，也可以用以下简洁代码替代之前的复杂实现来征服面试官：</p>
-<p><pre><code class="language-cpp">int countOneBits(uint32_t n) {
+}</code></pre>
+<p class="zh">其实现原理如下：首先初始化计数器为0。接着进入循环处理每个比特位 —— 只要整数n不为零，就将最低有效位(通过n&amp;1获取)累加到计数器，然后将n右移一位(丢弃已处理的最低位)。当所有比特处理完毕(n变为0时)，返回统计到的置位比特总数。整个过程虽不复杂，却需要扎实的位运算功底。</p>
+<p class="zh">这种比特计数算法在计算领域有着奇特的重要性：从错误检测校正、数据压缩、密码学、算法优化，到数字信号处理、硬件设计和性能评估均有应用。难怪它最终以std::popcount的形式纳入C++20标准模板库(STL)。</p>
+<p class="zh">更有趣的是，该操作不仅存在于STL中，甚至被固化到处理器指令层面，即著名的POPCNT指令 —— 其&quot;著名&quot;程度在2024年达到顶峰，微软利用该指令阻止老旧设备安装Windows 11而引发争议<span class="footnote"><a href="https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/" target="_blank" rel="noopener noreferrer">https://www.theregister.com/2024/04/23/windows_11_cpu_requirements/</a></span>。</p>
+<p class="zh">对应聘者而言，也可以用以下简洁代码替代之前的复杂实现来征服面试官：</p>
+<pre class="line-numbers"><code class="language-cpp">int countOneBits(uint32_t n) {
   return std::popcount(n);
-}</code></pre></p>
-<p>值得注意的是，在包含&lt;bit&gt;头文件后，我们将上述代码提交至gcc.godbolt.org的编译器进行测试，却得到了一组耐人寻味的结果。无论采用何种优化级别，GCC生成的代码总会演变成以下形态：</p>
-<p><pre><code class="language-shell">countOneBits(unsigned int):
+}</code></pre>
+<p class="zh">值得注意的是，在包含&lt;bit&gt;头文件后，我们将上述代码提交至gcc.godbolt.org的编译器进行测试，却得到了一组耐人寻味的结果。无论采用何种优化级别，GCC生成的代码总会演变成以下形态：</p>
+<pre><code class="language-shell">countOneBits(unsigned int):
   sub rsp, 8
   mov edi, edi
   call __popcountdi2
   add rsp, 8
-  ret</code></pre></p>
-<p>代码在编译过程中，悄然隐没于GCC提供的库函数深处 —— 这个名为<code>__popcountdi2</code><span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html</a></span>的神秘调用就此登场。这个内部函数用于实现 64 位整数的“位计数”操作（即统计二进制中 1 的个数），但其背后隐藏着能否真正利用现代 CPU 硬件特性的关键。若要让 GCC 充分发挥当前处理器的硬件潜能，我们必须祭出一些鲜为人知的编译选项。例如通用架构优化标志 -march，或是针对此场景特化的 -mpopcnt 指令开关。</p>
-<p>根据官方文档说明<span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html</a></span>，该编译选项将自动选择适配的处理器指令集以启用特定CPU的扩展功能。这些选项将指示编译器自动选择最适合目标处理器的指令集，并启用相关的扩展功能。考虑到 POPCNT 指令最早出现在 Nehalem 架构的初代 Core i5/i7 处理器中，只需向 GCC 明确指定：-march=nehalem。</p>
-<p>编译器现在生成的指令变得干净利落、高效简洁，直接使用了硬件支持的 popcnt 指令，而非回退到软件模拟或低效循环计算。</p>
-<p><pre><code class="language-shell">countOneBits(unsigned int):
+  ret</code></pre>
+<p class="zh">代码在编译过程中，悄然隐没于GCC提供的库函数深处 —— 这个名为<code>__popcountdi2</code><span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gccint/Integer-library-routines.html</a></span>的神秘调用就此登场。这个内部函数用于实现 64 位整数的“位计数”操作（即统计二进制中 1 的个数），但其背后隐藏着能否真正利用现代 CPU 硬件特性的关键。若要让 GCC 充分发挥当前处理器的硬件潜能，我们必须祭出一些鲜为人知的编译选项。例如通用架构优化标志 -march，或是针对此场景特化的 -mpopcnt 指令开关。</p>
+<p class="zh">根据官方文档说明<span class="footnote"><a href="https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html" target="_blank" rel="noopener noreferrer">https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html</a></span>，该编译选项将自动选择适配的处理器指令集以启用特定CPU的扩展功能。这些选项将指示编译器自动选择最适合目标处理器的指令集，并启用相关的扩展功能。考虑到 POPCNT 指令最早出现在 Nehalem 架构的初代 Core i5/i7 处理器中，只需向 GCC 明确指定：-march=nehalem。</p>
+<p class="zh">编译器现在生成的指令变得干净利落、高效简洁，直接使用了硬件支持的 popcnt 指令，而非回退到软件模拟或低效循环计算。</p>
+<pre><code class="language-shell">countOneBits(unsigned int):
   popcnt eax, edi
-  ret</code></pre></p>
-<p>有趣的是，若仅使用-mpopcnt编译选项，编译器会额外生成xor eax, eax指令(即将EAX寄存器清零) —— 这或许暗示着选择Nehalem架构时触发了某些处理器特定的优化机制：</p>
-<p><pre><code class="language-shell">countOneBits(unsigned int):
+  ret</code></pre>
+<p class="zh">有趣的是，若仅使用-mpopcnt编译选项，编译器会额外生成xor eax, eax指令(即将EAX寄存器清零) —— 这或许暗示着选择Nehalem架构时触发了某些处理器特定的优化机制：</p>
+<pre><code class="language-shell">countOneBits(unsigned int):
   xor eax, eax
   popcnt eax, edi
-  ret</code></pre></p>
-<p>在GCC上我们已无法进一步优化，该功能确实已至底层极限。于是我们将目光转向下一个测试对象——Clang。</p>
-<p>未启用优化时，Clang同样会调用其标准库中的通用std::popcount函数。但一旦开启优化，各层级优化选项均会产生如下精炼输出：</p>
-<p><pre><code class="language-shell">countOneBits(unsigned int):
+  ret</code></pre>
+<p class="zh">在GCC上我们已无法进一步优化，该功能确实已至底层极限。于是我们将目光转向下一个测试对象——Clang。</p>
+<p class="zh">未启用优化时，Clang同样会调用其标准库中的通用std::popcount函数。但一旦开启优化，各层级优化选项均会产生如下精炼输出：</p>
+<pre><code class="language-shell">countOneBits(unsigned int):
   mov eax, edi
   shr eax
   and eax, 1431655765
@@ -77,10 +77,10 @@
   and eax, 252645135
   imul eax, eax, 16843009
   shr eax, 24
-  ret</code></pre></p>
-<p>看似不可思议，但这段代码其实有非常合理的解释——斯坦福大学Sean Eron Anderson的位操作魔法网站<span class="footnote"><a href="https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel" target="_blank" rel="noopener noreferrer">https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel</a></span>中就详细记载了相关的实现原理。该网站堪称位运算领域的“圣典”，其中展示了如何通过一系列巧妙的位掩码与算术运算，高效统计一个整数中比特 1 的数量。抛开这个额外发现不谈，在处理器架构适配和指令集扩展方面，Clang 的表现与 GCC 如出一辙：它也能根据目标架构自动选择是否使用 POPCNT 指令，或回退到高效的位操作实现。</p>
-<p>作为三大编译器最后一位测试对象，微软那个(我们都知道的)小巧软萌的C++编译器表现与Clang惊人相似：当指定不支持POPCNT指令的架构时，它会生成类似Clang低级位操作的黑魔法代码；而若架构支持POPCNT指令，它就会自动适配并正确调用该指令(编译参数：/std:c++latest /arch:SSE4.2 /O1)。</p>
-<p>干得漂亮，软萌的小家伙。</p>
+  ret</code></pre>
+<p class="zh">看似不可思议，但这段代码其实有非常合理的解释——斯坦福大学Sean Eron Anderson的位操作魔法网站<span class="footnote"><a href="https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel" target="_blank" rel="noopener noreferrer">https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel</a></span>中就详细记载了相关的实现原理。该网站堪称位运算领域的“圣典”，其中展示了如何通过一系列巧妙的位掩码与算术运算，高效统计一个整数中比特 1 的数量。抛开这个额外发现不谈，在处理器架构适配和指令集扩展方面，Clang 的表现与 GCC 如出一辙：它也能根据目标架构自动选择是否使用 POPCNT 指令，或回退到高效的位操作实现。</p>
+<p class="zh">作为三大编译器最后一位测试对象，微软那个(我们都知道的)小巧软萌的C++编译器表现与Clang惊人相似：当指定不支持POPCNT指令的架构时，它会生成类似Clang低级位操作的黑魔法代码；而若架构支持POPCNT指令，它就会自动适配并正确调用该指令(编译参数：/std:c++latest /arch:SSE4.2 /O1)。</p>
+<p class="zh">干得漂亮，软萌的小家伙。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="8.2..html" class="prev-link">« 上一章：8.2. 数字宇宙之和</a>
@@ -93,6 +93,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

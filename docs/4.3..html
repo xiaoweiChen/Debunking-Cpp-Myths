@@ -24,32 +24,32 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">4.3. 打开天窗</h1></section>
-  <p>在我们深入探讨 Windows 平台下应用程序的执行流程、以及从进程创建到 main() 函数入口这一过程所需经历的各个阶段之前，有必要先说明一个关键点：从 C++ 标准的角度来看，Windows 与 Linux 或其他任何操作系统之间不应存在本质上的差异。如果你仅使用标准 C++ 所提供的功能（包括构造函数、析构函数、初始化顺序等），那么这些行为在 Windows 上的表现应与我们在前文中所讨论的内容完全一致。因此，我们不会在此重复介绍相同的概念。</p>
-<p>然而，我们将重点讲解的是：为什么 Windows 下的应用程序会以当前方式启动？有哪些机制直接影响这一行为？ 这将是我们类比 Linux 系统所进行的又一次深入探索。为此，我们将使用 Microsoft Visual Studio 编译器 来演示相关行为，因为对于 Windows 平台上的 GCC 和 Clang 而言，它们的行为是相同的，无需单独赘述。</p>
-<p>由于 Windows 是一个封闭系统，要理解其进程创建机制，我们必须依赖为数不多但极具价值的参考资料。其中一本我强烈推荐的书籍是：</p>
-<p>《Windows Internals, 第7版(第1部分)》<span class="footnote"><a href="https://learn.microsoft.com/en-us/sysinternals/resources/windows-internals" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/sysinternals/resources/windows-internals</a></span>(Windows 内部机制)，作者为 Pavel Yosifovich、Alex Ionescu、Mark E. Russinovich 和 David A. Solomon。</p>
-<p>本书为我们提供了关于 Windows 内部机制的权威视角。结合来自互联网世界的各类零散资料，我们尝试为你提供一个轻松入门、逻辑清晰的 Windows 进程创建机制概述。</p>
-<p>当然，在阅读本节内容时，建议你已熟悉本章前面有关 Linux 启动流程的讨论。许多概念将在两个平台间形成对照，有助于加深理解。</p>
-<p>此外，还有一个值得指出的现象：在 Windows 中，安全机制、线程管理和用户权限控制的实现要比 Linux 更加精细复杂。这种设计哲学也体现在系统对进程生命周期的管理方式上。如果你希望深入了解这方面的知识，我们推荐 James Forshaw 的著作：《Windows Security Internals: A Deep Dive into Windows Authentication, Authorization, and Auditing》(Windows 安全内部机制：深入剖析 Windows 身份验证、授权与审计)。这本书深入剖析了 Windows 的身份验证、授权及审计机制，是进一步研究 Windows 安全架构的绝佳资源。</p>
-<p>让我们回到进程创建这一主题。在 Windows 系统中，进程的创建是一个由多个操作系统组件协作完成的多阶段过程。这些核心组件包括： Windows 的客户端库(kernel32.dll)、Windows 执行体(Windows Executive)以及 Windows 子系统进程(csrss.exe)。由于我们无法访问这些 Windows 组件的源代码，因此我们对这一机制的介绍只能停留在较高层次的概述层面。</p>
-<p>在 Windows 中，进程的创建通常通过 CreateProcess 函数族来实现。这个函数家族拥有多样化的成员，例如用于以不同用户身份运行进程、使用特定安全权限启动进程等的变种。尽管它们的调用方式各不相同，但最终都会在经过若干次内部调用迭代后，汇聚到 kernel32.dll 中的 CreateProcessInternalW 函数。该函数首先负责将传入的参数和标志转换为系统内部使用的表示形式。遗憾的是，这些内部结构的具体定义对我们来说是不可见的，这也限制了我们对其工作机制的进一步探索。</p>
-<p>新进程的优先级类由 CreationFlags 参数决定。在 Windows 中，共有六种优先级类：Idle(空闲)、Below Normal(低于正常)、Normal(正常)、Above Normal(高于正常)、High(高)、Real-time(实时)。如果没有指定优先级类，默认使用 Normal。如果请求了 Real-time 但调用者没有相应的特权，则优先级会降级为 High。</p>
-<p>接下来，如果新进程需要被调试，kernel32.dll 会负责初始化与本地调试接口的连接，并根据调用参数设置默认的严重错误处理模式（如已指定）。用户提供的属性列表将被转换为其内部原生格式，同时系统也会添加一些必要的内部属性。此外，用于新进程及其初始线程的安全属性也将被解析并转换为系统内部使用的表示形式。这些安全上下文信息确保了进程和线程能够在正确的权限边界内运行。</p>
-<p>完成这些准备工作后，系统进入下一个关键阶段：加载目标可执行镜像文件。这一任务由 NtCreateUserProcess 系统调用完成。在此阶段，函数首先会对传入的所有参数进行验证，以确保其未被篡改或损坏。随后，系统尝试查找并打开合适的 Windows 可执行镜像，并创建一个“节对象”（section object），该对象将在后续步骤中被映射到新进程的虚拟地址空间中。</p>
-<p>如果当前镜像不是一个有效的 Windows 可执行文件（PE 格式），系统会尝试寻找一个兼容的支持程序来运行它。例如，若目标程序是一个 MS-DOS 或 Win16 应用程序，Windows 将通过 ntvdm.exe（仅适用于 32 位系统）来模拟运行该程序。这种机制确保了旧版 DOS 或 Win16 应用程序可以在现代 Windows 环境中继续运行。</p>
-<p>不过需要注意的是，这一功能已在现代 Windows 版本中逐步被淘汰。对于 64 位系统而言，ntvdm.exe 已不再支持，因此你必须在 32 位版本的 Windows 上手动启用该组件，才能使用对旧程序的兼容支持。</p>
-<p>当目标可执行镜像被成功打开，系统便进入下一个关键阶段：创建 Windows 执行体进程对象（Executive Process Object）。这一步包括初始化进程的虚拟地址空间以及一系列核心数据结构。执行体进程对象扮演着“容器”的角色，承载着该进程所需的所有资源，包括内存区域、句柄表、线程集合以及其他关键内核对象。</p>
-<p>在进程对象成功创建之后，系统紧接着会创建初始线程（Initial Thread）。这一阶段涉及设置线程的用户栈、寄存器上下文以及对应的执行体线程对象。该线程是整个进程执行流程的核心，它负责从程序入口点开始执行，并驱动整个进程的运行。</p>
-<p>初始线程创建完成后，Windows 会执行与子系统相关的初始化任务。这些操作对于将新进程正确集成到 Windows 子系统至关重要。该子系统为进程提供了运行所需的完整环境，包括窗口管理、控制台支持、图形设备接口（GDI）等资源。</p>
-<p>除非调用者指定了 CREATE_SUSPENDED 标志（在这种情况下，线程将保持挂起状态，直到被显式恢复），否则系统会立即启动初始线程。</p>
-<p>最后，在新进程及其线程的上下文中，系统会完成地址空间的最终初始化工作。这包括加载所有必需的动态链接库（DLL），并执行它们的入口点函数（如 DllMain()）。</p>
-<p>一旦这些初始化步骤全部完成，应用程序就正式进入其自身的主控流程，标志着整个进程创建过程的圆满完成。</p>
-<p><h4 class="filename">4.3.1 是选择 PE，还是放弃 PE？</h4></p>
-<p>“是选择 PE，还是放弃 PE？”<span class="footnote">译者注：这是对莎士比亚名句 “To be or not to be” 的一种戏仿，用在技术语境中时，通常是指 是否使用 PE(Portable Executable，可移植可执行文件)格式的问题。</span>正如所有具有特定含义的文件一样，生成基于 Windows 的可执行文件的每一个字节都承载着特殊的意义。</p>
-<p>Windows 可移植可执行文件（Portable Executable，简称 PE）格式是一种用于可执行文件、目标代码、动态链接库（DLL）以及其他在 Windows 操作系统中使用的系统文件的标准文件格式。PE 格式不仅适用于 Windows 系统，还被广泛应用于 DOS（及 FreeDOS）、以及 ReactOS 中，涵盖了从传统的可执行文件（EXE）到动态链接库（DLL）等多种类型。</p>
-<p>PE 格式设计得非常灵活且可扩展，能够支持现代操作系统的各种特性。如果你对这一领域感兴趣，互联网上提供了大量优秀的学习资源，我们鼓励你深入研究这一主题。由于篇幅限制，本书无法详尽地涵盖所有相关的细节。</p>
-<p>接下来，我们将提供一个简化版的 PE 文件结构及其组件说明，重点关注与本章讨论内容紧密相关的部分：</p>
-<p><ul>
+  <p class="zh">在我们深入探讨 Windows 平台下应用程序的执行流程、以及从进程创建到 main() 函数入口这一过程所需经历的各个阶段之前，有必要先说明一个关键点：从 C++ 标准的角度来看，Windows 与 Linux 或其他任何操作系统之间不应存在本质上的差异。如果你仅使用标准 C++ 所提供的功能（包括构造函数、析构函数、初始化顺序等），那么这些行为在 Windows 上的表现应与我们在前文中所讨论的内容完全一致。因此，我们不会在此重复介绍相同的概念。</p>
+<p class="zh">然而，我们将重点讲解的是：为什么 Windows 下的应用程序会以当前方式启动？有哪些机制直接影响这一行为？ 这将是我们类比 Linux 系统所进行的又一次深入探索。为此，我们将使用 Microsoft Visual Studio 编译器 来演示相关行为，因为对于 Windows 平台上的 GCC 和 Clang 而言，它们的行为是相同的，无需单独赘述。</p>
+<p class="zh">由于 Windows 是一个封闭系统，要理解其进程创建机制，我们必须依赖为数不多但极具价值的参考资料。其中一本我强烈推荐的书籍是：</p>
+<p class="zh">《Windows Internals, 第7版(第1部分)》<span class="footnote"><a href="https://learn.microsoft.com/en-us/sysinternals/resources/windows-internals" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/sysinternals/resources/windows-internals</a></span>(Windows 内部机制)，作者为 Pavel Yosifovich、Alex Ionescu、Mark E. Russinovich 和 David A. Solomon。</p>
+<p class="zh">本书为我们提供了关于 Windows 内部机制的权威视角。结合来自互联网世界的各类零散资料，我们尝试为你提供一个轻松入门、逻辑清晰的 Windows 进程创建机制概述。</p>
+<p class="zh">当然，在阅读本节内容时，建议你已熟悉本章前面有关 Linux 启动流程的讨论。许多概念将在两个平台间形成对照，有助于加深理解。</p>
+<p class="zh">此外，还有一个值得指出的现象：在 Windows 中，安全机制、线程管理和用户权限控制的实现要比 Linux 更加精细复杂。这种设计哲学也体现在系统对进程生命周期的管理方式上。如果你希望深入了解这方面的知识，我们推荐 James Forshaw 的著作：《Windows Security Internals: A Deep Dive into Windows Authentication, Authorization, and Auditing》(Windows 安全内部机制：深入剖析 Windows 身份验证、授权与审计)。这本书深入剖析了 Windows 的身份验证、授权及审计机制，是进一步研究 Windows 安全架构的绝佳资源。</p>
+<p class="zh">让我们回到进程创建这一主题。在 Windows 系统中，进程的创建是一个由多个操作系统组件协作完成的多阶段过程。这些核心组件包括： Windows 的客户端库(kernel32.dll)、Windows 执行体(Windows Executive)以及 Windows 子系统进程(csrss.exe)。由于我们无法访问这些 Windows 组件的源代码，因此我们对这一机制的介绍只能停留在较高层次的概述层面。</p>
+<p class="zh">在 Windows 中，进程的创建通常通过 CreateProcess 函数族来实现。这个函数家族拥有多样化的成员，例如用于以不同用户身份运行进程、使用特定安全权限启动进程等的变种。尽管它们的调用方式各不相同，但最终都会在经过若干次内部调用迭代后，汇聚到 kernel32.dll 中的 CreateProcessInternalW 函数。该函数首先负责将传入的参数和标志转换为系统内部使用的表示形式。遗憾的是，这些内部结构的具体定义对我们来说是不可见的，这也限制了我们对其工作机制的进一步探索。</p>
+<p class="zh">新进程的优先级类由 CreationFlags 参数决定。在 Windows 中，共有六种优先级类：Idle(空闲)、Below Normal(低于正常)、Normal(正常)、Above Normal(高于正常)、High(高)、Real-time(实时)。如果没有指定优先级类，默认使用 Normal。如果请求了 Real-time 但调用者没有相应的特权，则优先级会降级为 High。</p>
+<p class="zh">接下来，如果新进程需要被调试，kernel32.dll 会负责初始化与本地调试接口的连接，并根据调用参数设置默认的严重错误处理模式（如已指定）。用户提供的属性列表将被转换为其内部原生格式，同时系统也会添加一些必要的内部属性。此外，用于新进程及其初始线程的安全属性也将被解析并转换为系统内部使用的表示形式。这些安全上下文信息确保了进程和线程能够在正确的权限边界内运行。</p>
+<p class="zh">完成这些准备工作后，系统进入下一个关键阶段：加载目标可执行镜像文件。这一任务由 NtCreateUserProcess 系统调用完成。在此阶段，函数首先会对传入的所有参数进行验证，以确保其未被篡改或损坏。随后，系统尝试查找并打开合适的 Windows 可执行镜像，并创建一个“节对象”（section object），该对象将在后续步骤中被映射到新进程的虚拟地址空间中。</p>
+<p class="zh">如果当前镜像不是一个有效的 Windows 可执行文件（PE 格式），系统会尝试寻找一个兼容的支持程序来运行它。例如，若目标程序是一个 MS-DOS 或 Win16 应用程序，Windows 将通过 ntvdm.exe（仅适用于 32 位系统）来模拟运行该程序。这种机制确保了旧版 DOS 或 Win16 应用程序可以在现代 Windows 环境中继续运行。</p>
+<p class="zh">不过需要注意的是，这一功能已在现代 Windows 版本中逐步被淘汰。对于 64 位系统而言，ntvdm.exe 已不再支持，因此你必须在 32 位版本的 Windows 上手动启用该组件，才能使用对旧程序的兼容支持。</p>
+<p class="zh">当目标可执行镜像被成功打开，系统便进入下一个关键阶段：创建 Windows 执行体进程对象（Executive Process Object）。这一步包括初始化进程的虚拟地址空间以及一系列核心数据结构。执行体进程对象扮演着“容器”的角色，承载着该进程所需的所有资源，包括内存区域、句柄表、线程集合以及其他关键内核对象。</p>
+<p class="zh">在进程对象成功创建之后，系统紧接着会创建初始线程（Initial Thread）。这一阶段涉及设置线程的用户栈、寄存器上下文以及对应的执行体线程对象。该线程是整个进程执行流程的核心，它负责从程序入口点开始执行，并驱动整个进程的运行。</p>
+<p class="zh">初始线程创建完成后，Windows 会执行与子系统相关的初始化任务。这些操作对于将新进程正确集成到 Windows 子系统至关重要。该子系统为进程提供了运行所需的完整环境，包括窗口管理、控制台支持、图形设备接口（GDI）等资源。</p>
+<p class="zh">除非调用者指定了 CREATE_SUSPENDED 标志（在这种情况下，线程将保持挂起状态，直到被显式恢复），否则系统会立即启动初始线程。</p>
+<p class="zh">最后，在新进程及其线程的上下文中，系统会完成地址空间的最终初始化工作。这包括加载所有必需的动态链接库（DLL），并执行它们的入口点函数（如 DllMain()）。</p>
+<p class="zh">一旦这些初始化步骤全部完成，应用程序就正式进入其自身的主控流程，标志着整个进程创建过程的圆满完成。</p>
+<p class="zh"><h4 class="filename">4.3.1 是选择 PE，还是放弃 PE？</h4></p>
+<p class="zh">“是选择 PE，还是放弃 PE？”<span class="footnote">译者注：这是对莎士比亚名句 “To be or not to be” 的一种戏仿，用在技术语境中时，通常是指 是否使用 PE(Portable Executable，可移植可执行文件)格式的问题。</span>正如所有具有特定含义的文件一样，生成基于 Windows 的可执行文件的每一个字节都承载着特殊的意义。</p>
+<p class="zh">Windows 可移植可执行文件（Portable Executable，简称 PE）格式是一种用于可执行文件、目标代码、动态链接库（DLL）以及其他在 Windows 操作系统中使用的系统文件的标准文件格式。PE 格式不仅适用于 Windows 系统，还被广泛应用于 DOS（及 FreeDOS）、以及 ReactOS 中，涵盖了从传统的可执行文件（EXE）到动态链接库（DLL）等多种类型。</p>
+<p class="zh">PE 格式设计得非常灵活且可扩展，能够支持现代操作系统的各种特性。如果你对这一领域感兴趣，互联网上提供了大量优秀的学习资源，我们鼓励你深入研究这一主题。由于篇幅限制，本书无法详尽地涵盖所有相关的细节。</p>
+<p class="zh">接下来，我们将提供一个简化版的 PE 文件结构及其组件说明，重点关注与本章讨论内容紧密相关的部分：</p>
+<ul>
     <li>DOS 文件头(IMAGE_DOS_HEADER)：
   文件以 MZ 开头，这是 Mark Zbikowski 的姓名首字母缩写，他是供职于微软期间创建该格式的工程师。接下来是 DOS 文件头，它是 MS-DOS 时代的遗留结构。该文件头中包含一个小型的 DOS 桩程序(stub program)，如果该可执行文件在 DOS 环境下运行，它会显示一条消息：“This program cannot be run in DOS mode”。DOS 文件头的最后部分包含一个指向 PE 文件头位置的指针。</li>  <li>PE 文件头(IMAGE_NT_HEADERS)：
   <ul></li>  <li>签名(Signature)：用于标识该文件为 PE 文件。签名是一个 4 字节的值，即 <code>PE\0\0</code>。</li>  <li>文件头(IMAGE_FILE_HEADER)：包含有关文件的基本信息，例如目标机器类型、节区数量、文件创建的时间和日期，以及可选文件头的大小。</li>  <li>可选文件头(IMAGE_OPTIONAL_HEADER)：提供程序加载和运行所需的关键信息。尽管名为“可选”，但对于可执行文件来说它是必需的，其中包括以下内容：
@@ -64,45 +64,45 @@
   </ul></li>  <li>节区(Sections)：
   实际的节区紧跟在文件头之后，包含了可执行代码、已初始化数据以及其他程序运行所需的组件。
   每个节区都根据可选文件头中指定的 SectionAlignment 值进行对齐。
-</ul></li></p>
-<p>对于我们来说，这一系列节区及其子结构中最重要且最有趣的部分是 AddressOfEntryPoint 字段。</p>
-<p><h4 class="filename">4.3.2 上手操作</h4></p>
-<p>我们最初的方法将是一个非常干净的应用程序，一个经典的 “Hello World！”</p>
-<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+</ul></li>
+<p class="zh">对于我们来说，这一系列节区及其子结构中最重要且最有趣的部分是 AddressOfEntryPoint 字段。</p>
+<p class="zh"><h4 class="filename">4.3.2 上手操作</h4></p>
+<p class="zh">我们最初的方法将是一个非常干净的应用程序，一个经典的 “Hello World！”</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 
 int main() {
   std::cout &lt;&lt; &quot;Hello World!\n&quot;;
-}</code></pre></p>
-<p>这将帮助我们理解一个非常简单的应用程序在 Windows 下是如何被加载和执行的。不过，在进一步深入之前，有一点小小的说明：在 Windows 中存在多种不同类型的应用程序，这一点由 PE 文件头中的 OptionalHeader/Subsystem 字段指明。</p>
-<p>出于本章的研究目的，剖析应用程序从启动到进入 main() 函数的完整流程 —— 可以选择构建一个 控制台应用程序（Console Application）。虽然还有其他类型的 Windows 应用程序可供研究（如图形界面 GUI 应用程序），但它们通常涉及更复杂的机制，例如消息循环、窗口过程函数，以及系统依赖项。为了保持示例的简洁性和可追踪性，选择以控制台程序作为切入点。</p>
-<p>假设已经成功编译了这个合成的控制台应用程序，接下来可以使用 Ghidra 打开它进行分析。文件的开头部分与此前介绍的标准 PE 文件结构高度一致：</p>
-<p>
+}</code></pre>
+<p class="zh">这将帮助我们理解一个非常简单的应用程序在 Windows 下是如何被加载和执行的。不过，在进一步深入之前，有一点小小的说明：在 Windows 中存在多种不同类型的应用程序，这一点由 PE 文件头中的 OptionalHeader/Subsystem 字段指明。</p>
+<p class="zh">出于本章的研究目的，剖析应用程序从启动到进入 main() 函数的完整流程 —— 可以选择构建一个 控制台应用程序（Console Application）。虽然还有其他类型的 Windows 应用程序可供研究（如图形界面 GUI 应用程序），但它们通常涉及更复杂的机制，例如消息循环、窗口过程函数，以及系统依赖项。为了保持示例的简洁性和可追踪性，选择以控制台程序作为切入点。</p>
+<p class="zh">假设已经成功编译了这个合成的控制台应用程序，接下来可以使用 Ghidra 打开它进行分析。文件的开头部分与此前介绍的标准 PE 文件结构高度一致：</p>
+<p class="zh">
     <div class="image-block" style="text-align: center;">
       <div><img src="content/chapter4/images/12.png" style="width: 90.0%;" alt="图 4.12 —— PE 头的内容"></div>
       <div class="caption">图 4.12 —— PE 头的内容</div>
     </div></p>
-<p>这一大段头部信息看似复杂，但实际上对我们最有意义的是其中的 AddressOfEntryPoint 字段。目前，它指向一个名为 entry 的函数地址 —— 这正是我们的应用程序开始执行的位置。</p>
-<p>因此，让我们深入查看这个入口函数的具体实现。如果我们继续跟踪 entry 函数的调用链，最终会到达如下所示的核心初始化函数：</p>
-<p><pre><code class="language-cpp">ulong __cdecl entry(void *param_1) {
+<p class="zh">这一大段头部信息看似复杂，但实际上对我们最有意义的是其中的 AddressOfEntryPoint 字段。目前，它指向一个名为 entry 的函数地址 —— 这正是我们的应用程序开始执行的位置。</p>
+<p class="zh">因此，让我们深入查看这个入口函数的具体实现。如果我们继续跟踪 entry 函数的调用链，最终会到达如下所示的核心初始化函数：</p>
+<pre class="line-numbers"><code class="language-cpp">ulong __cdecl entry(void *param_1) {
   ulong uVar1;
   uVar1 = __scrt_common_main();
   return uVar1;
-}</code></pre></p>
-<p>这一发现本身就很有趣，因为它看起来正是基于控制台的 Windows 应用程序的标准入口点。为了进一步验证这一点，我们继续深入探索接下来要执行的函数。该函数的反汇编代码如下所示：</p>
-<p><pre><code class="language-cpp">int __cdecl __scrt_common_main(void) {
+}</code></pre>
+<p class="zh">这一发现本身就很有趣，因为它看起来正是基于控制台的 Windows 应用程序的标准入口点。为了进一步验证这一点，我们继续深入探索接下来要执行的函数。该函数的反汇编代码如下所示：</p>
+<pre class="line-numbers"><code class="language-cpp">int __cdecl __scrt_common_main(void) {
   int iVar1;
   __security_init_cookie();
   iVar1 = __scrt_common_main_seh();
   return iVar1;
-}</code></pre></p>
-<p>Microsoft的页面<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170</a></span>中详细描述了 <code>__security_init_cookie()</code> 函数。然而，另一个函数则属于一种完全不同的类型。它执行了大量的初始化工作，例如设置终端环境和处理初始化过程中的错误。在某个阶段，会执行以下代码片段：</p>
-<p>
+}</code></pre>
+<p class="zh">Microsoft的页面<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/security-init-cookie?view=msvc-170</a></span>中详细描述了 <code>__security_init_cookie()</code> 函数。然而，另一个函数则属于一种完全不同的类型。它执行了大量的初始化工作，例如设置终端环境和处理初始化过程中的错误。在某个阶段，会执行以下代码片段：</p>
+<p class="zh">
     <div class="image-block" style="text-align: center;">
       <div><img src="content/chapter4/images/13.png" style="width: 90.0%;" alt="图 4.13 ——  main() 的调用"></div>
       <div class="caption">图 4.13 ——  main() 的调用</div>
     </div></p>
-<p>invoke_main 负责调用 main()：</p>
-<p><pre><code class="language-cpp">int __cdecl invoke_main(void) {
+<p class="zh">invoke_main 负责调用 main()：</p>
+<pre class="line-numbers"><code class="language-cpp">int __cdecl invoke_main(void) {
   char **_Argv;
   char **_Env;
   undefined4 *puVar1;
@@ -114,30 +114,30 @@ int main() {
   piVar2 = (int *)___p___argc();
   iVar3 = main(*piVar2,_Argv,_Env);
   return iVar3;
-}</code></pre></p>
-<p>此时，已经到达了调用 main() 函数的关键阶段。即使是像 “Hello World!” 这样一个看似简单的应用程序，在其背后也隐藏着大量必要的模板代码（boilerplate code） —— 这些代码负责为程序的执行准备环境。</p>
-<p>现在，是时候让我们的合成应用程序在 Ghidra 中开启一段“逆向之旅”了。为了保持叙述简洁，我们略去了创建项目、编译和链接的具体步骤；姑且假设这个可执行文件是通过某种魔法自动生成的。</p>
-<p>由于最感兴趣的是确定 main() 之前函数调用的顺序，并且知道 my_a 和 my_other_a 变量是以全局方式初始化的，因此需要在二进制文件中进行查找。在某个时刻，会发现以下有趣的数据：</p>
-<p>
+}</code></pre>
+<p class="zh">此时，已经到达了调用 main() 函数的关键阶段。即使是像 “Hello World!” 这样一个看似简单的应用程序，在其背后也隐藏着大量必要的模板代码（boilerplate code） —— 这些代码负责为程序的执行准备环境。</p>
+<p class="zh">现在，是时候让我们的合成应用程序在 Ghidra 中开启一段“逆向之旅”了。为了保持叙述简洁，我们略去了创建项目、编译和链接的具体步骤；姑且假设这个可执行文件是通过某种魔法自动生成的。</p>
+<p class="zh">由于最感兴趣的是确定 main() 之前函数调用的顺序，并且知道 my_a 和 my_other_a 变量是以全局方式初始化的，因此需要在二进制文件中进行查找。在某个时刻，会发现以下有趣的数据：</p>
+<p class="zh">
     <div class="image-block" style="text-align: center;">
       <div><img src="content/chapter4/images/14.png" style="width: 90.0%;" alt="图 4.14 —— 根据 Ghidra 显示的 .CRT\$XCU 节区"></div>
       <div class="caption">图 4.14 —— 根据 Ghidra 显示的 .CRT\$XCU 节区</div>
     </div></p>
-<p>嗯，这看起来很有趣，尤其是那个神秘的 <code>.CRT$XCU</code> 文本。这让我们回想起之前讨论 PE 文件节区时的内容：可执行文件中的每个节区都是一个独立的区域，用于存放不同类型的数据或代码。</p>
-<p>每个节区都有特定的用途，并具有定义其行为以及操作系统应如何处理它的属性。微软官方文档<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170</a></span>，对负责初始化 C 运行时（CRT）的各个节区进行了详细讨论。下面是对该文档的一个简要总结：</p>
-<p>根据文档说明，默认情况下，C 运行时库是通过链接器自动包含的，这确保了 CRT 被正确初始化，调用全局构造函数，最终执行用户定义的 main() 函数。当编译器遇到全局构造函数时，它会创建一个动态初始化器，并将其放置在 <code>.CRT$XCU</code> 节区中。</p>
-<p>CRT 使用了一些特定的指针，比如 <code>.CRT$XCA</code> 和 <code>.CRT$XCZ</code> 节区中的 <code>__xc_a</code> 和 <code>__xc_z</code>，来定义初始化器列表的起始和结束位置，从而确保它们按照正确的顺序调用。我们之前讨论过的 <code>__scrt_common_main_seh()</code> 函数就负责正确设置这些内容。</p>
-<p>这些符号名称是由 CRT 预定义的，而链接器则按字母顺序排列这些节区。这种排序机制确保了 <code>.CRT$XCU</code> 中用户定义的初始化器会在标准节区之间被执行。</p>
-<p>为了控制初始化顺序，开发者可以使用特定的 #pragma 指令，将他们的初始化器放入未使用的保留节区中，例如：</p>
-<p><ul>
+<p class="zh">嗯，这看起来很有趣，尤其是那个神秘的 <code>.CRT$XCU</code> 文本。这让我们回想起之前讨论 PE 文件节区时的内容：可执行文件中的每个节区都是一个独立的区域，用于存放不同类型的数据或代码。</p>
+<p class="zh">每个节区都有特定的用途，并具有定义其行为以及操作系统应如何处理它的属性。微软官方文档<span class="footnote"><a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170" target="_blank" rel="noopener noreferrer">https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-initialization?view=msvc-170</a></span>，对负责初始化 C 运行时（CRT）的各个节区进行了详细讨论。下面是对该文档的一个简要总结：</p>
+<p class="zh">根据文档说明，默认情况下，C 运行时库是通过链接器自动包含的，这确保了 CRT 被正确初始化，调用全局构造函数，最终执行用户定义的 main() 函数。当编译器遇到全局构造函数时，它会创建一个动态初始化器，并将其放置在 <code>.CRT$XCU</code> 节区中。</p>
+<p class="zh">CRT 使用了一些特定的指针，比如 <code>.CRT$XCA</code> 和 <code>.CRT$XCZ</code> 节区中的 <code>__xc_a</code> 和 <code>__xc_z</code>，来定义初始化器列表的起始和结束位置，从而确保它们按照正确的顺序调用。我们之前讨论过的 <code>__scrt_common_main_seh()</code> 函数就负责正确设置这些内容。</p>
+<p class="zh">这些符号名称是由 CRT 预定义的，而链接器则按字母顺序排列这些节区。这种排序机制确保了 <code>.CRT$XCU</code> 中用户定义的初始化器会在标准节区之间被执行。</p>
+<p class="zh">为了控制初始化顺序，开发者可以使用特定的 #pragma 指令，将他们的初始化器放入未使用的保留节区中，例如：</p>
+<ul>
     <li><code>.CRT$XCT</code>(在编译器生成的初始化器之前执行)</li>  <li><code>.CRT$XCV</code>(在编译器生成的初始化器之后执行)
-</ul></li></p>
-<p>这一技术详见于前几段提到的 CRT 启动文档中。使用这项技术之前，请先阅读下文，事情比看起来要复杂一些。</p>
-<p>根据微软的说法，这个主题过于依赖平台和编译器的具体实现，我们不打算深入探讨这些领域，尤其是考虑到官方文档中给出的如下警告：</p>
-<p><pre><code class="language-shell">CRT$XCT和.CRT$XCV 这些名称目前并未被编译器或 CRT 库使用，但无法保证它们将来也不会使用。此外，变量仍可能被编译器优化掉。在采用这种技术之前，请务必考虑潜在的工程实现、维护和可移植性问题。</code></pre></p>
-<p>所以，我们再次重申一下官方警告的内容：除非必须这么做，否则请避免使用这些文档描述不清、半遮半掩的“语言和编译器特性”，因为正如官方警告所说 —— 今天能用的东西，明天可能就失效了，甚至可能在下一次系统更新之后就无法正常工作。</p>
-<p>相反，让我们把注意力转向 <code>.CRT$XCU</code> 节区中“发现”的那些函数，看看这个明显非标准 C(也不是 C++)的命名背后究竟隐藏着什么：</p>
-<p><pre><code class="language-cpp">void __cdecl dynamic_initializer_for_my_a(void)
+</ul></li>
+<p class="zh">这一技术详见于前几段提到的 CRT 启动文档中。使用这项技术之前，请先阅读下文，事情比看起来要复杂一些。</p>
+<p class="zh">根据微软的说法，这个主题过于依赖平台和编译器的具体实现，我们不打算深入探讨这些领域，尤其是考虑到官方文档中给出的如下警告：</p>
+<pre><code class="language-shell">CRT$XCT和.CRT$XCV 这些名称目前并未被编译器或 CRT 库使用，但无法保证它们将来也不会使用。此外，变量仍可能被编译器优化掉。在采用这种技术之前，请务必考虑潜在的工程实现、维护和可移植性问题。</code></pre>
+<p class="zh">所以，我们再次重申一下官方警告的内容：除非必须这么做，否则请避免使用这些文档描述不清、半遮半掩的“语言和编译器特性”，因为正如官方警告所说 —— 今天能用的东西，明天可能就失效了，甚至可能在下一次系统更新之后就无法正常工作。</p>
+<p class="zh">相反，让我们把注意力转向 <code>.CRT$XCU</code> 节区中“发现”的那些函数，看看这个明显非标准 C(也不是 C++)的命名背后究竟隐藏着什么：</p>
+<pre class="line-numbers"><code class="language-cpp">void __cdecl dynamic_initializer_for_my_a(void)
 {
   int iVar1;
   uchar *unaff_EDI;
@@ -152,19 +152,19 @@ __CheckForDebuggerJustMyCode(unaff_EDI);
   A::A(&amp;my_a,my_string);
   atexit(dynamic_atexit_destructor_for_my_a);
   return;
-}</code></pre></p>
-<p>在执行了一些调试相关的维护任务（例如使用 0xcccccccc 填充栈内存以检测未初始化访问）之后，我们可以观察到对类 A 构造函数的调用。其中，第一个参数是典型的 this 指针，并且系统再次为该对象注册了一个 atexit 函数，用于在程序退出时调用其析构函数。这个 0xcccccccc 是 Visual C++ 编译器用来标记未初始化栈内存的经典“模式值”，它使得在调试过程中更容易识别出因使用未初始化内存而导致的问题。</p>
-<p>有趣的是，在当前的反汇编视图中，我们似乎并没有看到循环代码的执行。然而，如果我们进一步研究那些在调试构建中包含较大 C 风格数组的函数，就能更清楚地看到这种栈保护机制的实际应用 —— 包括设置良好的栈金丝雀（stack canaries）。</p>
-<p>栈金丝雀是一种重要的安全机制，旨在检测并防止基于栈的缓冲区溢出攻击。它通过在函数的局部变量和关键控制数据（如返回地址、保存的帧指针等）之间插入一个特殊的随机值（即“金丝雀”）来实现。</p>
-<p>如果发生缓冲区溢出，攻击者可能会覆盖掉这个金丝雀值。系统在函数返回前会检查该值是否被修改；如果发现异常，就会触发终止程序等安全措施，从而防止潜在的漏洞利用。</p>
-<p>这个术语的来源可以追溯到煤矿中使用金丝雀的历史用途。矿工会将金丝雀带入矿井中，以检测一氧化碳等有毒气体的存在。由于金丝雀对这些气体比人类更加敏感，一旦它们生病或死亡（即停止鸣叫），就表示矿工需要立即撤离。虽然这并不属于神话传说，但这一做法非常实用 —— 尤其是当你不是那只金丝雀的时候。</p>
-<p>有了上述基础后，我们现在大致了解了应用程序在 Windows 下是如何加载和初始化的，尽管目前仅限于控制台环境。别忘了，Windows 本质上是一个图形用户界面（GUI）操作系统。它创建窗口、处理消息循环、管理对话框，并响应大量用户交互事件。</p>
-<p>不过，GUI 应用程序的启动流程与控制台程序并没有本质区别。主要的区别在于：invoke_main 函数在调用特定于 GUI 的入口点函数 WinMain 之前，会先调用两个辅助函数：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">在执行了一些调试相关的维护任务（例如使用 0xcccccccc 填充栈内存以检测未初始化访问）之后，我们可以观察到对类 A 构造函数的调用。其中，第一个参数是典型的 this 指针，并且系统再次为该对象注册了一个 atexit 函数，用于在程序退出时调用其析构函数。这个 0xcccccccc 是 Visual C++ 编译器用来标记未初始化栈内存的经典“模式值”，它使得在调试过程中更容易识别出因使用未初始化内存而导致的问题。</p>
+<p class="zh">有趣的是，在当前的反汇编视图中，我们似乎并没有看到循环代码的执行。然而，如果我们进一步研究那些在调试构建中包含较大 C 风格数组的函数，就能更清楚地看到这种栈保护机制的实际应用 —— 包括设置良好的栈金丝雀（stack canaries）。</p>
+<p class="zh">栈金丝雀是一种重要的安全机制，旨在检测并防止基于栈的缓冲区溢出攻击。它通过在函数的局部变量和关键控制数据（如返回地址、保存的帧指针等）之间插入一个特殊的随机值（即“金丝雀”）来实现。</p>
+<p class="zh">如果发生缓冲区溢出，攻击者可能会覆盖掉这个金丝雀值。系统在函数返回前会检查该值是否被修改；如果发现异常，就会触发终止程序等安全措施，从而防止潜在的漏洞利用。</p>
+<p class="zh">这个术语的来源可以追溯到煤矿中使用金丝雀的历史用途。矿工会将金丝雀带入矿井中，以检测一氧化碳等有毒气体的存在。由于金丝雀对这些气体比人类更加敏感，一旦它们生病或死亡（即停止鸣叫），就表示矿工需要立即撤离。虽然这并不属于神话传说，但这一做法非常实用 —— 尤其是当你不是那只金丝雀的时候。</p>
+<p class="zh">有了上述基础后，我们现在大致了解了应用程序在 Windows 下是如何加载和初始化的，尽管目前仅限于控制台环境。别忘了，Windows 本质上是一个图形用户界面（GUI）操作系统。它创建窗口、处理消息循环、管理对话框，并响应大量用户交互事件。</p>
+<p class="zh">不过，GUI 应用程序的启动流程与控制台程序并没有本质区别。主要的区别在于：invoke_main 函数在调用特定于 GUI 的入口点函数 WinMain 之前，会先调用两个辅助函数：</p>
+<ul>
     <li>第一个函数用于设置窗口的显示状态（如最小化、最大化或正常显示）</li>  <li>第二个函数则负责处理以宽字符格式传入的命令行参数
-</ul></li></p>
-<p>其余的工作便是调用 WinMain 函数。从此刻起，程序便进入了我们较为熟悉的执行流程 —— 当然，这主要是针对那些具备 Windows GUI 开发经验的开发者而言。</p>
-<p>在本章即将结束之际，我们最想传达给读者的是一个简单的建议：不要害怕动手实验。无论是进行逆向工程，还是尝试修改二进制文件的行为，这些实践都是你真正理解系统底层机制的关键途径。</p>
+</ul></li>
+<p class="zh">其余的工作便是调用 WinMain 函数。从此刻起，程序便进入了我们较为熟悉的执行流程 —— 当然，这主要是针对那些具备 Windows GUI 开发经验的开发者而言。</p>
+<p class="zh">在本章即将结束之际，我们最想传达给读者的是一个简单的建议：不要害怕动手实验。无论是进行逆向工程，还是尝试修改二进制文件的行为，这些实践都是你真正理解系统底层机制的关键途径。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="4.2..html" class="prev-link">« 上一章：4.2. 企鹅(Linux)农场</a>
@@ -177,6 +177,18 @@ __CheckForDebuggerJustMyCode(unaff_EDI);
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

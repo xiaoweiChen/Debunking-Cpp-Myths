@@ -24,8 +24,8 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">11.2. 空格：从必须到无视</h1></section>
-  <p>以下代码段并不是一个特别复杂的代码段：</p>
-<p><pre><code class="language-cpp">#include &lt;cstdio&gt;
+  <p class="zh">以下代码段并不是一个特别复杂的代码段：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;cstdio&gt;
 #define STR_I(x) #x
 #define STR(x) STR_I(x)
 #define JOIN(x,y) (x y)
@@ -34,32 +34,32 @@
 int main(void){
   printf(&quot;%s\n&quot;, STR(JOIN(Hello, World)));
   printf(&quot;%s\n&quot;, STR(JOIN(Hello,World )));
-}</code></pre></p>
-<p>这段代码定义了一系列用于操作字符串和拼接标记的宏，其逻辑并不复杂：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">这段代码定义了一系列用于操作字符串和拼接标记的宏，其逻辑并不复杂：</p>
+<ul>
     <li>STR_I(x) 将其参数转换为字符串形式，</li>  <li>STR(x) 确保在字符串化前完成完整的宏展开，</li>  <li>JOIN(x,y) 用空格连接两个参数，</li>  <li>而 Hello(x) 虽然定义了但未使用。
-</ul></li></p>
-<p>随后出现了这个简短程序生命周期中最重要的两个printf调用。在第一个printf调用中，JOIN(Hello, World)会先展开为(Hello World)，然后字符串化为&quot;(Hello World)&quot;。这并不特别复杂。</p>
-<p>然而有趣的部分来了：在第二个printf调用中，JOIN(Hello,World)(逗号和World之间没有空格)的行为会根据GCC版本而不同：</p>
-<p><ul>
+</ul></li>
+<p class="zh">随后出现了这个简短程序生命周期中最重要的两个printf调用。在第一个printf调用中，JOIN(Hello, World)会先展开为(Hello World)，然后字符串化为&quot;(Hello World)&quot;。这并不特别复杂。</p>
+<p class="zh">然而有趣的部分来了：在第二个printf调用中，JOIN(Hello,World)(逗号和World之间没有空格)的行为会根据GCC版本而不同：</p>
+<ul>
     <li>在GCC 9.4及更早版本中，结果为没有空格的(HelloWorld)</li>  <li>而在GCC 9.5及更新版本中，预处理器会在标记间添加空格，使得两个printf调用都输出"(Hello World)"
-</ul></li></p>
-<p>GCC 9.4和9.5之间的这种差异源于各版本处理标记连接和宏参数间空格的方式不同：</p>
-<p><ul>
+</ul></li>
+<p class="zh">GCC 9.4和9.5之间的这种差异源于各版本处理标记连接和宏参数间空格的方式不同：</p>
+<ul>
     <li>GCC 9.4不会在没有显式给出空格的地方插入空格</li>  <li>GCC 9.5则通过即使在宏调用中省略空格也添加空格的方式，使处理更加一致
-</ul></li></p>
-<p>虽然C和C++标准没有明确说明&quot;宏参数和逗号之间的空格应被忽略&quot;，但预处理器的标记化和宏展开方式暗示了这一点。无论如何，规则指出参数由逗号分隔，而空格不会影响这种分隔。看起来GCC(9.4之前版本)对规范缺失部分的解释较为宽松，而在GCC 9.5及之后版本中重新进行了解释。</p>
-<p>个误解的根源在于Hello宏被定义成函数式宏，却被当作普通替换宏来使用。很可能这主要是个(或者说曾经是)旧版GCC的bug。当然现在都不再用旧版本了，毕竟众所周知，新编译器对标准的遵循度更高，而且我们写的肯定都是完全符合标准的代码，对吧？</p>
-<p>这段历史向前兼容的小插曲着实有趣。</p>
-<p><h4 class="filename">11.1.2 第十一个“标准”</h4></p>
-<p>C++11 在保持与 C++98 向后兼容的同时，引入了一系列新特性，使得开发者能够逐步采用现代语言功能，而不必担心破坏现有代码。这一设计哲学确保了语言的平滑演进。</p>
-<p>其中最具革命性的新增特性之一是 移动语义。它不仅提升了性能，还带来了全新的编程范式。然而，这种特性依赖于一种 C++98 编译器无法理解的新语法 —— 右值引用，使用了移动语义的代码在旧编译器上将完全无法编译，尽管它们在新标准中已成为核心机制。</p>
-<p>同样地，auto关键字通过自动类型推断简化了类型声明，但开发者仍可像在C++98中那样，用它显式指定变量具有自动存储类型(虽然老实说，从来没人按C语言的初衷使用过这个关键字 —— 尽管C++继承了它，但即便在C语言中它也是多余的，除非追溯到其起源的B语言时代，那时它确实用于正确表示变量的栈存储位置)。</p>
-<p>基于范围的for循环等新语法使容器迭代更简洁，不过谢天谢地，经典的C++98风格for循环依然完全可用(毕竟仍有大量代码在使用它们)。nullptr的引入为旧的NULL宏提供了类型安全的替代方案，但出于向后兼容考虑，NULL仍被保留 —— 尽管它本质上与0并无区别。</p>
-<p>除核心语言改进外，C++11还引入了现代函数式编程特性，如允许内联编写匿名函数的lambda表达式，让代码更简洁优雅。新的constexpr特性使某些函数能在编译期求值以提升性能，但对于旧编译器，开发者仍可沿用C++98那套通过复杂模板递归实现运行时函数求值的老方法(毕竟旧编译器也不支持constexpr)。</p>
-<p>然而，对C++老用户而言，最令人困惑的莫过于模板解析规则中双右尖括号&gt;&gt;的变化。在C++98中，当使用嵌套模板参数时，解析器要求右尖括号之间必须加空格(&gt; &gt;)，以区别于位移运算符&gt;&gt; —— 因为C++98解析器会将连续的两个&gt;视为右移运算符，而非两个嵌套模板的闭合符号。</p>
-<p>从C++11开始，编译器已能智能识别上下文，将&gt;&gt;视为两个嵌套模板的闭合符而非右移操作。这不仅使语法更简洁，也减少了错误率，开发者不再需要手动添加空格。但这也意味着，下面这段程序在不同标准下会输出不同结果(取决于使用支持C++11的编译器还是仅支持C++98的编译器)：</p>
-<p><pre><code class="language-cpp">#include &lt;iostream&gt;
+</ul></li>
+<p class="zh">虽然C和C++标准没有明确说明&quot;宏参数和逗号之间的空格应被忽略&quot;，但预处理器的标记化和宏展开方式暗示了这一点。无论如何，规则指出参数由逗号分隔，而空格不会影响这种分隔。看起来GCC(9.4之前版本)对规范缺失部分的解释较为宽松，而在GCC 9.5及之后版本中重新进行了解释。</p>
+<p class="zh">个误解的根源在于Hello宏被定义成函数式宏，却被当作普通替换宏来使用。很可能这主要是个(或者说曾经是)旧版GCC的bug。当然现在都不再用旧版本了，毕竟众所周知，新编译器对标准的遵循度更高，而且我们写的肯定都是完全符合标准的代码，对吧？</p>
+<p class="zh">这段历史向前兼容的小插曲着实有趣。</p>
+<p class="zh"><h4 class="filename">11.1.2 第十一个“标准”</h4></p>
+<p class="zh">C++11 在保持与 C++98 向后兼容的同时，引入了一系列新特性，使得开发者能够逐步采用现代语言功能，而不必担心破坏现有代码。这一设计哲学确保了语言的平滑演进。</p>
+<p class="zh">其中最具革命性的新增特性之一是 移动语义。它不仅提升了性能，还带来了全新的编程范式。然而，这种特性依赖于一种 C++98 编译器无法理解的新语法 —— 右值引用，使用了移动语义的代码在旧编译器上将完全无法编译，尽管它们在新标准中已成为核心机制。</p>
+<p class="zh">同样地，auto关键字通过自动类型推断简化了类型声明，但开发者仍可像在C++98中那样，用它显式指定变量具有自动存储类型(虽然老实说，从来没人按C语言的初衷使用过这个关键字 —— 尽管C++继承了它，但即便在C语言中它也是多余的，除非追溯到其起源的B语言时代，那时它确实用于正确表示变量的栈存储位置)。</p>
+<p class="zh">基于范围的for循环等新语法使容器迭代更简洁，不过谢天谢地，经典的C++98风格for循环依然完全可用(毕竟仍有大量代码在使用它们)。nullptr的引入为旧的NULL宏提供了类型安全的替代方案，但出于向后兼容考虑，NULL仍被保留 —— 尽管它本质上与0并无区别。</p>
+<p class="zh">除核心语言改进外，C++11还引入了现代函数式编程特性，如允许内联编写匿名函数的lambda表达式，让代码更简洁优雅。新的constexpr特性使某些函数能在编译期求值以提升性能，但对于旧编译器，开发者仍可沿用C++98那套通过复杂模板递归实现运行时函数求值的老方法(毕竟旧编译器也不支持constexpr)。</p>
+<p class="zh">然而，对C++老用户而言，最令人困惑的莫过于模板解析规则中双右尖括号&gt;&gt;的变化。在C++98中，当使用嵌套模板参数时，解析器要求右尖括号之间必须加空格(&gt; &gt;)，以区别于位移运算符&gt;&gt; —— 因为C++98解析器会将连续的两个&gt;视为右移运算符，而非两个嵌套模板的闭合符号。</p>
+<p class="zh">从C++11开始，编译器已能智能识别上下文，将&gt;&gt;视为两个嵌套模板的闭合符而非右移操作。这不仅使语法更简洁，也减少了错误率，开发者不再需要手动添加空格。但这也意味着，下面这段程序在不同标准下会输出不同结果(取决于使用支持C++11的编译器还是仅支持C++98的编译器)：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;iostream&gt;
 const int value = 1;
 
 template &lt;class T&gt;
@@ -79,15 +79,15 @@ int main() {
   } else {
     std::cout &lt;&lt; &quot;C++11 compiler&quot;;
   }
-}</code></pre></p>
-<p>当我们深入剖析这段程序的精妙之处时，其怪异行为的成因就一目了然了。如果还没明白，让我们拆解看看。不过别担心，我们不会逐行解析整个程序(那太冗长了)，而是聚焦最关键的部分：<code>&lt;C&lt; ::value&gt;&gt;::value&gt;::value&gt;::value</code>，这个结构正是所有特性识别的核心密钥。</p>
-<p>在C++98语法下，这个表达式会解析为：</p>
-<p><pre><code class="language-cpp">if(static_cast&lt;bool&gt;(D&lt;int&gt;::value)) { ... }</code></pre></p>
-<p>归根结底，这一切都取决于D&lt;int&gt;::value的值 —— 因为在C++98解析规则下，::value&gt;&gt;::value会解析为1 &gt;&gt; 1(结果为0)，进而推导出C&lt;0&gt;::value(即普通的int类型别名)，最终得到D&lt;int&gt;::value。既然我们已将其定义为2，程序自然会执行C++98的识别分支。</p>
-<p>但当使用符合C++11标准的编译器解析时，该表达式会解析为更复杂的结构：</p>
-<p><pre><code class="language-cpp">if((static_cast&lt;int&gt;(D&lt;C&lt;1&gt; &gt;::value &gt; ::value)) &gt; ::value) { ... }</code></pre></p>
-<p>这段看似复杂的多层右尖括号结构，最终竟会被解析为两个比较运算，这可能并不直观。关键在于D&lt;C&lt;1&gt;&gt;::value的求值结果：由于C&lt;1&gt;本身就是一个类型，我们实际上进入了以C&lt;1&gt;为模板参数的D类特化版本，其值为2。接着与::value(值为1)比较，经过一系列有趣的转换后，最终表达式实际上是1&gt;1，结果为false，于是程序进入C++11分支。</p>
-<p>虽然我们由此获得了一种简短(尽管过度复杂且不实用)的检测方法，能判断代码是否由符合C++11标准的编译器编译。但在实际生产代码中，直接检查<code>__cplusplus</code>宏的值才是更明智的选择。</p>
+}</code></pre>
+<p class="zh">当我们深入剖析这段程序的精妙之处时，其怪异行为的成因就一目了然了。如果还没明白，让我们拆解看看。不过别担心，我们不会逐行解析整个程序(那太冗长了)，而是聚焦最关键的部分：<code>&lt;C&lt; ::value&gt;&gt;::value&gt;::value&gt;::value</code>，这个结构正是所有特性识别的核心密钥。</p>
+<p class="zh">在C++98语法下，这个表达式会解析为：</p>
+<pre class="line-numbers"><code class="language-cpp">if(static_cast&lt;bool&gt;(D&lt;int&gt;::value)) { ... }</code></pre>
+<p class="zh">归根结底，这一切都取决于D&lt;int&gt;::value的值 —— 因为在C++98解析规则下，::value&gt;&gt;::value会解析为1 &gt;&gt; 1(结果为0)，进而推导出C&lt;0&gt;::value(即普通的int类型别名)，最终得到D&lt;int&gt;::value。既然我们已将其定义为2，程序自然会执行C++98的识别分支。</p>
+<p class="zh">但当使用符合C++11标准的编译器解析时，该表达式会解析为更复杂的结构：</p>
+<pre class="line-numbers"><code class="language-cpp">if((static_cast&lt;int&gt;(D&lt;C&lt;1&gt; &gt;::value &gt; ::value)) &gt; ::value) { ... }</code></pre>
+<p class="zh">这段看似复杂的多层右尖括号结构，最终竟会被解析为两个比较运算，这可能并不直观。关键在于D&lt;C&lt;1&gt;&gt;::value的求值结果：由于C&lt;1&gt;本身就是一个类型，我们实际上进入了以C&lt;1&gt;为模板参数的D类特化版本，其值为2。接着与::value(值为1)比较，经过一系列有趣的转换后，最终表达式实际上是1&gt;1，结果为false，于是程序进入C++11分支。</p>
+<p class="zh">虽然我们由此获得了一种简短(尽管过度复杂且不实用)的检测方法，能判断代码是否由符合C++11标准的编译器编译。但在实际生产代码中，直接检查<code>__cplusplus</code>宏的值才是更明智的选择。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="11.1..html" class="prev-link">« 上一章：11.1. C与C++的兼容方向</a>
@@ -100,6 +100,18 @@ int main() {
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,12 +24,12 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">10.6. 总结</h1></section>
-  <p>在本章中，我们已经看到，C++ 拥有覆盖各种需求的丰富库与框架。然而，与其他技术生态相比，获取这些资源的过程并不轻松：它们缺乏统一集中的存放平台，导致发现困难；更可能引发诸如编译器兼容性不佳、代码风格陈旧等附加问题 —— 这正是本章所揭示的关键认知之一。</p>
-<p>正如其他技术栈一样，C++ 的库生态同样面临漏洞风险，并易受供应链攻击的威胁。常见的防范措施包括持续跟踪漏洞披露动态、在下载时验证二进制文件的真实性等。正如此章所述，额外的代码审计与漏洞扫描始终是有益无害的。因此，大型组织在此方面更具优势 —— 他们通常配备有专门的安全团队来应对这些问题，代价却是牺牲了一定的灵活性与敏捷性。</p>
-<p>那么，C++ 是否拥有支持现代编程范式的库？答案无疑是肯定的。只是相较于其他主流语言生态，这些库往往更难发现、更难集成、兼容性更差。</p>
-<p>在下一章中，我们将进一步探讨一个更为根本的问题：</p>
-<p>C++ 是否真正具备良好的向后兼容性？</p>
-<p>这不仅涉及语言本身的版本迭代，也关乎其更广泛的生态系统是否能在演进过程中保持稳定与连贯。</p>
+  <p class="zh">在本章中，我们已经看到，C++ 拥有覆盖各种需求的丰富库与框架。然而，与其他技术生态相比，获取这些资源的过程并不轻松：它们缺乏统一集中的存放平台，导致发现困难；更可能引发诸如编译器兼容性不佳、代码风格陈旧等附加问题 —— 这正是本章所揭示的关键认知之一。</p>
+<p class="zh">正如其他技术栈一样，C++ 的库生态同样面临漏洞风险，并易受供应链攻击的威胁。常见的防范措施包括持续跟踪漏洞披露动态、在下载时验证二进制文件的真实性等。正如此章所述，额外的代码审计与漏洞扫描始终是有益无害的。因此，大型组织在此方面更具优势 —— 他们通常配备有专门的安全团队来应对这些问题，代价却是牺牲了一定的灵活性与敏捷性。</p>
+<p class="zh">那么，C++ 是否拥有支持现代编程范式的库？答案无疑是肯定的。只是相较于其他主流语言生态，这些库往往更难发现、更难集成、兼容性更差。</p>
+<p class="zh">在下一章中，我们将进一步探讨一个更为根本的问题：</p>
+<p class="zh">C++ 是否真正具备良好的向后兼容性？</p>
+<p class="zh">这不仅涉及语言本身的版本迭代，也关乎其更广泛的生态系统是否能在演进过程中保持稳定与连贯。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="10.5..html" class="prev-link">« 上一章：10.5. 供应链安全</a>
@@ -42,6 +42,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

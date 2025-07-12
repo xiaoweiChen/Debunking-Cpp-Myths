@@ -24,25 +24,25 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.6. 鲜为人知的那些事</h1></section>
-  <p>到目前为止，我们已经看到一些情况：是否遵循 C++ 标准，往往完全取决于开发者的个人选择。他们可以选择特定平台，使用自己喜爱的编译器所提供的扩展功能，或者坚持使用纯粹的标准 C++。</p>
-<p>然而，在现实世界的广阔天地中，还存在某些并非出于自愿的情形 —— 由于环境施加了限制，导致我们无法使用 C++ 标准中的一些关键特性，从而难以实现标准合规。</p>
-<p>暂且不谈那些令人不适的场景：比如我们必须维护几十年前遗留下来的代码库，这些代码诞生于 C++ 的“黄金时代”（也就是标准化委员会尚未接管之前的时代），那个年代充满了自由与混乱 —— 就像 BASIC 曾经带来的各种方言泛滥一样。在现实项目中，我们有时会遇到一些无法控制的情况，迫使我们放弃对完整 C++ 标准的支持：</p>
-<p><ul>
+  <p class="zh">到目前为止，我们已经看到一些情况：是否遵循 C++ 标准，往往完全取决于开发者的个人选择。他们可以选择特定平台，使用自己喜爱的编译器所提供的扩展功能，或者坚持使用纯粹的标准 C++。</p>
+<p class="zh">然而，在现实世界的广阔天地中，还存在某些并非出于自愿的情形 —— 由于环境施加了限制，导致我们无法使用 C++ 标准中的一些关键特性，从而难以实现标准合规。</p>
+<p class="zh">暂且不谈那些令人不适的场景：比如我们必须维护几十年前遗留下来的代码库，这些代码诞生于 C++ 的“黄金时代”（也就是标准化委员会尚未接管之前的时代），那个年代充满了自由与混乱 —— 就像 BASIC 曾经带来的各种方言泛滥一样。在现实项目中，我们有时会遇到一些无法控制的情况，迫使我们放弃对完整 C++ 标准的支持：</p>
+<ul>
     <li>某些项目明确禁止使用异常机制</li>  <li>有些运行环境缺乏对动态内存分配的可靠支持</li>  <li>还有一些嵌入式或底层系统要求我们直接向硬件地址写入数据才能实现特定功能
-</ul></li></p>
-<p>不过，即使是最后一种情形，也仍然可以通过符合标准的方式实现。</p>
-<p>以嵌入式系统为例，许多这类平台积极鼓励开发者使用其专有的汇编指令。我们知道，在现代 C++ 中，并不存在所谓“平台无关的汇编语言” —— 因为到了这个层级，已经是软件所能触及的最低抽象层了。再往下就是纯十六进制的机器码，而那个需要手动编写机器指令的时代早已一去不复返。</p>
-<p>还有一种常见情况是：硬件对代码行为提出了严格的要求，必须具备确定性行为：</p>
-<p><ul>
+</ul></li>
+<p class="zh">不过，即使是最后一种情形，也仍然可以通过符合标准的方式实现。</p>
+<p class="zh">以嵌入式系统为例，许多这类平台积极鼓励开发者使用其专有的汇编指令。我们知道，在现代 C++ 中，并不存在所谓“平台无关的汇编语言” —— 因为到了这个层级，已经是软件所能触及的最低抽象层了。再往下就是纯十六进制的机器码，而那个需要手动编写机器指令的时代早已一去不复返。</p>
+<p class="zh">还有一种常见情况是：硬件对代码行为提出了严格的要求，必须具备确定性行为：</p>
+<ul>
     <li>异常机制被排除在外（谁愿意在每一纳秒的执行流程中都无法准确追踪程序状态？）</li>  <li>动态内存分配也被摒弃（因为分配延迟、内存碎片等问题会导致不确定性行为）
-</ul></li></p>
-<p>在这种情况下，C++ 标准中的大量特性就不得不被舍弃。</p>
-<p>为了解决这些问题，嵌入式领域发展出了一些替代方案，例如：</p>
-<p><ul>
+</ul></li>
+<p class="zh">在这种情况下，C++ 标准中的大量特性就不得不被舍弃。</p>
+<p class="zh">为了解决这些问题，嵌入式领域发展出了一些替代方案，例如：</p>
+<ul>
     <li>使用内存池或对象池</li>  <li>在编译期进行静态资源分配</li>  <li>或者采用其他形式的定制化资源管理策略 —— 其中不少方法甚至是平台定制的
-</ul></li></p>
-<p>至于异常机制，情况则更为复杂。在 Bjarne Stroustrup 的一篇精彩论文中<span class="footnote"><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf" target="_blank" rel="noopener noreferrer">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf</a></span>，他探讨了用诸如“确定性异常”等替代机制取代现有异常处理模型所面临的挑战、成本与潜在风险。</p>
-<p>正如该文所指出的那样，目前尚无明确证据表明，我们应该彻底抛弃现有的异常机制。那样做只会加剧本已严重的 C++ 社区碎片化问题。相反，作者主张应将重点放在增强当前的异常处理系统上，而不是通过引入新的机制来使语言变得更加复杂。他强调：尽管异常机制并不完美，但它在过去几十年中有效地服务了无数开发者，依然是一个经过实战检验的重要工具。</p>
+</ul></li>
+<p class="zh">至于异常机制，情况则更为复杂。在 Bjarne Stroustrup 的一篇精彩论文中<span class="footnote"><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf" target="_blank" rel="noopener noreferrer">https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1947r0.pdf</a></span>，他探讨了用诸如“确定性异常”等替代机制取代现有异常处理模型所面临的挑战、成本与潜在风险。</p>
+<p class="zh">正如该文所指出的那样，目前尚无明确证据表明，我们应该彻底抛弃现有的异常机制。那样做只会加剧本已严重的 C++ 社区碎片化问题。相反，作者主张应将重点放在增强当前的异常处理系统上，而不是通过引入新的机制来使语言变得更加复杂。他强调：尽管异常机制并不完美，但它在过去几十年中有效地服务了无数开发者，依然是一个经过实战检验的重要工具。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.5..html" class="prev-link">« 上一章：2.5. 头文件不符合C++规范时</a>
@@ -55,6 +55,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

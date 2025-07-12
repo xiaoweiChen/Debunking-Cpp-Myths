@@ -24,9 +24,9 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">5.6. 总结</h1></section>
-  <p>通过本章的学习，已经深刻认识到：在 C++ 编程中，遵循既定的执行顺序对于确保代码行为的可预测性和正确性至关重要。同时，也应该理解了在某些场景下，语言不强制指定执行顺序的设计选择所具有的深远意义。</p>
-<p>建议使用 Compiler Explorer 这样的在线实验平台进行实践探索 —— 集成了多种编译器和版本，能够直观地观察不同实现之间的差异。但请务必注意：如果发现不同编译器对同一段代码产生了不同的运行结果，那么很可能已经触及了“未指定行为”（unspecified）或“未定义行为”（undefined behavior）的边界。</p>
-<p>在下一章中，将深入探讨 C++ 内存管理中所面临的一系列挑战，包括动态内存分配、资源泄漏，以及现代 C++ 中的应对机制。</p>
+  <p class="zh">通过本章的学习，已经深刻认识到：在 C++ 编程中，遵循既定的执行顺序对于确保代码行为的可预测性和正确性至关重要。同时，也应该理解了在某些场景下，语言不强制指定执行顺序的设计选择所具有的深远意义。</p>
+<p class="zh">建议使用 Compiler Explorer 这样的在线实验平台进行实践探索 —— 集成了多种编译器和版本，能够直观地观察不同实现之间的差异。但请务必注意：如果发现不同编译器对同一段代码产生了不同的运行结果，那么很可能已经触及了“未指定行为”（unspecified）或“未定义行为”（undefined behavior）的边界。</p>
+<p class="zh">在下一章中，将深入探讨 C++ 内存管理中所面临的一系列挑战，包括动态内存分配、资源泄漏，以及现代 C++ 中的应对机制。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="5.5..html" class="prev-link">« 上一章：5.5. 去序从简</a>
@@ -39,6 +39,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

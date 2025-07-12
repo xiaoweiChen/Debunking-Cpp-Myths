@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">7.3. 并行和并发的常见问题</h1></section>
-  <p>我深信，软件开发的核心挑战之一在于：将系统的静态视图（即代码）在脑海中转化为其动态行为 —— 也就是程序运行时的实际表现。 每当开发者考虑进行一次修改时，都需要在脑中“模拟执行”这段代码，这种思维活动虽然高度自动化，却始终消耗着大量的心智资源。也正是出于这个原因，我认为 测试驱动开发（TDD） 和 渐进式设计 具有重要价值 —— 将一部分认知负担从大脑转移到了反复运行的测试中，能够更安全、更有信心地推进代码演进。</p>
-<p>然而，这种根本性的认知挑战在单线程环境下已经颇具难度，在涉及并行或并发设计时更是复杂度倍增。我们不仅要预判某段代码自身的运行逻辑，还必须设想它与其他同时运行的代码之间如何交互与影响。因此，理解并预测并行执行所带来的行为变化，本身就是一项极具挑战性的脑力劳动。</p>
-<p>除了认知层面的困难，还有以下几个关键性的技术挑战：</p>
-<p><ul>
+  <p class="zh">我深信，软件开发的核心挑战之一在于：将系统的静态视图（即代码）在脑海中转化为其动态行为 —— 也就是程序运行时的实际表现。 每当开发者考虑进行一次修改时，都需要在脑中“模拟执行”这段代码，这种思维活动虽然高度自动化，却始终消耗着大量的心智资源。也正是出于这个原因，我认为 测试驱动开发（TDD） 和 渐进式设计 具有重要价值 —— 将一部分认知负担从大脑转移到了反复运行的测试中，能够更安全、更有信心地推进代码演进。</p>
+<p class="zh">然而，这种根本性的认知挑战在单线程环境下已经颇具难度，在涉及并行或并发设计时更是复杂度倍增。我们不仅要预判某段代码自身的运行逻辑，还必须设想它与其他同时运行的代码之间如何交互与影响。因此，理解并预测并行执行所带来的行为变化，本身就是一项极具挑战性的脑力劳动。</p>
+<p class="zh">除了认知层面的困难，还有以下几个关键性的技术挑战：</p>
+<ul>
     <li>资源共享带来的管理复杂性陡增。尤其是在多个线程可能修改同一数据的情况下，一个线程使用的值可能已经被另一个线程更改，从而导致错误结果；某个内存地址可能已被某个线程释放，而另一个线程却试图读写该地址，引发未定义行为。</li>  <li>基础设施共享同样充满风险。例如，某个线程可能因 bug 而长时间独占共享资源，阻塞其他线程的执行。尽管多核架构下的任务分离可以在一定程度上缓解此类问题，但最终仍需进行任务合并，这可能导致性能瓶颈。此外，线程可能陷入无限等待状态，直到超时机制介入。
-</ul></li></p>
-<p>从零开始实现一个可靠的并行或并发程序，可以说是开发者面临的最艰巨任务。我曾为解决一个复杂的线程同步问题整整调试了一周。那段时间里，我能明显感受到技术主管和项目经理对我的能力产生了怀疑 —— 尽管我对自己的判断仍有信心，但耗时之久确实令人沮丧。</p>
-<p>正因如此，业界涌现出了大量用于辅助实现并发与并行程序的库和设计模式。这些工具大多要求我们将代表线程行为的函数传递给特定的调度器或执行框架，由后者负责处理底层的线程同步与资源管理复杂性。这种通过任务类型抽象来隔离复杂性的方法，在实践中大大提升了并发编程的可行性。</p>
-<p>此外，受函数式编程思想启发的一些架构模式（如 Hadoop 所采用的 MapReduce 模型），也在帮助我们应对大规模并行化挑战方面发挥了重要作用。它们通过强调不可变性和纯函数调用，降低了状态共享带来的风险，并简化了并行任务的设计与推理过程。</p>
-<p>由此可见，当讨论现代并行编程的方法论时，函数式编程所提供的思路已成为不可或缺的一部分。接下来的内容将围绕这些思路展开深入探讨。</p>
+</ul></li>
+<p class="zh">从零开始实现一个可靠的并行或并发程序，可以说是开发者面临的最艰巨任务。我曾为解决一个复杂的线程同步问题整整调试了一周。那段时间里，我能明显感受到技术主管和项目经理对我的能力产生了怀疑 —— 尽管我对自己的判断仍有信心，但耗时之久确实令人沮丧。</p>
+<p class="zh">正因如此，业界涌现出了大量用于辅助实现并发与并行程序的库和设计模式。这些工具大多要求我们将代表线程行为的函数传递给特定的调度器或执行框架，由后者负责处理底层的线程同步与资源管理复杂性。这种通过任务类型抽象来隔离复杂性的方法，在实践中大大提升了并发编程的可行性。</p>
+<p class="zh">此外，受函数式编程思想启发的一些架构模式（如 Hadoop 所采用的 MapReduce 模型），也在帮助我们应对大规模并行化挑战方面发挥了重要作用。它们通过强调不可变性和纯函数调用，降低了状态共享带来的风险，并简化了并行任务的设计与推理过程。</p>
+<p class="zh">由此可见，当讨论现代并行编程的方法论时，函数式编程所提供的思路已成为不可或缺的一部分。接下来的内容将围绕这些思路展开深入探讨。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="7.2..html" class="prev-link">« 上一章：7.2. 并行和并发的定义</a>
@@ -46,6 +46,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,14 +24,14 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">4.1. main()函数</h1></section>
-  <p>当我们最初在学校或大学学习 C++ 时，在第一堂课上，老师通常会告诉我们：“同学们，请看这个主函数：void main(void)。你的程序就是从这里开始运行的。” 就是这样简单直接。</p>
-<p>我之所以写下 void main(void)，只是为了引起你的好奇心，让你保持警觉。事实上，对于有一定经验的 C++ 开发者来说，void main(void) 距离标准 C++ 的规范，就像“尼莫点”（地球上距离陆地最远的海洋地点）距离最近的大陆一样遥远。</p>
-<p>哦，你还在这里！这意味着你确实读了这些。太好了 —— 作为开发者，我们就应该关注每一个细节，比如应用程序是如何被操作系统加载，并执行到内存中的。</p>
-<p>我们生活在一个自由的世界中，因此可以根据自己的意愿选择多种操作系统。因此，我们将介绍应用程序在 Linux 和 Windows 下如何加载和执行。</p>
-<p>这两个操作系统在加载和执行编译后的二进制文件方面存在显著差异。其中一种系统（不难猜出是哪个）允许追踪这一过程的所有代码路径，直至深入内核的核心；而对另一种系统，必须依赖现有的文档、书籍以及各种技术资料，这些信息需要热衷于底层研究的技术人员自行收集与整理。</p>
-<p>由于 Linux 处理这一机制的方式与 BSD 家族（如 FreeBSD、NetBSD 等）非常相似，在后续讨论中将不再频繁提及这些系统。为了让你在追求知识的过程中也能感受到乐趣，我们希望提供最新且相关的信息，所以不为那些早已不再活跃的操作系统（例如 MS-DOS）提供相关内容，除非你恰好在 Deutsche Bahn 工作<span class="footnote"><a href="https://www.theregister.com/2024/01/30/windows_311_trundles_on/" target="_blank" rel="noopener noreferrer">https://www.theregister.com/2024/01/30/windows_311_trundles_on/</a></span>。</p>
-<p>但在深入探讨之前，让我们先展示一个用于演示上述功能的测试程序：</p>
-<p><pre><code class="language-cpp">#include &lt;cstring&gt;
+  <p class="zh">当我们最初在学校或大学学习 C++ 时，在第一堂课上，老师通常会告诉我们：“同学们，请看这个主函数：void main(void)。你的程序就是从这里开始运行的。” 就是这样简单直接。</p>
+<p class="zh">我之所以写下 void main(void)，只是为了引起你的好奇心，让你保持警觉。事实上，对于有一定经验的 C++ 开发者来说，void main(void) 距离标准 C++ 的规范，就像“尼莫点”（地球上距离陆地最远的海洋地点）距离最近的大陆一样遥远。</p>
+<p class="zh">哦，你还在这里！这意味着你确实读了这些。太好了 —— 作为开发者，我们就应该关注每一个细节，比如应用程序是如何被操作系统加载，并执行到内存中的。</p>
+<p class="zh">我们生活在一个自由的世界中，因此可以根据自己的意愿选择多种操作系统。因此，我们将介绍应用程序在 Linux 和 Windows 下如何加载和执行。</p>
+<p class="zh">这两个操作系统在加载和执行编译后的二进制文件方面存在显著差异。其中一种系统（不难猜出是哪个）允许追踪这一过程的所有代码路径，直至深入内核的核心；而对另一种系统，必须依赖现有的文档、书籍以及各种技术资料，这些信息需要热衷于底层研究的技术人员自行收集与整理。</p>
+<p class="zh">由于 Linux 处理这一机制的方式与 BSD 家族（如 FreeBSD、NetBSD 等）非常相似，在后续讨论中将不再频繁提及这些系统。为了让你在追求知识的过程中也能感受到乐趣，我们希望提供最新且相关的信息，所以不为那些早已不再活跃的操作系统（例如 MS-DOS）提供相关内容，除非你恰好在 Deutsche Bahn 工作<span class="footnote"><a href="https://www.theregister.com/2024/01/30/windows_311_trundles_on/" target="_blank" rel="noopener noreferrer">https://www.theregister.com/2024/01/30/windows_311_trundles_on/</a></span>。</p>
+<p class="zh">但在深入探讨之前，让我们先展示一个用于演示上述功能的测试程序：</p>
+<pre class="line-numbers"><code class="language-cpp">#include &lt;cstring&gt;
 #include &lt;cstdio&gt;
 
 struct A {
@@ -58,20 +58,20 @@ A my_other_a(my_other_string);
 
 int main() {
   printf(&quot;Hello, World, %s, %s\n&quot;, my_a.get(), my_other_a.get());
-}</code></pre></p>
-<p>在符合标准的系统上编译并运行该程序时，它将输出如下内容，正如标准所预期的那样：</p>
-<p><pre><code class="language-shell">A::A : Hello string
+}</code></pre>
+<p class="zh">在符合标准的系统上编译并运行该程序时，它将输出如下内容，正如标准所预期的那样：</p>
+<pre><code class="language-shell">A::A : Hello string
 A::A : Go away string
 Hello, World, Hello string, Go away string
 A::~A : Go away string
-A::~A : Hello string</code></pre></p>
-<p>我们有意避免使用 cout 和其他流操作，以保持程序的简洁性。</p>
-<p>我们不想让生成的代码受到干扰，因为接下来我们将深入分析编译后的可执行文件。</p>
-<p>这段代码是为了本章特别编写的示例代码，属于合成场景。作者完全清楚使用 strcpy 可能带来的缓冲区溢出风险，因此建议读者“听其言，而非效其行” —— 请不要在实际项目中使用 strcpy。</p>
-<p>回到我们的主题：来看看操作系统如何加载并执行应用程序。</p>
-<p>如果你觉得下面的内容过于底层、不够吸引人，请记住：C++ 程序会编译为原生代码，能够以底层操作系统所能提供的最高性能运行。</p>
-<p>正因如此，我们认为每一位 C++ 开发者都有必要了解操作系统如何处理他们的程序，以及编译器在完成源码翻译、生成一个可执行文件之后，究竟发生了什么。</p>
-<p>我们会尽量避免陷入过于底层的细节，只展示真正必要的内容，以便各位能充分理解这一过程的重要性。</p>
+A::~A : Hello string</code></pre>
+<p class="zh">我们有意避免使用 cout 和其他流操作，以保持程序的简洁性。</p>
+<p class="zh">我们不想让生成的代码受到干扰，因为接下来我们将深入分析编译后的可执行文件。</p>
+<p class="zh">这段代码是为了本章特别编写的示例代码，属于合成场景。作者完全清楚使用 strcpy 可能带来的缓冲区溢出风险，因此建议读者“听其言，而非效其行” —— 请不要在实际项目中使用 strcpy。</p>
+<p class="zh">回到我们的主题：来看看操作系统如何加载并执行应用程序。</p>
+<p class="zh">如果你觉得下面的内容过于底层、不够吸引人，请记住：C++ 程序会编译为原生代码，能够以底层操作系统所能提供的最高性能运行。</p>
+<p class="zh">正因如此，我们认为每一位 C++ 开发者都有必要了解操作系统如何处理他们的程序，以及编译器在完成源码翻译、生成一个可执行文件之后，究竟发生了什么。</p>
+<p class="zh">我们会尽量避免陷入过于底层的细节，只展示真正必要的内容，以便各位能充分理解这一过程的重要性。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="4.0..html" class="prev-link">« 上一章：第4章</a>
@@ -84,6 +84,18 @@ A::~A : Hello string</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

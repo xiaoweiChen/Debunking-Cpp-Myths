@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">7.5. Actor模型</h1></section>
-  <p>我们所处的世界本质上是以并行方式运作的。每一棵树、每一株植物，乃至每一个人都在独立地运行和变化，偶尔通过相互作用来影响彼此的状态。因此，我们天生就具备理解并行程序运作的心智模型：在一个具备同步机制的基础设施之上，各自独立封装的行为实体通过某种方式进行交互。</p>
-<p>这一理念启发了 Carl Hewitt 于 1973 年提出 Actor 模型（Actor Model）。该模型将程序拆分为多个能够执行以下三种基本行为的“actor”</p>
-<p><ul>
+  <p class="zh">我们所处的世界本质上是以并行方式运作的。每一棵树、每一株植物，乃至每一个人都在独立地运行和变化，偶尔通过相互作用来影响彼此的状态。因此，我们天生就具备理解并行程序运作的心智模型：在一个具备同步机制的基础设施之上，各自独立封装的行为实体通过某种方式进行交互。</p>
+<p class="zh">这一理念启发了 Carl Hewitt 于 1973 年提出 Actor 模型（Actor Model）。该模型将程序拆分为多个能够执行以下三种基本行为的“actor”</p>
+<ul>
     <li>向其他actor发送消息</li>  <li>创建新actor</li>  <li>定义处理下一条消息时应采取的行为准则
-</ul></li></p>
-<p>每个 actor 都拥有一个类似电子邮件地址的唯一标识符，它只能与自己已知地址的 actor 进行通信。这些地址通常通过接收消息或创建新 actor 的过程获得。</p>
-<p>Actor 模型的一个核心优势在于 —— 它将通信机制与业务逻辑进行了清晰的解耦。这种设计使得开发者无需直接操作线程原语，就能编写出高度并发且可扩展的程序。</p>
-<p>在 C++ 社区中，最成熟和稳定的 Actor 模型实现是 CAF（C++ Actor Framework）(<a href="https://www.actor-framework.org/" target="_blank" rel="noopener noreferrer">https://www.actor-framework.org/</a>)。近年来也出现了新的实现方案，例如阿里巴巴开源的 Hiactor：(<a href="https://github.com/alibaba/hiactor" target="_blank" rel="noopener noreferrer">https://github.com/alibaba/hiactor</a>)。不过，最广为人知的 Actor 实现来自 Java 生态系统，那就是 Akka 工具包：(<a href="https://akka.io/" target="_blank" rel="noopener noreferrer">https://akka.io/</a>)。</p>
-<p>为了展示 Actor 模型的实际应用，来看一个使用 CAF 实现两个 actor 之间简单聊天的示例。在这个例子中，我们将 actor 的行为定义为 Lambda 表达式，实例化两个用于聊天的 actor，并在它们之间发送消息。每个 actor 在接收到消息后会将其内容输出到控制台：</p>
-<p><pre><code class="language-cpp">behavior chatter(event_based_actor* self, const string&amp; name) {
+</ul></li>
+<p class="zh">每个 actor 都拥有一个类似电子邮件地址的唯一标识符，它只能与自己已知地址的 actor 进行通信。这些地址通常通过接收消息或创建新 actor 的过程获得。</p>
+<p class="zh">Actor 模型的一个核心优势在于 —— 它将通信机制与业务逻辑进行了清晰的解耦。这种设计使得开发者无需直接操作线程原语，就能编写出高度并发且可扩展的程序。</p>
+<p class="zh">在 C++ 社区中，最成熟和稳定的 Actor 模型实现是 CAF（C++ Actor Framework）(<a href="https://www.actor-framework.org/" target="_blank" rel="noopener noreferrer">https://www.actor-framework.org/</a>)。近年来也出现了新的实现方案，例如阿里巴巴开源的 Hiactor：(<a href="https://github.com/alibaba/hiactor" target="_blank" rel="noopener noreferrer">https://github.com/alibaba/hiactor</a>)。不过，最广为人知的 Actor 实现来自 Java 生态系统，那就是 Akka 工具包：(<a href="https://akka.io/" target="_blank" rel="noopener noreferrer">https://akka.io/</a>)。</p>
+<p class="zh">为了展示 Actor 模型的实际应用，来看一个使用 CAF 实现两个 actor 之间简单聊天的示例。在这个例子中，我们将 actor 的行为定义为 Lambda 表达式，实例化两个用于聊天的 actor，并在它们之间发送消息。每个 actor 在接收到消息后会将其内容输出到控制台：</p>
+<pre class="line-numbers"><code class="language-cpp">behavior chatter(event_based_actor* self, const string&amp; name) {
   return {
     [=] (const string&amp; msg) {
       cout &lt;&lt; name &lt;&lt; &quot; received: &quot; &lt;&lt; msg &lt;&lt; endl;
@@ -52,26 +52,26 @@ void caf_main(actor_system&amp; system) {
   sleep_for(seconds(1));
 }
 
-CAF_MAIN()</code></pre></p>
-<p>运行这段代码会产生不同的输出。最理想的结果正是我们所预期的：</p>
-<p><pre><code class="language-shell">Bob received: Hello Bob!
+CAF_MAIN()</code></pre>
+<p class="zh">运行这段代码会产生不同的输出。最理想的结果正是我们所预期的：</p>
+<pre><code class="language-shell">Bob received: Hello Bob!
 Alice received: Hello Alice!
 Alice received: How are you?
-Bob received: I'm good, thanks!</code></pre></p>
-<p>但反复运行这段代码会产生不同的结果，如下所示：</p>
-<p><pre><code class="language-shell">Bob received: Hello Bob!
+Bob received: I'm good, thanks!</code></pre>
+<p class="zh">但反复运行这段代码会产生不同的结果，如下所示：</p>
+<pre><code class="language-shell">Bob received: Hello Bob!
 Bob received: I'm good, thanks!
 Alice received: Hello Alice!
-Alice received: How are you?</code></pre></p>
-<p>还可能得到更糟糕的输出结果：</p>
-<p><pre><code class="language-shell">Alice received: Hello Alice!
+Alice received: How are you?</code></pre>
+<p class="zh">还可能得到更糟糕的输出结果：</p>
+<pre><code class="language-shell">Alice received: Hello Alice!
 BobAlice received: How are you? received: Hello Bob!
 
-Bob received: I'm good, thanks!</code></pre></p>
-<p>这些结果清楚地表明，actor 是真正并行运行的。同时，它们也揭示了一个现实：尽管框架在底层做了大量封装，并行编程的复杂性终究无法被完全隐藏。我们仍然需要理解消息传递、状态同步以及潜在的并发问题，只是这些问题现在以更高层次的形式呈现出来。</p>
-<p>不过，Actor 模型为我们提供了一种强大的抽象方式 —— 它让我们将并行编程看作是一组独立对象对请求做出响应的过程。这种模型不仅更贴近现实世界的运作方式，还允许我们根据系统需求灵活选择 actor 的类型和通信机制。前面的例子展示了一个基于事件、接收异步消息的 actor，但许多框架（如 CAF）同样支持阻塞式消息传递，以及具有不同生命周期的 actor 类型。</p>
-<p>Actor 模型的一大优势在于其天然的可扩展性。我们可以轻松地将 actor 分布在不同的计算节点上，从而构建出分布式系统。这意味着，从第一行代码开始，我们的程序就具备了横向扩展的能力。当然，这也意味着我们立刻面对分布式系统的典型挑战，例如网络延迟、节点故障、数据一致性等问题。</p>
-<p>至此，我们已经了解了现代 C++ 标准库所提供的并发支持，以及经过实践验证的 Actor 模型所能实现的功能。然而，在面对日益复杂的软件需求时，我们仍会遇到一些当前语言和标准尚未原生支持的场景。那么，到底还有哪些能力是我们目前无法轻易实现的？这正是下一节要探讨的重点。</p>
+Bob received: I'm good, thanks!</code></pre>
+<p class="zh">这些结果清楚地表明，actor 是真正并行运行的。同时，它们也揭示了一个现实：尽管框架在底层做了大量封装，并行编程的复杂性终究无法被完全隐藏。我们仍然需要理解消息传递、状态同步以及潜在的并发问题，只是这些问题现在以更高层次的形式呈现出来。</p>
+<p class="zh">不过，Actor 模型为我们提供了一种强大的抽象方式 —— 它让我们将并行编程看作是一组独立对象对请求做出响应的过程。这种模型不仅更贴近现实世界的运作方式，还允许我们根据系统需求灵活选择 actor 的类型和通信机制。前面的例子展示了一个基于事件、接收异步消息的 actor，但许多框架（如 CAF）同样支持阻塞式消息传递，以及具有不同生命周期的 actor 类型。</p>
+<p class="zh">Actor 模型的一大优势在于其天然的可扩展性。我们可以轻松地将 actor 分布在不同的计算节点上，从而构建出分布式系统。这意味着，从第一行代码开始，我们的程序就具备了横向扩展的能力。当然，这也意味着我们立刻面对分布式系统的典型挑战，例如网络延迟、节点故障、数据一致性等问题。</p>
+<p class="zh">至此，我们已经了解了现代 C++ 标准库所提供的并发支持，以及经过实践验证的 Actor 模型所能实现的功能。然而，在面对日益复杂的软件需求时，我们仍会遇到一些当前语言和标准尚未原生支持的场景。那么，到底还有哪些能力是我们目前无法轻易实现的？这正是下一节要探讨的重点。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="7.4..html" class="prev-link">« 上一章：7.4. 函数式编程的救援</a>
@@ -84,6 +84,18 @@ Bob received: I'm good, thanks!</code></pre></p>
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

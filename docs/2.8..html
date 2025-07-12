@@ -24,13 +24,13 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.8. 总结</h1></section>
-  <p>正如本章所展示的那样，编写符合标准的 C++ 代码是确保其在不同平台和编译器之间具备可移植性、兼容性与可维护性的关键所在。</p>
-<p>我们已经了解到，遵循 ISO/IEC C++ 标准，不仅可以帮助写出行为可预测、更少出现 bug 和平台相关问题的代码，还能使程序从通用的编译器优化中受益，并更好地适应未来的语言演进。这意味着代码不仅能在今天运行良好，在多年之后依然能够保持良好的可读性与性能表现 —— 这正是我们在本章中反复强调的核心价值。</p>
-<p>然而，另一方面，使用特定于编译器的扩展也带来了不容忽视的优势：它们为开发者提供了针对特定平台的性能优化能力、对尚未标准化的高级特性的早期访问权限，以及与厂商专属工具链的深度集成。这些功能往往能显著提升开发效率或程序性能。</p>
-<p>但与此同时，这些非标准扩展也可能引入一系列潜在问题：包括但不限于降低代码的可移植性、增加对特定编译器版本的依赖、以及偏离主流 C++ 实践所带来的长期维护风险。这也是本章所重点探讨的内容。</p>
-<p>因此，我们得出结论：是否采用这些扩展，必须根据项目的实际需求进行慎重权衡。需要在功能增强带来的短期收益与兼容性、可维护性和长期支持方面的潜在成本之间做出取舍。</p>
-<p>在这个阶段，我们相信你现在已具备足够的判断力，能够为项目和代码库做出最合适的决策 —— 无论是为了交付一个商业产品，还是出于兴趣，在一台三十年前的老机器上，用一个三十年前的编译器，都能完成个人的小项目。</p>
-<p>接下来的章节将由 Alex 呈现。我们将深入探索并试图揭示一个根本性的问题：C++ 究竟是仅仅另一种面向对象的语言？还是在其表面之下，隐藏着远比我们所见更深邃、更丰富的编程范式与设计哲学？</p>
+  <p class="zh">正如本章所展示的那样，编写符合标准的 C++ 代码是确保其在不同平台和编译器之间具备可移植性、兼容性与可维护性的关键所在。</p>
+<p class="zh">我们已经了解到，遵循 ISO/IEC C++ 标准，不仅可以帮助写出行为可预测、更少出现 bug 和平台相关问题的代码，还能使程序从通用的编译器优化中受益，并更好地适应未来的语言演进。这意味着代码不仅能在今天运行良好，在多年之后依然能够保持良好的可读性与性能表现 —— 这正是我们在本章中反复强调的核心价值。</p>
+<p class="zh">然而，另一方面，使用特定于编译器的扩展也带来了不容忽视的优势：它们为开发者提供了针对特定平台的性能优化能力、对尚未标准化的高级特性的早期访问权限，以及与厂商专属工具链的深度集成。这些功能往往能显著提升开发效率或程序性能。</p>
+<p class="zh">但与此同时，这些非标准扩展也可能引入一系列潜在问题：包括但不限于降低代码的可移植性、增加对特定编译器版本的依赖、以及偏离主流 C++ 实践所带来的长期维护风险。这也是本章所重点探讨的内容。</p>
+<p class="zh">因此，我们得出结论：是否采用这些扩展，必须根据项目的实际需求进行慎重权衡。需要在功能增强带来的短期收益与兼容性、可维护性和长期支持方面的潜在成本之间做出取舍。</p>
+<p class="zh">在这个阶段，我们相信你现在已具备足够的判断力，能够为项目和代码库做出最合适的决策 —— 无论是为了交付一个商业产品，还是出于兴趣，在一台三十年前的老机器上，用一个三十年前的编译器，都能完成个人的小项目。</p>
+<p class="zh">接下来的章节将由 Alex 呈现。我们将深入探索并试图揭示一个根本性的问题：C++ 究竟是仅仅另一种面向对象的语言？还是在其表面之下，隐藏着远比我们所见更深邃、更丰富的编程范式与设计哲学？</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.7..html" class="prev-link">« 上一章：2.7. 未来之路</a>
@@ -43,6 +43,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

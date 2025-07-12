@@ -24,11 +24,11 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">2.1. 环境要求</h1></section>
-  <p>必须坦诚地指出，阅读本章可能不会是一个轻松的过程，但我们将会尽力让内容尽可能易于理解。我们的讨论将穿梭于 C++ 所支持的各种平台、编译器以及不同的“方言”之间。然而，在某个时刻，必须划清理论与实践之间的界限，并尝试将这些看似抽象的概念转化为真正可用的代码。</p>
-<p>因此，强烈建议您能够访问互联网，以便随时查阅相关信息。而如果想动手尝试不同的编译器行为，我们特别推荐一个实验性 C++ 探索的首选工具 —— Matt Godbolt 的 Compiler Explorer：</p>
-<p><a href="https://gcc.godbolt.org/" target="_blank" rel="noopener noreferrer">https://gcc.godbolt.org/</a></p>
-<p>这个在线平台几乎支持我们在本章中将要讨论的所有主流 C++ 编译器，是观察不同编译器如何处理代码、探索语言特性和优化行为的理想场所。</p>
-<p>目前，无需下载或保存任何资料，因为我们还没有写出足够有价值或具有代表性的代码，值得提交到本书的 GitHub 仓库中。换句话说，现在所生成的代码只是为了辅助理解，并不需要保留。</p>
+  <p class="zh">必须坦诚地指出，阅读本章可能不会是一个轻松的过程，但我们将会尽力让内容尽可能易于理解。我们的讨论将穿梭于 C++ 所支持的各种平台、编译器以及不同的“方言”之间。然而，在某个时刻，必须划清理论与实践之间的界限，并尝试将这些看似抽象的概念转化为真正可用的代码。</p>
+<p class="zh">因此，强烈建议您能够访问互联网，以便随时查阅相关信息。而如果想动手尝试不同的编译器行为，我们特别推荐一个实验性 C++ 探索的首选工具 —— Matt Godbolt 的 Compiler Explorer：</p>
+<p class="zh"><a href="https://gcc.godbolt.org/" target="_blank" rel="noopener noreferrer">https://gcc.godbolt.org/</a></p>
+<p class="zh">这个在线平台几乎支持我们在本章中将要讨论的所有主流 C++ 编译器，是观察不同编译器如何处理代码、探索语言特性和优化行为的理想场所。</p>
+<p class="zh">目前，无需下载或保存任何资料，因为我们还没有写出足够有价值或具有代表性的代码，值得提交到本书的 GitHub 仓库中。换句话说，现在所生成的代码只是为了辅助理解，并不需要保留。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="2.0..html" class="prev-link">« 上一章：第2章</a>
@@ -41,6 +41,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

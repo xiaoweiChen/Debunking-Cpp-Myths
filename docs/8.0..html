@@ -24,16 +24,16 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="chapter"><h1 class="chapter-title">第8章</h1></section>
-  <p><div style="text-align:right">
+  <div style="text-align:right">
 <em>—— 不可复降于此</em>
-</div></p>
-<p>在追求极致效率的 C++ 开发领域，优化代码以榨取每一丝性能始终是一项令人着迷的挑战。这条探索之路往往将开发者引向计算的本质 —— 当高级语言与底层硬件相遇，每一个 CPU 时钟周期都变得弥足珍贵。</p>
-<p>回到三十年前的九十年代，开发者们常常需要手工打磨每一个字节的机器码，甚至深入汇编语言（乃至更底层）的“深水区”，只为实现那微乎其微却至关重要的性能提升。尽管这些早期优化手段在今天看来或许显得原始，但它们为理解 C++ 与汇编语言之间的关系、以及性能优化的本质奠定了坚实基础。</p>
-<p>本章将聚焦于一个看似简单的任务 —— 点亮屏幕像素的优化。我们将通过对比三十年前手工优化的汇编例程与现代 Clang、GCC、MSVC 等先进编译器的输出结果，揭示编译器技术在过去几十年中的演进历程。随着分析的深入，你将看到人类直觉与机器优化之间不断变化的平衡点，从而洞察我们所写的代码与最终运行它的机器之间日益复杂的关系。(注：本章聚焦Intel x86处理器架构特性，ARM架构将留待其他著作探讨)</p>
-<p>通过本章，你将掌握以下关键知识：</p>
-<p><ul>
+</div>
+<p class="zh">在追求极致效率的 C++ 开发领域，优化代码以榨取每一丝性能始终是一项令人着迷的挑战。这条探索之路往往将开发者引向计算的本质 —— 当高级语言与底层硬件相遇，每一个 CPU 时钟周期都变得弥足珍贵。</p>
+<p class="zh">回到三十年前的九十年代，开发者们常常需要手工打磨每一个字节的机器码，甚至深入汇编语言（乃至更底层）的“深水区”，只为实现那微乎其微却至关重要的性能提升。尽管这些早期优化手段在今天看来或许显得原始，但它们为理解 C++ 与汇编语言之间的关系、以及性能优化的本质奠定了坚实基础。</p>
+<p class="zh">本章将聚焦于一个看似简单的任务 —— 点亮屏幕像素的优化。我们将通过对比三十年前手工优化的汇编例程与现代 Clang、GCC、MSVC 等先进编译器的输出结果，揭示编译器技术在过去几十年中的演进历程。随着分析的深入，你将看到人类直觉与机器优化之间不断变化的平衡点，从而洞察我们所写的代码与最终运行它的机器之间日益复杂的关系。(注：本章聚焦Intel x86处理器架构特性，ARM架构将留待其他著作探讨)</p>
+<p class="zh">通过本章，你将掌握以下关键知识：</p>
+<ul>
     <li>如何通过嵌入式汇编或内联汇编加速关键性能路径上的例程。</li>  <li>在哪些场景下应避免手动编写汇编代码，而应信任现代编译器强大的优化能力。
-</ul></li></p>
+</ul></li>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="7.7..html" class="prev-link">« 上一章：7.7. 总结</a>
@@ -46,6 +46,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

@@ -24,11 +24,11 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">1.4. Stroustrup学习法</h1></section>
-  <p>尽管 C++ 标准一直在朝着更简洁、现代的方向演进，但许多学习资料却依然停留在过去。我理解要跟上 C++ 标准的变化并不容易，尤其是在 2010 年之后，语言更新的步伐明显加快。一个常见的问题是：在实际开发中，究竟有多少代码真正采用了最新的标准？学生是否仍然需要掌握那些旧版 C++ 的写法，以便应对那些已有数十年历史的代码库？</p>
-<p>虽然这种情况确实存在，但我们终究必须向前迈进，而 C++ 的设计者 Bjarne Stroustrup 也持这一观点。他撰写的书《C++ 程序设计原理与实践》（Programming: Principles and Practice Using C++）在 2024 年推出的第三版中，针对面向编程初学者系统地介绍了 C++，是一本非常优秀的入门教材。书中配有大量实用的教学示例和课件，非常适合教师授课或自学使用。需要注意的是，Stroustrup 并没有回避指针和内存管理这些传统难点，而是以一种循序渐进的方式讲解了最基本的知识，并迅速引导读者了解如何在现代 C++ 中避免直接使用它们。</p>
-<p>以第 16 章相关的教学幻灯片为例，该章节聚焦于数组相关的内容。从讲解原始数组（naked arrays）开始，解释了数组与指针之间的关系，以及使用指针时可能遇到的问题。随后，课程逐步引入一系列更安全、更现代的替代方案：vector、set、map、unordered_map、array、string、unique_ptr、shared_ptr、span 和 not_null指针等。这组幻灯片最后通过一个判断回文字符串的示例收尾，展示了多种实现方式，并比较了它们在代码安全性与简洁性方面的差异。因此，这一章节的核心目标是揭示数组与指针带来的种种问题，并展示标准模板库(STL)结构如何规避这些问题。</p>
-<p>最终写出的代码风格已经非常接近 Java 或 C# 的写法，但 Stroustrup 也指出，指针运算在某些数据结构的底层实现中仍然具有价值。换句话说，它应在确实需要进行高度性能优化时谨慎使用。由此可见，C++ 的设计者并不是在回避指针和内存管理，而是在努力减少与之相关的潜在风险。相比 C++98 时代，现代 C++ 让开发者能够将更多精力放在业务逻辑上，而不是频繁处理内存细节 —— 仍需比 Java 或 C# 开发者投入更多的关注。</p>
-<p>那么问题依然存在：初学者是否可以在不深入理解指针的情况下学习 C++？另一种教学方法似乎表明这是可能的 —— 前提是我们希望培养的是库的使用者，而不是库的设计者。</p>
+  <p class="zh">尽管 C++ 标准一直在朝着更简洁、现代的方向演进，但许多学习资料却依然停留在过去。我理解要跟上 C++ 标准的变化并不容易，尤其是在 2010 年之后，语言更新的步伐明显加快。一个常见的问题是：在实际开发中，究竟有多少代码真正采用了最新的标准？学生是否仍然需要掌握那些旧版 C++ 的写法，以便应对那些已有数十年历史的代码库？</p>
+<p class="zh">虽然这种情况确实存在，但我们终究必须向前迈进，而 C++ 的设计者 Bjarne Stroustrup 也持这一观点。他撰写的书《C++ 程序设计原理与实践》（Programming: Principles and Practice Using C++）在 2024 年推出的第三版中，针对面向编程初学者系统地介绍了 C++，是一本非常优秀的入门教材。书中配有大量实用的教学示例和课件，非常适合教师授课或自学使用。需要注意的是，Stroustrup 并没有回避指针和内存管理这些传统难点，而是以一种循序渐进的方式讲解了最基本的知识，并迅速引导读者了解如何在现代 C++ 中避免直接使用它们。</p>
+<p class="zh">以第 16 章相关的教学幻灯片为例，该章节聚焦于数组相关的内容。从讲解原始数组（naked arrays）开始，解释了数组与指针之间的关系，以及使用指针时可能遇到的问题。随后，课程逐步引入一系列更安全、更现代的替代方案：vector、set、map、unordered_map、array、string、unique_ptr、shared_ptr、span 和 not_null指针等。这组幻灯片最后通过一个判断回文字符串的示例收尾，展示了多种实现方式，并比较了它们在代码安全性与简洁性方面的差异。因此，这一章节的核心目标是揭示数组与指针带来的种种问题，并展示标准模板库(STL)结构如何规避这些问题。</p>
+<p class="zh">最终写出的代码风格已经非常接近 Java 或 C# 的写法，但 Stroustrup 也指出，指针运算在某些数据结构的底层实现中仍然具有价值。换句话说，它应在确实需要进行高度性能优化时谨慎使用。由此可见，C++ 的设计者并不是在回避指针和内存管理，而是在努力减少与之相关的潜在风险。相比 C++98 时代，现代 C++ 让开发者能够将更多精力放在业务逻辑上，而不是频繁处理内存细节 —— 仍需比 Java 或 C# 开发者投入更多的关注。</p>
+<p class="zh">那么问题依然存在：初学者是否可以在不深入理解指针的情况下学习 C++？另一种教学方法似乎表明这是可能的 —— 前提是我们希望培养的是库的使用者，而不是库的设计者。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="1.3..html" class="prev-link">« 上一章：1.3. C++ 的难点</a>
@@ -41,6 +41,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

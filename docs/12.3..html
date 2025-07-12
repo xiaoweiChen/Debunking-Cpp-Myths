@@ -24,84 +24,84 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">12.3. Rust的特性</h1></section>
-  <p>要理解Rust的核心特性，首推其官网(<a href="https://www.rust-lang.org/" target="_blank" rel="noopener noreferrer">https://www.rust-lang.org/</a>)，该站对其核心优势的提炼极为精当：</p>
-<p><ul>
+  <p class="zh">要理解Rust的核心特性，首推其官网(<a href="https://www.rust-lang.org/" target="_blank" rel="noopener noreferrer">https://www.rust-lang.org/</a>)，该站对其核心优势的提炼极为精当：</p>
+<ul>
     <li>运行高效且内存节约</li>  <li>零运行时开销</li>  <li>无垃圾回收机制</li>  <li>卓越的跨语言互操作性</li>  <li>通过丰富的类型系统和所有权模型实现内存安全和线程安全</li>  <li>出色的文档</li>  <li>友好的编译器，提供有用的错误消息</li>  <li>集成的包管理器和构建工具</li>  <li>自动格式化程序</li>  <li>智能多编辑器支持，具有自动完成和类型检查
-</ul></li></p>
-<p>仅从这些描述中，我们便能清晰地看出 Rust 与 C++ 的诸多相似之处，以及它在多个关键方面对 C++ 现状的显著改进。相似点主要体现在“控制力”层面：原生编译、无垃圾回收、高性能和内存效率 —— 这些特性也正是 C++ 长期以来引以为豪的核心优势。</p>
-<p>而它们之间的差异，则直指本书反复探讨的痛点所在：标准化的包管理、统一工具链以及友好的编译器。</p>
-<p>尤其是最后一点，对于那些曾饱受冗长、晦涩、令人抓狂的 C++ 编译错误信息折磨的开发者来说，简直堪称“雪中送炭”。还记得 2000 年代使用 Visual C++ 时的噩梦吗？我曾亲身经历过一次编译失败，提示却是：“错误信息过长，无法显示”。虽然现代 C++ 在这方面已有明显改善，但面对模板元编程引发的错误堆栈，仍然是一场难以言说的噩梦。</p>
-<p>不过，让我们暂且走出官网首页的宣传语，深入挖掘一些真正让人眼前一亮的功能。</p>
-<p>接下来，我将重点介绍几个相较于 C++ 而言特别实用且有趣的 Rust 特性：</p>
-<p><h4 class="filename">12.3.1 项目模板系统和包管理机制</h4></p>
-<p>作为命令行和Neovim代码编辑器的重度用户，我尤其钟爱能直接从命令行创建项目的技术。Rust自带的cargo工具可以完成项目创建、构建、运行、打包和发布全流程工作：</p>
-<p><ul>
+</ul></li>
+<p class="zh">仅从这些描述中，我们便能清晰地看出 Rust 与 C++ 的诸多相似之处，以及它在多个关键方面对 C++ 现状的显著改进。相似点主要体现在“控制力”层面：原生编译、无垃圾回收、高性能和内存效率 —— 这些特性也正是 C++ 长期以来引以为豪的核心优势。</p>
+<p class="zh">而它们之间的差异，则直指本书反复探讨的痛点所在：标准化的包管理、统一工具链以及友好的编译器。</p>
+<p class="zh">尤其是最后一点，对于那些曾饱受冗长、晦涩、令人抓狂的 C++ 编译错误信息折磨的开发者来说，简直堪称“雪中送炭”。还记得 2000 年代使用 Visual C++ 时的噩梦吗？我曾亲身经历过一次编译失败，提示却是：“错误信息过长，无法显示”。虽然现代 C++ 在这方面已有明显改善，但面对模板元编程引发的错误堆栈，仍然是一场难以言说的噩梦。</p>
+<p class="zh">不过，让我们暂且走出官网首页的宣传语，深入挖掘一些真正让人眼前一亮的功能。</p>
+<p class="zh">接下来，我将重点介绍几个相较于 C++ 而言特别实用且有趣的 Rust 特性：</p>
+<p class="zh"><h4 class="filename">12.3.1 项目模板系统和包管理机制</h4></p>
+<p class="zh">作为命令行和Neovim代码编辑器的重度用户，我尤其钟爱能直接从命令行创建项目的技术。Rust自带的cargo工具可以完成项目创建、构建、运行、打包和发布全流程工作：</p>
+<ul>
     <li>创建项目：cargo new 项目名</li>  <li>运行项目：cargo run</li>  <li>检查编译错误：cargo check</li>  <li>编译项目：cargo build</li>  <li>打包项目：如您所料 —— cargo package</li>  <li>发布项目：(鼓点声)...cargo publish
-</ul></li></p>
-<p>通过 cargo，我们不仅能轻松创建库和可执行文件，还能利用 cargo generate 工具(参见<a href="https://cargo-generate.github.io/cargo-generate/" target="_blank" rel="noopener noreferrer">https://cargo-generate.github.io/cargo-generate/</a>)基于预定义的项目模板快速初始化新项目。</p>
-<p>我知道，这对大多数 C++ 开发者来说可能并不稀奇 —— 毕竟你们很少从头开始创建新项目。在教授 C++ 开发者进行单元测试或实践测试驱动开发（TDD）时，这一点常常让我感到惊讶：我们不得不一起费劲地手动配置测试项目与生产代码之间的引用关系，而这些本应是理所当然、一键即可完成的操作。</p>
-<p>请相信我，这种便捷性不仅体现在项目初期，在进行小型实验、个人练习、甚至优化编译时间方面都大有裨益。</p>
-<p>在 SSD 硬盘尚未普及、编译速度仍令人头疼的年代，我曾常用一个“土办法”来应对 C++ 编译缓慢的问题：将正在修改的少数几个文件单独组成一个新的编译单元，其余部分则作为二进制依赖引用进来 —— 这虽然原始，但确实能显著缩短每次构建的时间。</p>
-<p>关于新建项目的讨论就到这里。</p>
-<p>现在，让我们写点代码……或者说，尝试修改一些变量……</p>
-<p>（突然想起 Rust 的默认不可变性）</p>
-<p><h4 class="filename">12.3.2 不可变性</h4></p>
-<p>Rust 默认采用不可变设计，正如官方文档所述：&quot;值一旦被绑定到变量名，就无法更改该值&quot;。让我们通过一个简单示例演示：先为变量分配字符串值并显示，然后尝试修改它：</p>
-<p><pre><code class="language-rust">fn main() {
+</ul></li>
+<p class="zh">通过 cargo，我们不仅能轻松创建库和可执行文件，还能利用 cargo generate 工具(参见<a href="https://cargo-generate.github.io/cargo-generate/" target="_blank" rel="noopener noreferrer">https://cargo-generate.github.io/cargo-generate/</a>)基于预定义的项目模板快速初始化新项目。</p>
+<p class="zh">我知道，这对大多数 C++ 开发者来说可能并不稀奇 —— 毕竟你们很少从头开始创建新项目。在教授 C++ 开发者进行单元测试或实践测试驱动开发（TDD）时，这一点常常让我感到惊讶：我们不得不一起费劲地手动配置测试项目与生产代码之间的引用关系，而这些本应是理所当然、一键即可完成的操作。</p>
+<p class="zh">请相信我，这种便捷性不仅体现在项目初期，在进行小型实验、个人练习、甚至优化编译时间方面都大有裨益。</p>
+<p class="zh">在 SSD 硬盘尚未普及、编译速度仍令人头疼的年代，我曾常用一个“土办法”来应对 C++ 编译缓慢的问题：将正在修改的少数几个文件单独组成一个新的编译单元，其余部分则作为二进制依赖引用进来 —— 这虽然原始，但确实能显著缩短每次构建的时间。</p>
+<p class="zh">关于新建项目的讨论就到这里。</p>
+<p class="zh">现在，让我们写点代码……或者说，尝试修改一些变量……</p>
+<p class="zh">（突然想起 Rust 的默认不可变性）</p>
+<p class="zh"><h4 class="filename">12.3.2 不可变性</h4></p>
+<p class="zh">Rust 默认采用不可变设计，正如官方文档所述：&quot;值一旦被绑定到变量名，就无法更改该值&quot;。让我们通过一个简单示例演示：先为变量分配字符串值并显示，然后尝试修改它：</p>
+<pre class="line-numbers"><code class="language-rust">fn main() {
   let the_message = "Hello, world!";
   println!("{the_message}");
   the_message = "A new hello!";
   println!("{the_message}");
-}</code></pre></p>
-<p>尝试编译此程序会导致编译错误。</p>
-<p><code>cannot assign twice to immutable variable the_message</code></p>
-<p>贴心的错误信息还包含提示：</p>
-<p><code>For more information about this error, try &#x27;rustc --explain E0384&#x27;</code></p>
-<p>错误解释不仅包含示例，还明确说明如何声明可变变量：</p>
-<p><em>&quot;Rust变量默认不可变。要修复此错误，需在声明变量时于let后添加mut关键字&quot;。</em></p>
-<p>以下是修改后可正常编译的代码示例：</p>
-<p><pre><code class="language-rust">let mut the_message = "Hello, world!";
+}</code></pre>
+<p class="zh">尝试编译此程序会导致编译错误。</p>
+<p class="zh"><code>cannot assign twice to immutable variable the_message</code></p>
+<p class="zh">贴心的错误信息还包含提示：</p>
+<p class="zh"><code>For more information about this error, try &#x27;rustc --explain E0384&#x27;</code></p>
+<p class="zh">错误解释不仅包含示例，还明确说明如何声明可变变量：</p>
+<p class="zh"><em>&quot;Rust变量默认不可变。要修复此错误，需在声明变量时于let后添加mut关键字&quot;。</em></p>
+<p class="zh">以下是修改后可正常编译的代码示例：</p>
+<pre class="line-numbers"><code class="language-rust">let mut the_message = "Hello, world!";
 println!("{the_message}");
 the_message = "A new hello!";
-println!("{the_message}");</code></pre></p>
-<p>由此可见，可变变量必须显式声明为 mut，这体现了Rust默认不可变的设计哲学。</p>
-<p>正如前几章讨论的，这种设计能有效解决并行并发、自动化测试和代码简洁性等诸多问题。</p>
-<p><h4 class="filename">12.3.3 复合类型的简洁语法</h4></p>
-<p>Rust 借鉴了 Python 和 Ruby 等语言的语法特性来处理数组和元组，其声明方式如下所示：</p>
-<p><pre><code class="language-rust">let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+println!("{the_message}");</code></pre>
+<p class="zh">由此可见，可变变量必须显式声明为 mut，这体现了Rust默认不可变的设计哲学。</p>
+<p class="zh">正如前几章讨论的，这种设计能有效解决并行并发、自动化测试和代码简洁性等诸多问题。</p>
+<p class="zh"><h4 class="filename">12.3.3 复合类型的简洁语法</h4></p>
+<p class="zh">Rust 借鉴了 Python 和 Ruby 等语言的语法特性来处理数组和元组，其声明方式如下所示：</p>
+<pre class="line-numbers"><code class="language-rust">let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 println!("{:?}", months);
 
 let (one, two) = (1, 1+1);
-println!("{one} and {two}");</code></pre></p>
-<p>这看似微不足道,却能显著简化代码。值得一提的是,C++自C++11起通过花括号列表初始化(list initializer)引入了类似语法,并在后续版本中持续优化:</p>
-<p><pre><code class="language-rust">std::vector<string> months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};</code></pre></p>
-<p>我期待这方面能有更多改进，但考虑到C++语法已然十分复杂，对此并不抱太高期望。</p>
-<p><h4 class="filename">12.3.4 可省略的return关键字</h4></p>
-<p>Rust函数允许直接返回最后一个表达式的值。</p>
-<p>以下示例演示了如何使用该特性实现数字自增：</p>
-<p><pre><code class="language-rust">fn main() {
+println!("{one} and {two}");</code></pre>
+<p class="zh">这看似微不足道,却能显著简化代码。值得一提的是,C++自C++11起通过花括号列表初始化(list initializer)引入了类似语法,并在后续版本中持续优化:</p>
+<pre class="line-numbers"><code class="language-rust">std::vector<string> months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};</code></pre>
+<p class="zh">我期待这方面能有更多改进，但考虑到C++语法已然十分复杂，对此并不抱太高期望。</p>
+<p class="zh"><h4 class="filename">12.3.4 可省略的return关键字</h4></p>
+<p class="zh">Rust函数允许直接返回最后一个表达式的值。</p>
+<p class="zh">以下示例演示了如何使用该特性实现数字自增：</p>
+<pre class="line-numbers"><code class="language-rust">fn main() {
   let two = increment(1);
   println!("{two}");
 }
 
 fn increment(x:i32) -> i32{
   x+1
-}</code></pre></p>
-<p>虽然在前述简单函数中我通常不会使用这种写法，但省略return关键字确实能简化闭包编写 —— 这正是我们接下来要探讨的内容。</p>
-<p><h4 class="filename">12.3.5 闭包</h4></p>
-<p>让我们对数组中的所有元素进行自增操作：</p>
-<p><pre><code class="language-rust">fn increment_all() -> Vec<i32>{
+}</code></pre>
+<p class="zh">虽然在前述简单函数中我通常不会使用这种写法，但省略return关键字确实能简化闭包编写 —— 这正是我们接下来要探讨的内容。</p>
+<p class="zh"><h4 class="filename">12.3.5 闭包</h4></p>
+<p class="zh">让我们对数组中的所有元素进行自增操作：</p>
+<pre class="line-numbers"><code class="language-rust">fn increment_all() -> Vec<i32>{
   let values : Vec<i32> = vec![1, 2, 3];
   return values.iter().map(|x| x+1).collect();
-}</code></pre></p>
-<p>与函数式编程的常规做法类似(如同C++中的ranges库)：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">与函数式编程的常规做法类似(如同C++中的ranges库)：</p>
+<ul>
     <li>获取迭代器</li>  <li>调用map函数(相当于C++中的transform算法)并传入闭包</li>  <li>调用collect获取结果集
-</ul></li></p>
-<p>闭包语法之所以如此简洁，正是得益于可选的return语句设计。</p>
-<p><h4 class="filename">12.3.6 标准库中的单元测试</h4></p>
-<p>单元测试是软件开发中至关重要的实践，但仅有少数语言在标准库中提供原生支持。Rust默认集成了这一功能，且使用极其简便。让我们为increment_all函数添加单元测试以验证其行为符合预期：</p>
-<p><pre><code class="language-rust">#[cfg(test)]
+</ul></li>
+<p class="zh">闭包语法之所以如此简洁，正是得益于可选的return语句设计。</p>
+<p class="zh"><h4 class="filename">12.3.6 标准库中的单元测试</h4></p>
+<p class="zh">单元测试是软件开发中至关重要的实践，但仅有少数语言在标准库中提供原生支持。Rust默认集成了这一功能，且使用极其简便。让我们为increment_all函数添加单元测试以验证其行为符合预期：</p>
+<pre class="line-numbers"><code class="language-rust">#[cfg(test)]
 mod tests {
   use super::*;
 
@@ -109,38 +109,38 @@ mod tests {
   fn it_works() {
     assert_eq!(vec![2, 3, 4], increment_all());
   }
-}</code></pre></p>
-<p>我特别欣赏Rust允许在同一个编译单元(Rust中称为crate)内同时编写生产代码和单元测试的便捷性。如果仅将单元测试视为义务性工作，这可能无足轻重；但对我这样常通过单元测试进行技术探索和设计验证的开发者而言，此特性实属福音。</p>
-<p><h4 class="filename">12.3.7 特质</h4></p>
-<p>Rust(以及Go)与其他主流语言的一大区别在于：它不支持继承机制，而是推崇组合模式。为实现多态行为，Rust提供了特质(trait)这一特性。</p>
-<p>Rust的特质类似于面向对象语言中的接口，它们定义了一组需要由派生类型实现的方法。但Rust特质有个独特功能：可以为非自身定义的类型添加特质。这与C#的扩展方法类似，但又不尽相同。</p>
-<p>Rust官方文档通过两个结构体示例演示了特质的使用：一个表示推文(tweet)，另一个表示新闻文章(news article)。为两者添加Summary特质后，就能生成对应的内容摘要。如下例所示，特质实现既独立于结构体实现，也独立于特质定义本身，这种设计提供了极大的灵活性。</p>
-<p>首先，让我们看看这两个结构体的定义。新闻文章结构体NewsArticle包含以下字段：</p>
-<p><pre><code class="language-rust">pub struct NewsArticle {
+}</code></pre>
+<p class="zh">我特别欣赏Rust允许在同一个编译单元(Rust中称为crate)内同时编写生产代码和单元测试的便捷性。如果仅将单元测试视为义务性工作，这可能无足轻重；但对我这样常通过单元测试进行技术探索和设计验证的开发者而言，此特性实属福音。</p>
+<p class="zh"><h4 class="filename">12.3.7 特质</h4></p>
+<p class="zh">Rust(以及Go)与其他主流语言的一大区别在于：它不支持继承机制，而是推崇组合模式。为实现多态行为，Rust提供了特质(trait)这一特性。</p>
+<p class="zh">Rust的特质类似于面向对象语言中的接口，它们定义了一组需要由派生类型实现的方法。但Rust特质有个独特功能：可以为非自身定义的类型添加特质。这与C#的扩展方法类似，但又不尽相同。</p>
+<p class="zh">Rust官方文档通过两个结构体示例演示了特质的使用：一个表示推文(tweet)，另一个表示新闻文章(news article)。为两者添加Summary特质后，就能生成对应的内容摘要。如下例所示，特质实现既独立于结构体实现，也独立于特质定义本身，这种设计提供了极大的灵活性。</p>
+<p class="zh">首先，让我们看看这两个结构体的定义。新闻文章结构体NewsArticle包含以下字段：</p>
+<pre class="line-numbers"><code class="language-rust">pub struct NewsArticle {
   pub headline: String,
   pub location: String,
   pub author: String,
   pub content: String,
-}</code></pre></p>
-<p>然后，Tweet 结构包含其自己的字段：</p>
-<p><pre><code class="language-rust">pub struct Tweet {
+}</code></pre>
+<p class="zh">然后，Tweet 结构包含其自己的字段：</p>
+<pre class="line-numbers"><code class="language-rust">pub struct Tweet {
   pub username: String,
   pub content: String,
   pub reply: bool,
   pub retweet: bool,
-}</code></pre></p>
-<p>另外，使用返回字符串的单个方法 summarize 来定义 Summary trait：</p>
-<p><pre><code class="language-rust">pub trait Summary {
+}</code></pre>
+<p class="zh">另外，使用返回字符串的单个方法 summarize 来定义 Summary trait：</p>
+<pre class="line-numbers"><code class="language-rust">pub trait Summary {
   fn summarize(&self) -> String;
-}</code></pre></p>
-<p>现在,为 Tweet 结构实施 Summary 特征。通过指定此 trait 的实现应用于结构来完成:</p>
-<p><pre><code class="language-rust">impl Summary for Tweet {
+}</code></pre>
+<p class="zh">现在,为 Tweet 结构实施 Summary 特征。通过指定此 trait 的实现应用于结构来完成:</p>
+<pre class="line-numbers"><code class="language-rust">impl Summary for Tweet {
   fn summarize(&self) -> String {
-    format!(": ", self.username, self.content)
+    format!("{}: {}", self.username, self.content)
   }
-}</code></pre></p>
-<p>测试完美运行：</p>
-<p><pre><code class="language-rust">#[test]
+}</code></pre>
+<p class="zh">测试完美运行：</p>
+<pre class="line-numbers"><code class="language-rust">#[test]
 fn summarize_tweet() {
   let tweet = Tweet {
     username: String::from("me"),
@@ -150,11 +150,11 @@ fn summarize_tweet() {
   };
 
   assert_eq!("me: a message", tweet.summarize());
-}</code></pre></p>
-<p>最后，让实现NewsArticle的特征：</p>
-<p><pre><code class="language-rust">impl Summary for NewsArticle {
+}</code></pre>
+<p class="zh">最后，让实现NewsArticle的特征：</p>
+<pre class="line-numbers"><code class="language-rust">impl Summary for NewsArticle {
   fn summarize(&self) -> String {
-    format!(", by  ()", self.headline, self.author, self.location)
+    format!("{}, by {} ({})", self.headline, self.author, self.location)
   }
 }
 #[test]
@@ -167,53 +167,53 @@ fn summarize_tweet() {
     };
 
     assert_eq!("Big News, by Me (Undisclosed)", news_article.summarize());
-  }</code></pre></p>
-<p>Rust的特质系统远不止于此，它具备更强大的能力：</p>
-<p><ul>
+  }</code></pre>
+<p class="zh">Rust的特质系统远不止于此，它具备更强大的能力：</p>
+<ul>
     <li>可提供默认方法实现</li>  <li>可限定参数类型需实现特定特质(或特质组合)</li>  <li>可泛化地为多种类型实现特质</li>  <li>融合了面向对象接口、C#扩展方法和C++概念的多重特性
-</ul></li></p>
-<p>虽然这些高级用法已超出本章讨论范围。</p>
-<p>最值得铭记的是：Rust处理继承的方式与C++有着根本性差异。</p>
-<p><h4 class="filename">12.3.8 所有权模型</h4></p>
-<p>Rust有个极具特色的设计，也是其最广为人知的特性 —— 所有权模型。这是Rust针对C++内存安全问题的解决方案，不同于Java/C#采用垃圾回收机制，Rust通过更明确的内存所有权来解决问题。</p>
-<p>如《Rust编程语言》所述(<a href="https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html" target="_blank" rel="noopener noreferrer">https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html</a>)：“内存通过所有权系统进行管理，编译器会检查一组规则。任何规则被违反时，程序都无法通过编译。所有权的所有特性都不会在运行时拖慢程序速度。”</p>
-<p>Rust所有权的三大核心规则：</p>
-<p><ul>
+</ul></li>
+<p class="zh">虽然这些高级用法已超出本章讨论范围。</p>
+<p class="zh">最值得铭记的是：Rust处理继承的方式与C++有着根本性差异。</p>
+<p class="zh"><h4 class="filename">12.3.8 所有权模型</h4></p>
+<p class="zh">Rust有个极具特色的设计，也是其最广为人知的特性 —— 所有权模型。这是Rust针对C++内存安全问题的解决方案，不同于Java/C#采用垃圾回收机制，Rust通过更明确的内存所有权来解决问题。</p>
+<p class="zh">如《Rust编程语言》所述(<a href="https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html" target="_blank" rel="noopener noreferrer">https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html</a>)：“内存通过所有权系统进行管理，编译器会检查一组规则。任何规则被违反时，程序都无法通过编译。所有权的所有特性都不会在运行时拖慢程序速度。”</p>
+<p class="zh">Rust所有权的三大核心规则：</p>
+<ul>
     <li>Rust中的每个值都有唯一所有者</li>  <li>同一时间只能有一个所有者</li>  <li>当所有者离开作用域时，值将自动释放
-</ul></li></p>
-<p>先看一个与C++行为相同的例子。对于栈上分配的变量(如整型)，其复制行为符合常规认知：</p>
-<p><pre><code class="language-rust">#[test]
+</ul></li>
+<p class="zh">先看一个与C++行为相同的例子。对于栈上分配的变量(如整型)，其复制行为符合常规认知：</p>
+<pre class="line-numbers"><code class="language-rust">#[test]
 fn copy_on_stack() {
   let stack_value = 1;
   let copied_stack_value = stack_value;
 
   assert_eq!(1, stack_value);
   assert_eq!(1, copied_stack_value);
-}</code></pre></p>
-<p>正如预期的那样,这两个变量具有相同的值。但如果尝试使用在堆上分配的变量写相同的代码,则会收到错误:</p>
-<p><pre><code class="language-rust">#[test]
+}</code></pre>
+<p class="zh">正如预期的那样,这两个变量具有相同的值。但如果尝试使用在堆上分配的变量写相同的代码,则会收到错误:</p>
+<pre class="line-numbers"><code class="language-rust">#[test]
 fn copy_on_heap() {
   let heap_value = String::from("A string");
   let copied_heap_value = heap_value;
 
   assert_eq!(String::from("A string"), heap_value);
   assert_eq!(String::from("A string"), copied_heap_value);
-}</code></pre></p>
-<p>运行这段代码时，会遇到错误:</p>
-<p><code>[E0382]: borrow of moved value: &#x27;heap_value&#x27;</code></p>
-<p>究竟发生了什么？将heap_value赋值给copied_heap_value时，原变量heap_value随即失效 —— 这与C++的移动语义如出一辙，只是无需开发者进行操作。其底层机制通过两个特质实现：Copy和Drop。若类型实现Copy特质，则表现如第一个示例；若实现Drop特质，则表现如第二个示例。注意：任何类型都不能同时实现这两个特质。</p>
-<p>要让上述示例正常工作，需要改用克隆机制而非默认的移动语义：</p>
-<p><pre><code class="language-rust">#[test]
+}</code></pre>
+<p class="zh">运行这段代码时，会遇到错误:</p>
+<p class="zh"><code>[E0382]: borrow of moved value: &#x27;heap_value&#x27;</code></p>
+<p class="zh">究竟发生了什么？将heap_value赋值给copied_heap_value时，原变量heap_value随即失效 —— 这与C++的移动语义如出一辙，只是无需开发者进行操作。其底层机制通过两个特质实现：Copy和Drop。若类型实现Copy特质，则表现如第一个示例；若实现Drop特质，则表现如第二个示例。注意：任何类型都不能同时实现这两个特质。</p>
+<p class="zh">要让上述示例正常工作，需要改用克隆机制而非默认的移动语义：</p>
+<pre class="line-numbers"><code class="language-rust">#[test]
 fn clone_on_heap() {
   let heap_value = String::from("A string");
   let copied_heap_value = heap_value.clone();
 
   assert_eq!(String::from("A string"), heap_value);
   assert_eq!(String::from("A string"), copied_heap_value);
-}</code></pre></p>
-<p>这个示例可以正常运行，此时执行的是值克隆(而非引用同一内存地址)，所以在堆上进行了新的内存分配。</p>
-<p>移动语义在函数调用中同样适用。来初始化一个值并将其传递给函数(该函数原样返回此值)，观察会发生什么：</p>
-<p><pre><code class="language-rust">fn call_me(value: String) -> String {
+}</code></pre>
+<p class="zh">这个示例可以正常运行，此时执行的是值克隆(而非引用同一内存地址)，所以在堆上进行了新的内存分配。</p>
+<p class="zh">移动语义在函数调用中同样适用。来初始化一个值并将其传递给函数(该函数原样返回此值)，观察会发生什么：</p>
+<pre class="line-numbers"><code class="language-rust">fn call_me(value: String) -> String {
   return value;
 }
 
@@ -225,12 +225,12 @@ fn move_semantics_method_call() {
 
   assert_eq!(String::from("A string"), heap_value);
   assert_eq!(String::from("A string"), result);
-}</code></pre></p>
-<p>在编译这段代码时，会遇到与之前相同的错误：</p>
-<p><code>error[E0382]: borrow of moved value: &#x27;heap_value&#x27;</code></p>
-<p>这是因为堆上创建的值移动到call_me函数中，导致其脱离了当前作用域而释放。</p>
-<p>要使代码正常工作，需要指定函数应该借用(borrow)所有权而非取得所有权 —— 这通过引用和解引用操作符实现(与C++的语法相同)：</p>
-<p><pre><code class="language-rust">fn i_borrow(value: &String) -> &String {
+}</code></pre>
+<p class="zh">在编译这段代码时，会遇到与之前相同的错误：</p>
+<p class="zh"><code>error[E0382]: borrow of moved value: &#x27;heap_value&#x27;</code></p>
+<p class="zh">这是因为堆上创建的值移动到call_me函数中，导致其脱离了当前作用域而释放。</p>
+<p class="zh">要使代码正常工作，需要指定函数应该借用(borrow)所有权而非取得所有权 —— 这通过引用和解引用操作符实现(与C++的语法相同)：</p>
+<pre class="line-numbers"><code class="language-rust">fn i_borrow(value: &String) -> &String {
   return value;
 }
 
@@ -242,9 +242,9 @@ fn borrow_method_call() {
 
   assert_eq!(String::from("A string"), heap_value);
   assert_eq!(String::from("A string"), *result);
-}</code></pre></p>
-<p>Rust引用与C++引用的关键区别在于：Rust引用默认是不可变的(immutable)。</p>
-<p>当然，Rust的所有权模型还有更多精妙之处需要探索，但相信这些示例已足够初步理解其运作机制，以及如何有效预防内存安全问题。</p>
+}</code></pre>
+<p class="zh">Rust引用与C++引用的关键区别在于：Rust引用默认是不可变的(immutable)。</p>
+<p class="zh">当然，Rust的所有权模型还有更多精妙之处需要探索，但相信这些示例已足够初步理解其运作机制，以及如何有效预防内存安全问题。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="12.2..html" class="prev-link">« 上一章：12.2. 为什么要竞争？</a>
@@ -257,6 +257,18 @@ fn borrow_method_call() {
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

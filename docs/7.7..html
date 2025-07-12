@@ -24,10 +24,10 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">7.7. 总结</h1></section>
-  <p>在 C++ 中实现并行与并发编程，是否有“简单”的方法？与过去相比，答案是肯定的 —— 如今已经很少需要手动创建线程或直接处理同步问题（除非是在编写底层基础设施代码）。借助 STL 对并行算法的原生支持，甚至可以在不依赖外部库或工具的情况下，轻松实现并发逻辑。</p>
-<p>然而，并行与并发编程的内在复杂性始终存在。要真正发挥其优势，程序必须采用不同的结构设计，遵循额外的约束条件，并要求开发者转变思维方式和设计范式。这不是 C++ 所独有的挑战，而是所有尝试进行并行编程时都必须面对的核心问题。</p>
-<p>因此，可以得出这样的结论：如果做出正确的设计选择，现代 C++ 确实让并行编程比以往更加易用和安全，但它的复杂性依然不容低估。</p>
-<p>在下一章中，我们将探讨一个看似简单却极具深度的问题：C++ 中最快的执行形式是否是内联汇编？ 将从性能极限出发，审视语言抽象与硬件控制之间的权衡。</p>
+  <p class="zh">在 C++ 中实现并行与并发编程，是否有“简单”的方法？与过去相比，答案是肯定的 —— 如今已经很少需要手动创建线程或直接处理同步问题（除非是在编写底层基础设施代码）。借助 STL 对并行算法的原生支持，甚至可以在不依赖外部库或工具的情况下，轻松实现并发逻辑。</p>
+<p class="zh">然而，并行与并发编程的内在复杂性始终存在。要真正发挥其优势，程序必须采用不同的结构设计，遵循额外的约束条件，并要求开发者转变思维方式和设计范式。这不是 C++ 所独有的挑战，而是所有尝试进行并行编程时都必须面对的核心问题。</p>
+<p class="zh">因此，可以得出这样的结论：如果做出正确的设计选择，现代 C++ 确实让并行编程比以往更加易用和安全，但它的复杂性依然不容低估。</p>
+<p class="zh">在下一章中，我们将探讨一个看似简单却极具深度的问题：C++ 中最快的执行形式是否是内联汇编？ 将从性能极限出发，审视语言抽象与硬件控制之间的权衡。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="7.6..html" class="prev-link">« 上一章：7.6. 我们的能力边界</a>
@@ -40,6 +40,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

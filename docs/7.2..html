@@ -24,14 +24,14 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">7.2. 并行和并发的定义</h1></section>
-  <p>我的第一台电脑是罗马宁亚制造的 HC-90，这是 ZX-80 的克隆机型。我拥有过两个版本：第一个版本需要用磁带播放器加载程序。尽管操作不便，但它相比当时的主要竞争对手 CHIP 电脑（另一款罗马尼亚产的 ZX-80 克隆机）有一个显著优势—— CHIP 需要从磁带加载操作系统，而 HC-90 的 EPROM 足以直接启动 BASIC 解释器。我拥有的第二个版本进步很大：配备了 5 英寸软盘驱动器，这意味着程序加载速度大幅提升，也标志着我开始真正接触更复杂的编程任务。</p>
-<p>在这两个版本上，BASIC 解释器都是人机交互的主要界面。由于除了游戏之外几乎没有其他可用程序，我的高中时光大多是在编写 BASIC 程序和玩游戏中度过的。渐渐地，BASIC 已不能满足我的需求。虽然我也尝试进行图形和声音编程，但运行速度极其缓慢，这促使我学习 ZX-80 的汇编语言——这堪称一场冒险。汇编编程极易出错，一个小小的失误就可能导致系统重启并丢失所有未保存的工作。虽然这种编程方式难称高效，但它让我格外珍惜如今的编程环境：能在电脑上编译、运行、测试代码，并将修改保存到版本控制系统中。</p>
-<p>当时我渴望提升图形和声音的响应速度，却没意识到存在根本性限制：单核 CPU（按现今说法）意味着图形渲染、声音处理和逻辑运算必须串行执行。CPU 可能先处理声音指令，再显示图形，最后进行计算。由于这些任务在执行与实际输出之间存在微小延迟，它们看似“并行”，实则只是并发。当系统满负荷运行时，就能观察到声画不同步的现象。</p>
-<p>如果当年我能使用多处理器或多核环境会怎样？我可以将不同的任务分配到独立的处理器上。一个高效的调度器可以真正并行执行这些任务，从而充分利用闲置的 CPU 资源。只要任务定义明确，就能充分挖掘多核潜力，更快获得结果 —— 这才是真正的并行计算。</p>
-<p>来自 Haskell 社区的一个定义差异颇具启发性(参见<a href="https://wiki.haskell.org/Parallelism_vs._Concurrency" target="_blank" rel="noopener noreferrer">https://wiki.haskell.org/Parallelism_vs._Concurrency</a>)。他们严格区分并行函数式程序与并发函数式程序：两者都采用不可变性原则，但并行程序通过多核加速执行，同时保持确定性（无论串行还是并行运行，程序语义不变）；并发程序则涉及多个非确定性线程，各自执行 I/O 操作，操作顺序不可预知。</p>
-<p>遗憾的是，如同软件开发中的常见现象，这些术语的含义常被随意解读。有人坚称并发与并行截然不同。我在 StackOverflow 上就看到有观点认为并发是并行的超集，因为并发泛指管理多线程的各种方法 —— 这也确实是某些计算机教材所采用的立场。</p>
-<p>为明确概念，我选择最契合我编程启蒙时期的定义：并发是指多个操作看似同时运行，而并行是指它们确实同时运行。这种看似简单的差异会导致程序设计意图的根本不同。设计并行程序时，定义可并行执行的操作并确定其顺序，通过分解大任务来榨取 CPU 时间；设计并发程序时，则通过将长任务填入 CPU 空闲时段来优化响应时间。</p>
-<p>这两种编程模型各有其独特挑战。现在，回顾使用它们时的常见问题。</p>
+  <p class="zh">我的第一台电脑是罗马宁亚制造的 HC-90，这是 ZX-80 的克隆机型。我拥有过两个版本：第一个版本需要用磁带播放器加载程序。尽管操作不便，但它相比当时的主要竞争对手 CHIP 电脑（另一款罗马尼亚产的 ZX-80 克隆机）有一个显著优势—— CHIP 需要从磁带加载操作系统，而 HC-90 的 EPROM 足以直接启动 BASIC 解释器。我拥有的第二个版本进步很大：配备了 5 英寸软盘驱动器，这意味着程序加载速度大幅提升，也标志着我开始真正接触更复杂的编程任务。</p>
+<p class="zh">在这两个版本上，BASIC 解释器都是人机交互的主要界面。由于除了游戏之外几乎没有其他可用程序，我的高中时光大多是在编写 BASIC 程序和玩游戏中度过的。渐渐地，BASIC 已不能满足我的需求。虽然我也尝试进行图形和声音编程，但运行速度极其缓慢，这促使我学习 ZX-80 的汇编语言——这堪称一场冒险。汇编编程极易出错，一个小小的失误就可能导致系统重启并丢失所有未保存的工作。虽然这种编程方式难称高效，但它让我格外珍惜如今的编程环境：能在电脑上编译、运行、测试代码，并将修改保存到版本控制系统中。</p>
+<p class="zh">当时我渴望提升图形和声音的响应速度，却没意识到存在根本性限制：单核 CPU（按现今说法）意味着图形渲染、声音处理和逻辑运算必须串行执行。CPU 可能先处理声音指令，再显示图形，最后进行计算。由于这些任务在执行与实际输出之间存在微小延迟，它们看似“并行”，实则只是并发。当系统满负荷运行时，就能观察到声画不同步的现象。</p>
+<p class="zh">如果当年我能使用多处理器或多核环境会怎样？我可以将不同的任务分配到独立的处理器上。一个高效的调度器可以真正并行执行这些任务，从而充分利用闲置的 CPU 资源。只要任务定义明确，就能充分挖掘多核潜力，更快获得结果 —— 这才是真正的并行计算。</p>
+<p class="zh">来自 Haskell 社区的一个定义差异颇具启发性(参见<a href="https://wiki.haskell.org/Parallelism_vs._Concurrency" target="_blank" rel="noopener noreferrer">https://wiki.haskell.org/Parallelism_vs._Concurrency</a>)。他们严格区分并行函数式程序与并发函数式程序：两者都采用不可变性原则，但并行程序通过多核加速执行，同时保持确定性（无论串行还是并行运行，程序语义不变）；并发程序则涉及多个非确定性线程，各自执行 I/O 操作，操作顺序不可预知。</p>
+<p class="zh">遗憾的是，如同软件开发中的常见现象，这些术语的含义常被随意解读。有人坚称并发与并行截然不同。我在 StackOverflow 上就看到有观点认为并发是并行的超集，因为并发泛指管理多线程的各种方法 —— 这也确实是某些计算机教材所采用的立场。</p>
+<p class="zh">为明确概念，我选择最契合我编程启蒙时期的定义：并发是指多个操作看似同时运行，而并行是指它们确实同时运行。这种看似简单的差异会导致程序设计意图的根本不同。设计并行程序时，定义可并行执行的操作并确定其顺序，通过分解大任务来榨取 CPU 时间；设计并发程序时，则通过将长任务填入 CPU 空闲时段来优化响应时间。</p>
+<p class="zh">这两种编程模型各有其独特挑战。现在，回顾使用它们时的常见问题。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="7.1..html" class="prev-link">« 上一章：7.1. 环境要求</a>
@@ -44,6 +44,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>

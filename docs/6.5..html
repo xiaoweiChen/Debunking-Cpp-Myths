@@ -24,30 +24,30 @@
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
   <section class="section"><h1 class="section-title">6.5. 现代C++的局限性</h1></section>
-  <p>假设我们仅使用 STL 容器、避免裸指针，在必要时采用标准库提供的智能指针，并始终以内存安全为准则来设计类型 —— 这样就真的可以高枕无忧了吗？</p>
-<p>C++ 标准委员会知名成员 Herb Sutter 在其 2024 年 3 月 11 日发表的博客《C++ 安全性的现状与思考》(<a href="https://herbsutter.com/2024/03/11/safety-in-context/" target="_blank" rel="noopener noreferrer">https://herbsutter.com/2024/03/11/safety-in-context/</a>) 中，深入探讨了这一问题。他的结论是：在默认情况下，C++ 代码仍然太容易引入安全隐患。文章指出，有四个关键领域亟需重点关注：类型系统、边界检查、初始化机制以及生命周期管理。尽管 C++20 已经引入了一些初步解决方案（如 std::span、std::string_view、concepts 和范围感知机制），但语言层面仍缺乏一套“默认开启、按需关闭”的安全规则体系。</p>
-<p>接下来，我们将结合具体实例，解析这些观点。</p>
-<p>首当其冲的是C++20引入的std::span —— std::span 表示对一段连续内存（例如原生数组、std::array、带尺寸的指针、std::vector 或 std::string）的安全视图。它最大的优势在于能够自动推导出序列的长度，从而有效杜绝常见的“差一错误”（off-by-one errors）。这使得我们可以：安全地向函数传递集合的一部分，而无需担心越界访问；彻底禁用不安全的指针算术运算，转而使用 std::span 作为更安全的替代方案。</p>
-<p>其次是 string_view。std::string_view 提供了一种对字符串内容的只读访问方式，极大地减少了因意外修改字符串内容而导致的安全隐患。此外，还消除了许多原本不安全的字符串操作模式，比如不必要的复制和格式错误。</p>
-<p>第三是概念(concepts)。概念允许开发者为泛型函数或类施加清晰的约束条件，从而增强类型安全性。例如，可以明确要求某个泛型函数的参数类型必须支持加法和减法运算。虽然 concepts 的设计仍在持续演进（C++26 将带来更多改进），但它们已经能够帮助我们规避大量潜在的安全缺陷。</p>
-<p>第四是边界感知的范围(bound-aware ranges)。C++20 中引入的范围（ranges）库，让开发者可以用更加简洁、函数式的方式处理集合数据。借助范围，开发者不再需要手动传递 begin() 和 end() 迭代器，因为范围本身就知道自己的边界，从而显著降低误用的风险。</p>
-<p>这些现代 C++ 的改进措施（如果被正确使用）确实使 C++ 比 C++98 时代更加安全可靠。然而，语言的安全性仍有局限。</p>
-<p>还记得之前那个访问未预留内存的 std::vector 索引，最终导致运行时内存错误的示例吗？让我们再来看一遍那段代码：</p>
-<p><pre><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
+  <p class="zh">假设我们仅使用 STL 容器、避免裸指针，在必要时采用标准库提供的智能指针，并始终以内存安全为准则来设计类型 —— 这样就真的可以高枕无忧了吗？</p>
+<p class="zh">C++ 标准委员会知名成员 Herb Sutter 在其 2024 年 3 月 11 日发表的博客《C++ 安全性的现状与思考》(<a href="https://herbsutter.com/2024/03/11/safety-in-context/" target="_blank" rel="noopener noreferrer">https://herbsutter.com/2024/03/11/safety-in-context/</a>) 中，深入探讨了这一问题。他的结论是：在默认情况下，C++ 代码仍然太容易引入安全隐患。文章指出，有四个关键领域亟需重点关注：类型系统、边界检查、初始化机制以及生命周期管理。尽管 C++20 已经引入了一些初步解决方案（如 std::span、std::string_view、concepts 和范围感知机制），但语言层面仍缺乏一套“默认开启、按需关闭”的安全规则体系。</p>
+<p class="zh">接下来，我们将结合具体实例，解析这些观点。</p>
+<p class="zh">首当其冲的是C++20引入的std::span —— std::span 表示对一段连续内存（例如原生数组、std::array、带尺寸的指针、std::vector 或 std::string）的安全视图。它最大的优势在于能够自动推导出序列的长度，从而有效杜绝常见的“差一错误”（off-by-one errors）。这使得我们可以：安全地向函数传递集合的一部分，而无需担心越界访问；彻底禁用不安全的指针算术运算，转而使用 std::span 作为更安全的替代方案。</p>
+<p class="zh">其次是 string_view。std::string_view 提供了一种对字符串内容的只读访问方式，极大地减少了因意外修改字符串内容而导致的安全隐患。此外，还消除了许多原本不安全的字符串操作模式，比如不必要的复制和格式错误。</p>
+<p class="zh">第三是概念(concepts)。概念允许开发者为泛型函数或类施加清晰的约束条件，从而增强类型安全性。例如，可以明确要求某个泛型函数的参数类型必须支持加法和减法运算。虽然 concepts 的设计仍在持续演进（C++26 将带来更多改进），但它们已经能够帮助我们规避大量潜在的安全缺陷。</p>
+<p class="zh">第四是边界感知的范围(bound-aware ranges)。C++20 中引入的范围（ranges）库，让开发者可以用更加简洁、函数式的方式处理集合数据。借助范围，开发者不再需要手动传递 begin() 和 end() 迭代器，因为范围本身就知道自己的边界，从而显著降低误用的风险。</p>
+<p class="zh">这些现代 C++ 的改进措施（如果被正确使用）确实使 C++ 比 C++98 时代更加安全可靠。然而，语言的安全性仍有局限。</p>
+<p class="zh">还记得之前那个访问未预留内存的 std::vector 索引，最终导致运行时内存错误的示例吗？让我们再来看一遍那段代码：</p>
+<pre class="line-numbers"><code class="language-cpp">int doSomeWork(int value1, int value2, int value3, int value4) {
   vector&lt;int&gt; values;
   values[0] = value1;
   values[1] = value2;
   values[3] = value3;
   values[4] = value4;
   return values[0] + values[1] + values[3] + values[4];
-}</code></pre></p>
-<p>这段代码的问题在于，我们可以毫无阻碍地访问超出 vector 已分配大小的索引，同时跳过了对索引 2 的初始化。这正是未定义行为的典型表现。</p>
-<p>为了解决此类问题，一个可行的方案是：</p>
-<p><ul>
+}</code></pre>
+<p class="zh">这段代码的问题在于，我们可以毫无阻碍地访问超出 vector 已分配大小的索引，同时跳过了对索引 2 的初始化。这正是未定义行为的典型表现。</p>
+<p class="zh">为了解决此类问题，一个可行的方案是：</p>
+<ul>
     <li>启用编译器的安全模式标志</li>  <li>编译器在每次索引访问时自动生成边界检查，确保满足条件： <code>0 <= index < collection.size()</code></li>  <li>在运行时拦截越界访问，从而防止未定义行为的发生
-</ul></li></p>
-<p>这种编译选项可以在不修改现有代码的前提下直接应用，有效提升程序的健壮性，并帮助发现潜在的安全隐患。当然，一些开发者可能会出于对性能损耗的担忧而反对这一机制 —— 这正是此类检查应通过编译器标志进行控制的原因：理想情况下，默认启用，仅在性能敏感的场景中允许显式关闭。</p>
-<p>由此可见，尽管现代 C++ 已经在内存安全方面取得了显著进步，但要真正实现全面的安全保障，语言和工具链仍有进一步改进的空间。</p>
+</ul></li>
+<p class="zh">这种编译选项可以在不修改现有代码的前提下直接应用，有效提升程序的健壮性，并帮助发现潜在的安全隐患。当然，一些开发者可能会出于对性能损耗的担忧而反对这一机制 —— 这正是此类检查应通过编译器标志进行控制的原因：理想情况下，默认启用，仅在性能敏感的场景中允许显式关闭。</p>
+<p class="zh">由此可见，尽管现代 C++ 已经在内存安全方面取得了显著进步，但要真正实现全面的安全保障，语言和工具链仍有进一步改进的空间。</p>
   <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
 <div class="navigation">
   <a href="6.4..html" class="prev-link">« 上一章：6.4. 现代C++的救赎</a>
@@ -60,6 +60,18 @@
   <!-- 先加载核心库 -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <!-- 行号插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+
+  <!-- 复制按钮需要的 toolbar 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
+
+  <!-- Copy to clipboard 插件 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
   
   <!-- 加载MathJax -->
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
