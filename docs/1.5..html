@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1.5. Kate Gregory --- 不要教授C语言 - 走出C++谜云</title>
+  <title>1.5. Kate Gregory —— 不要教授C语言 - 走出C++谜云</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
   <script>
@@ -23,7 +23,7 @@
   <a href="1.6..html" class="next-link">下一章：1.6. 测试驱动学习法 »</a>
 </div>
 <div class="back-to-toc" style="text-align:left"><a href="index.html">返回目录</a></div>
-  <section class="section"><h1 class="section-title">1.5. Kate Gregory --- 不要教授C语言</h1></section>
+  <section class="section"><h1 class="section-title">1.5. Kate Gregory —— 不要教授C语言</h1></section>
   <p class="zh">在 CppCon 2015 的一次演讲中 (<a href="https://www.youtube.com/watch?v=YnWhqhNdYyk" target="_blank" rel="noopener noreferrer">https://www.youtube.com/watch?v=YnWhqhNdYyk</a>) ，Kate Gregory 指出：C 语言并不是学习 C++ 的前提条件。她强调，在初级 C++ 课程的第一天就教授 printf、裸数组和 char 指针，实际上会对学习过程产生负面影响。</p>
 <p class="zh">相反，她建议从标准模板库(STL)中提供的对象入手进行教学。例如，std::string 和 std::vector 对初学者来说都非常直观易懂。而且，运算符重载也是使用这些类型的一种非常自然的方式。初学者理所当然地期望 &quot;abcd&quot; + &quot;efg&quot; 能够得到 &quot;abcdefg&quot;，而无需深入理解运算符重载背后的复杂机制，就可以写出简单的程序。这种方法还巧妙地避开了对析构函数和手动内存管理的讨论。</p>
 <p class="zh">她进一步指出，如果你从实际示例出发，向初学者介绍 lambda 表达式其实也并不困难。以在vector中查找元素为例：第一种方法是使用传统的 for 循环遍历；第二种方法则使用 std::find。但如果我们想在 std::vector&lt;int&gt; 中查找一个偶数呢？这时自然而然就会引入 lambda 表达式，而无需一开始就讲解编写 lambda 的各种可能方式。</p>

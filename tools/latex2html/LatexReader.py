@@ -61,7 +61,9 @@ def parse_book_index(processed_content, input_dir, output_dir):
     if resolved_path.exists():
       try:
         print(f"Including subfile: {resolved_path.resolve()}")
-        processed_content = read_file_sync(resolved_path.resolve())
+        processed_content = \
+          read_file_sync(resolved_path.resolve()) \
+          .replace('---', '——')
       except Exception as err:
         print(f"Error including subfile {resolved_path.resolve()}: {err}")
     else:
