@@ -107,7 +107,7 @@ def create_navigation(chapters, current_index):
 
   if current_index > 0:
     prev_chapter = chapters[current_index - 1]
-    prev_filename = prev_chapter["section_name"]+ '.html'
+    prev_filename = prev_chapter["section_name"] + '.html'
     prev_link = f'<a href="{prev_filename}" class="prev-link">« 上一章：{prev_chapter["section_title"]}</a>'
   else:
     prev_link = '<span></span>'
@@ -467,8 +467,8 @@ def process_special_paragraph(paragraph_content, image_root_dir, output_dir):
     paragraph_content = paragraph_content.replace(r'\%', '%')
     paragraph_content = paragraph_content.replace(r'\_', '_')
     paragraph_content = paragraph_content.replace(r'\&', '&')
-    paragraph_content = paragraph_content.replace('\}', '}')
-    paragraph_content = paragraph_content.replace('\{', '{')
+    paragraph_content = paragraph_content.replace(r'\}', '}')
+    paragraph_content = paragraph_content.replace(r'\{', '{')
     paragraph_content = paragraph_content.replace('---', '——')
 
     paragraph_content = html.escape(paragraph_content)
